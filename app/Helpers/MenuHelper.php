@@ -51,7 +51,7 @@ class MenuHelper
             [
                 'icon' => 'support-ticket',
                 'name' => 'Suporte',
-                'path' => '/chat',
+                'path' => '/support',
                 
             ],
             

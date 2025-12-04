@@ -103,6 +103,12 @@ Route::middleware(['auth'])->group(function () {
     })->name('categories.edit');
 
 
+
+
+    // Rota para o componente Support/Index
+    Volt::route('/support', 'support.index')
+    ->name('support.index');
+
     // Rotas de faq
     Route::view('/faq', 'pages.faq')->name('faq');
     // Rotas de coming
