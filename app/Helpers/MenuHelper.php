@@ -53,7 +53,6 @@ class MenuHelper
                 'name' => 'Suporte',
                 'subItems' => [
                     ['name' => 'Lista de Tickets', 'path' => '/support-list', 'pro' => false],
-                    ['name' => 'Detalhes do Ticket', 'path' => '/support-show', 'pro' => false],
                     ['name' => 'Novo Ticket', 'path' => '/support', 'pro' => false],
                 ],
                

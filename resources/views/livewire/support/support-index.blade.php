@@ -8,18 +8,20 @@
                 Abrir Novo Ticket
             </h3>
 
-            @if (session('status'))
-                <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-zinc-800 dark:text-green-400" role="alert">
-                    {{ session('status') }}
-                </div>
-            @endif
+            <form action="{{ route('support.store') }}" method="POST" class="space-y-6">
+                @csrf
+                
+                @if(session('status'))
+                    <div class="rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-green-500/10 dark:text-green-500">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-            <form wire:submit="submitSupportForm" class="space-y-4">
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                         Assunto
                     </label>
-                    <input type="text" wire:model="subject" class="h-11 w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500 dark:focus:border-brand-500" placeholder="Resumo do problema">
+                    <input type="text" name="subject" value="{{ old('subject') }}" class="h-11 w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500 dark:focus:border-brand-500" placeholder="Ex: Problema com acesso ao sistema" required>
                     @error('subject') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
@@ -28,10 +30,10 @@
                         Prioridade
                     </label>
                     <div class="relative">
-                        <select wire:model="priority" class="h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:border-brand-500">
-                            <option value="low">Baixa</option>
-                            <option value="medium">Média</option>
-                            <option value="high">Alta</option>
+                        <select name="priority" class="h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:border-brand-500">
+                            <option value="low" @selected(old('priority', 'low') === 'low')>Baixa</option>
+                            <option value="medium" @selected(old('priority') === 'medium')>Média</option>
+                            <option value="high" @selected(old('priority') === 'high')>Alta</option>
                         </select>
                         <span class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400">
                             <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,7 +48,7 @@
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                         Mensagem
                     </label>
-                    <textarea wire:model="message" rows="6" class="w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500 dark:focus:border-brand-500" placeholder="Descreva seu problema detalhadamente..."></textarea>
+                    <textarea name="message" rows="6" class="w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500 dark:focus:border-brand-500" placeholder="Descreva seu problema detalhadamente..." required>{{ old('message') }}</textarea>
                     @error('message') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
@@ -78,7 +80,7 @@
                         <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Você ainda não criou nenhuma solicitação de suporte.</p>
                     </div>
                 @else
-                    <div class="space-y-4">
+                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                         @foreach($tickets as $ticket)
                             <a href="{{ route('support.show', $ticket) }}" wire:navigate class="group block rounded-xl border border-zinc-200 p-4 transition-colors hover:border-brand-500 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:border-brand-500 dark:hover:bg-white/[0.03]">
                                 <div class="mb-2 flex items-center justify-between">
@@ -86,10 +88,19 @@
                                         {{ $ticket->ticket_id }}
                                     </span>
                                     <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                        @if($ticket->status === 'open') bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-500
-                                        @elseif($ticket->status === 'in_progress') bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-500
-                                        @else bg-zinc-50 text-zinc-600 dark:bg-zinc-500/15 dark:text-zinc-400 @endif">
-                                        {{ ucfirst($ticket->status) }}
+                                        @if($ticket->status === 'solved' || $ticket->status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
+                                        @elseif($ticket->status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
+                                        @elseif($ticket->status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
+                                        @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
+                                        {{ 
+                                            match($ticket->status) {
+                                                'open' => 'Aberto',
+                                                'pending' => 'Pendente',
+                                                'resolved', 'solved' => 'Resolvido',
+                                                'closed' => 'Fechado',
+                                                default => ucfirst($ticket->status)
+                                            }
+                                        }}
                                     </span>
                                 </div>
                                 <h4 class="mb-1 text-sm font-medium text-zinc-800 group-hover:text-brand-500 dark:text-white/90 dark:group-hover:text-brand-500">

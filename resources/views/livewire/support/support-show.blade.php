@@ -13,21 +13,30 @@
                                 {{ $support->subject }}
                             </h2>
                             <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                @if($support->status === 'open') bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-500
-                                @elseif($support->status === 'in_progress') bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-500
-                                @else bg-zinc-50 text-zinc-600 dark:bg-zinc-500/15 dark:text-zinc-400 @endif">
-                                {{ ucfirst($support->status) }}
+                                @if($status === 'solved' || $status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
+                                @elseif($status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
+                                @elseif($status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
+                                @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
+                                {{ 
+                                    match($status) {
+                                        'open' => 'Aberto',
+                                        'pending' => 'Pendente',
+                                        'resolved', 'solved' => 'Resolvido',
+                                        'closed' => 'Fechado',
+                                        default => ucfirst($status)
+                                    }
+                                }}
                             </span>
                         </div>
                         <div class="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
                             <span class="flex items-center gap-1.5">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 text-blue-700 dark:bg-blue-500/15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                                 </svg>
                                 {{ $support->ticket_id }}
                             </span>
                             <span class="flex items-center gap-1.5">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 text-blue-700 dark:bg-blue-500/15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 {{ $support->created_at->format('d/m/Y H:i') }}
@@ -77,10 +86,11 @@
                 <h3 class="mb-4 text-lg font-medium text-zinc-800 dark:text-white/90">
                     Responder
                 </h3>
-                <form wire:submit="submitReply">
+                <form action="{{ route('support.reply', $support->id) }}" method="POST">
+                    @csrf
                     <div class="mb-4">
-                        <textarea wire:model="replyMessage" rows="4" class="w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500 dark:focus:border-brand-500" placeholder="Digite sua resposta..."></textarea>
-                        @error('replyMessage') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                        <textarea name="message" rows="4" class="w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500 dark:focus:border-brand-500" placeholder="Digite sua resposta..." required>{{ old('message') }}</textarea>
+                        @error('message') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
                     <div class="flex justify-end">
                         <button type="submit" class="flex items-center justify-center rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600">
@@ -97,31 +107,80 @@
                 <h3 class="mb-4 text-lg font-medium text-zinc-800 dark:text-white/90">
                     Informações
                 </h3>
-                <dl class="space-y-4">
                     <div>
-                        <dt class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Status</dt>
-                        <dd class="mt-1 text-sm font-medium text-zinc-800 dark:text-white">
+                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
+                            Status
+                        </label>
+                        @if(auth()->user()->is_admin)
+                            <form action="{{ route('support.update-status', $support->id) }}" method="POST" class="space-y-2">
+                                @csrf
+                                @method('PATCH')
+                                <div class="relative">
+                                    <select 
+                                        name="status"
+                                        class="h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:border-brand-500">
+                                        <option value="open" @selected($support->status === 'open')>Aberto</option>
+                                        <option value="pending" @selected($support->status === 'pending')>Pendente</option>
+                                        <option value="resolved" @selected($support->status === 'resolved')>Resolvido</option>
+                                        <option value="closed" @selected($support->status === 'closed')>Fechado</option>
+                                    </select>
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400">
+                                        <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.79199 7.396L10.0003 12.6043L15.2087 7.396" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <button 
+                                    type="submit"
+                                    class="w-full rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
+                                    Salvar Status
+                                </button>
+                            </form>
+                        @else
                             <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                @if($support->status === 'open') bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-500
-                                @elseif($support->status === 'in_progress') bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-500
-                                @else bg-zinc-50 text-zinc-600 dark:bg-zinc-500/15 dark:text-zinc-400 @endif">
-                                {{ ucfirst($support->status) }}
+                                @if($status === 'solved' || $status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
+                                @elseif($status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
+                                @elseif($status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
+                                @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
+                                {{ 
+                                    match($status) {
+                                        'open' => 'Aberto',
+                                        'pending' => 'Pendente',
+                                        'resolved', 'solved' => 'Resolvido',
+                                        'closed' => 'Fechado',
+                                        default => ucfirst($status)
+                                    }
+                                }}
                             </span>
-                        </dd>
+                        @endif
+                    </div>
+                    <div> 
+                        <p class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
+                            Prioridade
+                        </p>
+                        <span class="text-theme-xs rounded-full px-2 py-0.5 font-medium
+                            @if($support->priority === 'high') bg-red-50 dark:bg-red-500/15 text-red-600 dark:text-red-500
+                            @elseif($support->priority === 'medium') bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-500
+                            @else bg-green-50 dark:bg-green-500/15 text-green-600 dark:text-green-500 @endif">
+                            {{ 
+                                match($support->priority) {
+                                    'high' => 'Alta',
+                                    'medium' => 'Média',
+                                    'low' => 'Baixa',
+                                    default => ucfirst($support->priority)
+                                }
+                            }}
+                        </span>
                     </div>
                     <div>
-                        <dt class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Prioridade</dt>
-                        <dd class="mt-1 text-sm font-medium text-zinc-800 dark:text-white">
-                            {{ ucfirst($support->priority) }}
-                        </dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Última Atualização</dt>
-                        <dd class="mt-1 text-sm font-medium text-zinc-800 dark:text-white">
+                        <p class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
+                            Última Atualização
+                        </p> 
+                        <span class="mt-1 text-sm font-medium text-zinc-800 dark:text-white">
                             {{ $support->updated_at->diffForHumans() }}
-                        </dd>
+                        </span>
                     </div>
-                </dl>
+                </div>
             </div>
         </div>
     </div>

@@ -107,9 +107,59 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para o componente Support/Index
     Route::get('/support', \App\Livewire\Support\SupportIndex::class)->name('support.index');
+    Route::post('/support', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'subject' => 'required|min:5|max:100',
+            'priority' => 'required|in:low,medium,high',
+            'message' => 'required|min:10',
+        ]);
+        
+        \App\Models\Support::create([
+            'user_id' => auth()->id(),
+            'subject' => $request->subject,
+            'priority' => $request->priority,
+            'message' => $request->message,
+            'status' => 'pending',
+        ]);
+        
+        return redirect()->route('support.list')->with('status', 'Ticket criado com sucesso!');
+    })->name('support.store');
+    
     Route::get('/support-list', \App\Livewire\Support\SupportList::class)->name('support.list');
     
     Route::get('/support/{support}', \App\Livewire\Support\SupportShow::class)->name('support.show');
+    Route::post('/support/{support}/reply', function (\App\Models\Support $support, \Illuminate\Http\Request $request) {
+        // Ensure user owns the ticket or is admin
+        if ($support->user_id !== auth()->id() && !auth()->user()->is_admin) {
+            abort(403);
+        }
+        
+        $request->validate([
+            'message' => 'required|string|min:2'
+        ]);
+        
+        $support->replies()->create([
+            'user_id' => auth()->id(),
+            'message' => $request->message,
+        ]);
+        
+        return redirect()->route('support.show', $support)->with('message', 'Resposta enviada com sucesso!');
+    })->name('support.reply');
+    
+    Route::patch('/support/{support}/status', function (\App\Models\Support $support, \Illuminate\Http\Request $request) {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+        
+        $request->validate([
+            'status' => 'required|in:open,pending,resolved,closed'
+        ]);
+        
+        $support->update(['status' => $request->status]);
+        
+        return redirect()->route('support.show', $support)->with('message', 'Status atualizado com sucesso!');
+    })->name('support.update-status');
+    Route::redirect('/support-show', '/support-show'); 
 
     // Rotas de faq
     Route::view('/faq', 'pages.faq')->name('faq');

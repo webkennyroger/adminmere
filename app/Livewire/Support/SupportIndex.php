@@ -21,6 +21,15 @@ class SupportIndex extends Component
 
     public function submitSupportForm()
     {
+        \Illuminate\Support\Facades\Log::info('Support form submission started', [
+            'user' => auth()->id(),
+            'data' => [
+                'subject' => $this->subject,
+                'priority' => $this->priority,
+                'message' => $this->message
+            ]
+        ]);
+
         $this->validate();
 
         Support::create([
@@ -28,14 +37,13 @@ class SupportIndex extends Component
             'subject' => $this->subject,
             'priority' => $this->priority,
             'message' => $this->message,
-            'status' => 'open',
+            'status' => 'pending',
         ]);
 
         $this->reset();
-        session()->flash('status', 'Ticket criado com sucesso!');
         
-        // Opcional: Redirecionar para a lista após criar
-        // return $this->redirect(route('support.list'), navigate: true);
+        // Redirecionar para a lista após criar para confirmar visualização
+        return redirect()->route('support.list')->with('status', 'Ticket criado com sucesso!');
     }
 
     public function render()
@@ -43,8 +51,7 @@ class SupportIndex extends Component
         return view('livewire.support.support-index', [
             'tickets' => Support::where('user_id', auth()->id())
                 ->latest()
-                ->limit(5)
-                ->get(), // Mostra apenas os 5 últimos no dashboard de suporte
+                ->get(),
         ]);
     }
 }

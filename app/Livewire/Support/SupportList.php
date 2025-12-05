@@ -23,7 +23,26 @@ class SupportList extends Component
     public $sortBy = 'created_at';
 
     #[Url]
-    public $sortAsc = false;
+    public $sortAsc = false; // false = descending (newest first)
+
+    public $perPage = 10;
+    public $selected = [];
+    public $selectAll = false;
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selected = $this->getTicketsQuery()->pluck('id')->toArray();
+        } else {
+            $this->selected = [];
+        }
+    }
+
+    public function updatedSelected()
+    {
+        $totalTickets = $this->getTicketsQuery()->count();
+        $this->selectAll = count($this->selected) === $totalTickets && $totalTickets > 0;
+    }
 
     public function setFilter($status)
     {
@@ -41,9 +60,46 @@ class SupportList extends Component
         }
     }
 
-    public function render()
+    public function delete($id)
     {
-        $query = Support::where('user_id', auth()->id());
+        $ticket = Support::findOrFail($id);
+        
+        // Only admin or ticket owner can delete
+        if (!auth()->user()->is_admin && $ticket->user_id !== auth()->id()) {
+            abort(403);
+        }
+        
+        $ticket->delete();
+        
+        session()->flash('message', 'Ticket deletado com sucesso!');
+    }
+
+    public function deleteSelected()
+    {
+        $tickets = Support::whereIn('id', $this->selected)->get();
+        
+        foreach ($tickets as $ticket) {
+            // Only admin or ticket owner can delete
+            if (auth()->user()->is_admin || $ticket->user_id === auth()->id()) {
+                $ticket->delete();
+            }
+        }
+        
+        $this->selected = [];
+        $this->selectAll = false;
+        
+        session()->flash('message', 'Tickets deletados com sucesso!');
+    }
+
+    protected function getTicketsQuery()
+    {
+        $user = auth()->user();
+        $query = Support::query();
+
+        // Filter by user if not admin
+        if (!$user->is_admin) {
+            $query->where('user_id', $user->id);
+        }
 
         if ($this->search) {
             $query->where(function ($q) {
@@ -53,16 +109,37 @@ class SupportList extends Component
         }
 
         if ($this->status !== 'all') {
-            $query->where('status', $this->status);
+            if ($this->status === 'pending') {
+                $query->whereIn('status', ['pending', 'open']);
+            } elseif ($this->status === 'solved') {
+                $query->whereIn('status', ['resolved', 'closed', 'solved']);
+            } else {
+                $query->where('status', $this->status);
+            }
         }
 
+        return $query;
+    }
+
+    public function render()
+    {
+        $query = $this->getTicketsQuery();
         $query->orderBy($this->sortBy, $this->sortAsc ? 'asc' : 'desc');
 
+        $perPage = $this->perPage == -1 ? $query->count() : $this->perPage;
+
+        // Counts
+        $user = auth()->user();
+        $countQuery = Support::query();
+        if (!$user->is_admin) {
+            $countQuery->where('user_id', $user->id);
+        }
+
         return view('livewire.support.support-list', [
-            'tickets' => $query->paginate(10),
-            'totalTickets' => Support::where('user_id', auth()->id())->count(),
-            'pendingTickets' => Support::where('user_id', auth()->id())->where('status', 'pending')->count(),
-            'solvedTickets' => Support::where('user_id', auth()->id())->where('status', 'solved')->count(),
+            'tickets' => $query->paginate($perPage),
+            'totalTickets' => (clone $countQuery)->count(),
+            'pendingTickets' => (clone $countQuery)->whereIn('status', ['pending', 'open'])->count(),
+            'solvedTickets' => (clone $countQuery)->whereIn('status', ['solved', 'resolved', 'closed'])->count(),
         ]);
     }
 }
