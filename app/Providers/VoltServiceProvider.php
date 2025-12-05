@@ -20,8 +20,12 @@ class VoltServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Debugging Volt paths
+        file_put_contents(storage_path('logs/volt_debug.log'), "VoltServiceProvider booted.\n", FILE_APPEND);
+        file_put_contents(storage_path('logs/volt_debug.log'), "Mounting: " . resource_path('views/livewire') . "\n", FILE_APPEND);
+        
         Volt::mount([
-            config('livewire.view_path', resource_path('views/livewire')),
+            resource_path('views/livewire'),
             resource_path('views/pages'),
         ]);
     }

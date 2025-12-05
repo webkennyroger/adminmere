@@ -106,8 +106,10 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Rota para o componente Support/Index
-    Volt::route('/support', 'support.index')
-    ->name('support.index');
+    Route::get('/support', \App\Livewire\Support\SupportIndex::class)->name('support.index');
+    Route::get('/support-list', \App\Livewire\Support\SupportList::class)->name('support.list');
+    
+    Route::get('/support/{support}', \App\Livewire\Support\SupportShow::class)->name('support.show');
 
     // Rotas de faq
     Route::view('/faq', 'pages.faq')->name('faq');
@@ -136,4 +138,8 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+
+    // Volt::route('/test-volt', function () {
+    //     return 'Volt Routing Works';
+    // });
 });

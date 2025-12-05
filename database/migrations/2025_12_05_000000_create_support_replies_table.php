@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('supports', function (Blueprint $table) {
+        Schema::create('support_replies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('support_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('ticket_id')->unique();
-            $table->string('subject');
             $table->text('message');
-            $table->string('status')->default('open'); // open, in_progress, closed
-            $table->string('priority')->default('low'); // low, medium, high
+            $table->string('attachment')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('supports');
+        Schema::dropIfExists('support_replies');
     }
 };

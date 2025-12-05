@@ -1,0 +1,15 @@
+
+   PASS  Tests\Feature\Livewire\Support\SupportIndexTest
+  ✓ can view s… 0.23s  
+  ✓ can create… 0.03s  
+  ✓ validation… 0.02s  
+
+   PASS  Tests\Feature\Livewire\Support\SupportListTest
+  ✓ can view s… 0.02s  
+  ✓ can filter… 0.02s  
+  ✓ can search… 0.02s  
+  ✓ can sort t… 0.02s  
+
+  Tests:    7 passed (16 assertions)
+  Duration: 0.47s
+
