@@ -1,5 +1,5 @@
 import './bootstrap';
-import Alpine from 'alpinejs';
+// import Alpine from 'alpinejs';
 import ApexCharts from 'apexcharts';
 
 // flatpickr
@@ -10,12 +10,12 @@ import { Calendar } from '@fullcalendar/core';
 
 
 
-window.Alpine = Alpine;
+// window.Alpine = Alpine;
 window.ApexCharts = ApexCharts;
 window.flatpickr = flatpickr;
 window.FullCalendar = Calendar;
 
-Alpine.start();
+// Alpine.start();
 
 // Initialize components on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,5 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Calendar init
     if (document.querySelector('#calendar')) {
         import('./components/calendar-init').then(module => module.calendarInit());
+    }
+
+    // New Chart imports
+    if (document.querySelector('#userGrowthChart')) {
+        import('./charts/user-growth').then(module => module.initUserGrowthChart());
     }
 });

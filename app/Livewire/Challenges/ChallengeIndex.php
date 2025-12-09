@@ -16,6 +16,7 @@ class ChallengeIndex extends Component
     public $perPage = 10;
     public $selected = [];
     public $selectAll = false;
+    public $isEmbedded = false;
 
     // Modal states
     public $showViewModal = false;
@@ -42,16 +43,35 @@ class ChallengeIndex extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
+            $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
             $this->selected = Challenge::when($this->search, function ($query) {
                     $query->where('title', 'like', '%' . $this->search . '%')
                         ->orWhere('description', 'like', '%' . $this->search . '%');
                 })
+                ->latest()
+                ->paginate($perPage)
                 ->pluck('id')
-                ->map(fn ($id) => (string) $id)
-                ->all();
+                ->toArray();
         } else {
             $this->selected = [];
         }
+    }
+
+    public function updatedSelected()
+    {
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
+        $visibleIds = Challenge::when($this->search, function ($query) {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                    ->orWhere('description', 'like', '%' . $this->search . '%');
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectAll = !empty($visibleIds) && count(array_intersect($visibleIds, $this->selected)) === count($visibleIds);
     }
 
     public function deleteSelected()
@@ -74,6 +94,11 @@ class ChallengeIndex extends Component
             'image' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function updatedPerPage()
+    {
+        $this->resetPage();
     }
 
     public function updatingSearch()
@@ -207,13 +232,15 @@ class ChallengeIndex extends Component
 
     public function render()
     {
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
         $challenges = Challenge::with('category')
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%')
                     ->orWhere('description', 'like', '%' . $this->search . '%');
             })
             ->latest()
-            ->paginate($this->perPage);
+            ->paginate($perPage);
 
         $categories = Category::orderBy('name')->get();
 

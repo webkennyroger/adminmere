@@ -15,20 +15,20 @@ class SupportSeeder extends Seeder
         // Ensure we have a user to attach tickets to, or use factory
         $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
 
-        \App\Models\Support::factory(20)->create([
+        \App\Models\Support::factory(10)->create([
             'user_id' => $user->id,
         ])->each(function ($support) {
             // Randomly add replies to some tickets
             if (rand(0, 1)) {
-                \App\Models\SupportReply::factory(rand(1, 5))->create([
+                \App\Models\SupportReply::factory(rand(1, 3))->create([
                     'support_id' => $support->id,
                     'user_id' => $support->user_id, // Simulate user reply
                 ]);
                 
-                // Simulate admin reply
+                // Simulate admin reply using an existing user (mocking admin)
                  \App\Models\SupportReply::factory(rand(1, 2))->create([
                     'support_id' => $support->id,
-                    'user_id' => \App\Models\User::factory()->create()->id, 
+                    'user_id' => \App\Models\User::inRandomOrder()->first()->id, 
                 ]);
             }
         });

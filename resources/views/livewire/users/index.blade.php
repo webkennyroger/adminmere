@@ -34,7 +34,7 @@
                     <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search..." class="dark:bg-dark-900 h-11 w-full rounded-lg border border-zinc-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]">
                 </div>
 
-                @if ($selected)
+                @if (count($selected) > 0)
                 <button wire:click="deleteSelected" class="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 bg-red-200 px-4 py-[11px] text-sm font-medium text-red-700 shadow-theme-xs dark:border-red-700 dark:bg-red-800 dark:text-zinc-400 sm:w-auto">
                     Deletar Selecionados ({{ count($selected) }})
                 </button>
@@ -52,11 +52,14 @@
                 <table class="min-w-full">
                     <thead>
                         <tr class="border-zinc-200 border-y dark:border-zinc-700">
-                             <th scope="col" class="px-4 py-3">
+                            <th scope="col" class="w-12 px-4 py-3">
                                 <input type="checkbox" wire:model.live="selectAll" class="h-4 w-4 rounded border-zinc-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 focus:ring-offset-0 disabled:cursor-not-allowed disabled:text-zinc-400" />
                             </th>
                             <th scope="col" class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
                                 Nome
+                            </th>
+                            <th scope="col" class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
+                                Plano
                             </th>
                             <th scope="col" class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
                                 Email
@@ -93,6 +96,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->plan === 'free' ? 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' }}">
+                                        {{ $user->plan === 'free' ? 'Gratuito' : 'Assinante' }}
+                                    </span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-sm text-zinc-500 dark:text-zinc-400">
@@ -163,8 +171,8 @@
         </div>
 
         <!-- Pagination -->
-       <div class="p-4">
-            {{ $users->links() }}
+        <div class="p-4">
+            {{ $users->links('components.pagination.custom') }}
         </div>
     </div>
 </div>

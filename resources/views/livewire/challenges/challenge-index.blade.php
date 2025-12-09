@@ -1,7 +1,9 @@
 <div>
-    <x-common.page-breadcrumb title="Desafios" />
+    @unless($isEmbedded)
+        <x-common.page-breadcrumb title="Desafios" />
+    @endunless
 
-    <div class="rounded-2xl border border-zinc-200 bg-white pt-4 dark:border-zinc-800 dark:bg-white/[0.03]">
+    <div class="@if(!$isEmbedded) rounded-2xl border border-zinc-200 bg-white pt-4 dark:border-zinc-800 dark:bg-white/[0.03] @endif">
         <!-- Header -->
         <div class="flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
@@ -46,7 +48,7 @@
                     </div>
                 </form>
 
-                @if ($selected)
+                @if (count($selected) > 0)
                 <button wire:click="deleteSelected" class="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 bg-red-200 px-4 py-[11px] text-sm font-medium text-red-700 shadow-theme-xs dark:border-red-700 dark:bg-red-800 dark:text-zinc-400 sm:w-auto">
                     Deletar Selecionados ({{ count($selected) }})
                 </button>
@@ -121,7 +123,7 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="text-sm text-zinc-500 dark:text-zinc-400">
-                                        {{ Str::limit($challenge->description, 50) }}
+                                        {{ Str::limit($challenge->description, 40) }}
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -198,7 +200,7 @@
         </div>
         <!-- Pagination -->
         <div class="flex items-center flex-col sm:flex-row justify-between border-t border-zinc-200 px-5 py-4 dark:border-zinc-800">
-            {{ $challenges->links() }}
+            {{ $challenges->links('components.pagination.custom') }}
         </div>
     </div>
     

@@ -166,6 +166,11 @@ Route::middleware(['auth'])->group(function () {
     // Rotas de coming
     Route::view('/coming', 'pages.coming-soon')->name('coming');
 
+    // Goals (Metas)
+    Route::get('/goals', \App\Livewire\Goals\GoalIndex::class)->name('goals.index');
+
+    // Subscriptions (Assinaturas)
+    Route::get('/subscriptions', \App\Livewire\Subscriptions\SubscriptionIndex::class)->name('subscriptions.index');
 
     // Rota de Gerenciamento de Usuários
     Route::get('/users', UserIndex::class)->name('users.index');

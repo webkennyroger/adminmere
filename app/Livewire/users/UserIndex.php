@@ -10,10 +10,14 @@ use Livewire\WithFileUploads;
 class UserIndex extends Component
 {
     use WithPagination;
-    use WithFileUploads;
 
     public $search = '';
     public $perPage = 10;
+
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
 
     public $showModal = false;
     public $isEditMode = false;
@@ -67,12 +71,33 @@ class UserIndex extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selected = User::where('name', 'like', '%' . $this->search . '%')
-                ->orWhere('email', 'like', '%' . $this->search . '%')
-                ->pluck('id')->map(fn ($id) => (string) $id);
+            $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
+            $this->selected = User::where(function ($query) {
+                    $query->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('email', 'like', '%' . $this->search . '%');
+                })
+                ->paginate($perPage)
+                ->pluck('id')
+                ->toArray();
         } else {
             $this->selected = [];
         }
+    }
+
+    public function updatedSelected()
+    {
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
+        $visibleIds = User::where(function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('email', 'like', '%' . $this->search . '%');
+            })
+            ->paginate($perPage)
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectAll = !empty($visibleIds) && count(array_intersect($visibleIds, $this->selected)) === count($visibleIds);
     }
 
     public function create()

@@ -27,8 +27,13 @@ class CategoryIndex extends Component
     public string $search = '';
     public int $perPage = 10;
 
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
+
     // Propriedades para seleção
-    public array $selected = [];
+    public $selected = [];
     public bool $selectAll = false;
 
     // Cores disponíveis para seleção
@@ -71,13 +76,29 @@ class CategoryIndex extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
+            $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
             $this->selected = Category::where('name', 'like', '%' . $this->search . '%')
+                ->latest()
+                ->paginate($perPage)
                 ->pluck('id')
-                ->map(fn ($id) => (string) $id)
-                ->all();
+                ->toArray();
         } else {
             $this->selected = [];
         }
+    }
+
+    public function updatedSelected()
+    {
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
+        $visibleIds = Category::where('name', 'like', '%' . $this->search . '%')
+            ->latest()
+            ->paginate($perPage)
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectAll = !empty($visibleIds) && count(array_intersect($visibleIds, $this->selected)) === count($visibleIds);
     }
 
     public function deleteSelected()
@@ -175,12 +196,14 @@ class CategoryIndex extends Component
 
     public function render()
     {
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+
         $query = Category::withCount('challenges');
         if ($this->search) {
             $query->where('name', 'like', '%' . $this->search . '%');
         }
         return view('livewire.categories.category-index', [
-            'categories' => $query->latest()->paginate($this->perPage),
+            'categories' => $query->latest()->paginate($perPage),
         ]);
     }
 }

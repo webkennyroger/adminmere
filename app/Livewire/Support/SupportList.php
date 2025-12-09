@@ -32,7 +32,7 @@ class SupportList extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selected = $this->getTicketsQuery()->pluck('id')->toArray();
+            $this->selected = $this->getTicketsQuery()->pluck('id')->map(fn ($id) => (string) $id)->toArray();
         } else {
             $this->selected = [];
         }
@@ -47,6 +47,11 @@ class SupportList extends Component
     public function setFilter($status)
     {
         $this->status = $status;
+        $this->resetPage();
+    }
+
+    public function updatedPerPage()
+    {
         $this->resetPage();
     }
 

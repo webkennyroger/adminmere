@@ -27,6 +27,18 @@ class MenuHelper
             ],
 
             [
+                'icon' => 'task',
+                'name' => 'Metas',
+                'path' => '/goals',
+            ],
+
+            [
+                'icon' => 'ui-elements',
+                'name' => 'Assinaturas',
+                'path' => '/subscriptions',
+            ],
+
+            [
                 'icon' => 'user-profile',
                 'name' => 'Usuarios',
                 'path' => '/users',

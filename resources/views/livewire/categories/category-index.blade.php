@@ -46,7 +46,7 @@
                     </div>
                 </form>
 
-                @if ($selected)
+                @if (count($selected) > 0)
                 <button wire:click="deleteSelected" class="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 bg-red-200 px-4 py-[11px] text-sm font-medium text-red-700 shadow-theme-xs dark:border-red-700 dark:bg-red-800 dark:text-zinc-400 sm:w-auto">
                     Deletar Selecionados ({{ count($selected) }})
                 </button>
@@ -149,7 +149,7 @@
         </div>
         <!-- Pagination -->
         <div class="flex items-center flex-col sm:flex-row justify-between border-t border-zinc-200 px-5 py-4 dark:border-zinc-800">
-            {{ $categories->links() }}
+            {{ $categories->links('components.pagination.custom') }}
         </div>
     </div>
 

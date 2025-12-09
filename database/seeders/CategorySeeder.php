@@ -39,5 +39,8 @@ class CategorySeeder extends Seeder
                 $category
             );
         }
+
+        // Generate 6 more categories to reach total of 10
+        Category::factory(6)->create();
     }
 }

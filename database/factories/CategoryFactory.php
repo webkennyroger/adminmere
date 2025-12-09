@@ -9,18 +9,7 @@ class CategoryFactory extends Factory
 {
     public function definition(): array
     {
-        $name = $this->faker->randomElement([
-            'Corrida',
-            'Caminhada',
-            'Ciclismo',
-            'Natação',
-            'Trilha',
-            'Maratona',
-            'Meia Maratona',
-            'Treino Funcional',
-            'Crossfit',
-            'Yoga'
-        ]);
+        $name = ucfirst($this->faker->unique()->words(2, true));
 
         return [
             'name' => $name,

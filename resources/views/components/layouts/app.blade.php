@@ -92,7 +92,7 @@
         });
     </script>
 
-    <!-- Apply dark mode immediately to prevent flash -->
+    <!-- Apply dark mode  -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme');
@@ -100,10 +100,14 @@
             const theme = savedTheme || systemTheme;
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
-                document.body.classList.add('dark', 'bg-zinc-900');
+                if (document.body) {
+                    document.body.classList.add('dark', 'bg-zinc-900');
+                }
             } else {
                 document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark', 'bg-zinc-900');
+                if (document.body) {
+                    document.body.classList.remove('dark', 'bg-zinc-900');
+                }
             }
         })();
     </script>
@@ -154,4 +158,5 @@
 <!-- Livewire scripts -->
 @livewireScripts
 @stack('scripts')
+</body>
 </html>
