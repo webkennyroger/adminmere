@@ -1,46 +1,4 @@
-<?php
 
-use Illuminate\Support\Facades\Auth;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public $user;
-    public string $instagram = '';
-    public string $facebook = '';
-    public string $twitter = '';
-    public string $linkedin = '';
-
-    public function mount()
-    {
-        $this->user = Auth::user();
-        $this->instagram = $this->user->instagram ?? '';
-        $this->facebook = $this->user->facebook ?? '';
-        $this->twitter = $this->user->twitter ?? '';
-        $this->linkedin = $this->user->linkedin ?? '';
-    }
-
-    public function updateSocialMedia()
-    {
-        $validated = $this->validate([
-            'instagram' => ['nullable', 'string', 'max:255'],
-            'facebook' => ['nullable', 'string', 'max:255'],
-            'twitter' => ['nullable', 'string', 'max:255'],
-            'linkedin' => ['nullable', 'string', 'max:255'],
-        ]);
-
-        Auth::user()->update($validated);
-
-        $this->dispatch('profile-updated');
-        $this->dispatch('close-modal', 'open-social-modal');
-        $this->user = Auth::user()->fresh();
-        
-        // Update local properties
-        $this->instagram = $this->user->instagram ?? '';
-        $this->facebook = $this->user->facebook ?? '';
-        $this->twitter = $this->user->twitter ?? '';
-        $this->linkedin = $this->user->linkedin ?? '';
-    }
-}; ?>
 
 <div class="p-5 mb-6 border border-zinc-200 rounded-2xl dark:border-zinc-800 lg:p-6">
     <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -52,27 +10,73 @@ new class extends Component {
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Instagram</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->instagram ?? '-' }}</p>
+                    @if ($user->profile?->instagram)
+                        <a href="{{ str_starts_with($user->profile->instagram, 'http') ? $user->profile->instagram : 'https://www.instagram.com/'.$user->profile->instagram }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                            {{ $user->profile->instagram }}
+                        </a>
+                    @else
+                        <p class="text-sm font-medium text-zinc-800 dark:text-white/90">-</p>
+                    @endif
                 </div>
 
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Facebook</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->facebook ?? '-' }}</p>
+                    @if ($user->profile?->facebook)
+                        <a href="{{ str_starts_with($user->profile->facebook, 'http') ? $user->profile->facebook : 'https://www.facebook.com/'.$user->profile->facebook }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                            {{ $user->profile->facebook }}
+                        </a>
+                    @else
+                        <p class="text-sm font-medium text-zinc-800 dark:text-white/90">-</p>
+                    @endif
                 </div>
 
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">X (Twitter)</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->twitter ?? '-' }}</p>
+                    @if ($user->profile?->x)
+                        <a href="{{ str_starts_with($user->profile->x, 'http') ? $user->profile->x : 'https://x.com/'.$user->profile->x }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                            {{ $user->profile->x }}
+                        </a>
+                    @else
+                        <p class="text-sm font-medium text-zinc-800 dark:text-white/90">-</p>
+                    @endif
                 </div>
 
                 <div>
-                    <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">LinkedIn</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->linkedin ?? '-' }}</p>
+                    <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Youtube</p>
+                    @if ($user->profile?->youtube)
+                        <a href="{{ str_starts_with($user->profile->youtube, 'http') ? $user->profile->youtube : 'https://www.youtube.com/'.$user->profile->youtube }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                            {{ $user->profile->youtube }}
+                        </a>
+                    @else
+                        <p class="text-sm font-medium text-zinc-800 dark:text-white/90">-</p>
+                    @endif
+                </div>
+
+                <div>
+                    <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">TikTok</p>
+                    @if ($user->profile?->tiktok)
+                        <a href="{{ str_starts_with($user->profile->tiktok, 'http') ? $user->profile->tiktok : 'https://www.tiktok.com/@'.ltrim($user->profile->tiktok, '@') }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                            {{ $user->profile->tiktok }}
+                        </a>
+                    @else
+                        <p class="text-sm font-medium text-zinc-800 dark:text-white/90">-</p>
+                    @endif
+                </div>
+
+                <div>
+                    <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Mere</p>
+                    @if ($user->profile?->mere)
+                        <a href="{{ $user->profile->mere }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                            {{ $user->profile->mere }}
+                        </a>
+                    @else
+                        <p class="text-sm font-medium text-zinc-800 dark:text-white/90">-</p>
+                    @endif
                 </div>
             </div>
         </div>
 
-        <button class="edit-button" @click="$dispatch('open-social-modal')">
+        <button class="edit-button" @click="$dispatch('open-profile-social-modal')">
             <svg class="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -84,7 +88,7 @@ new class extends Component {
     </div>
 
     <!-- Social Media Modal -->
-    <x-ui.modal x-data="{ open: false }" @open-social-modal.window="open = true" @close-modal.window="if ($event.detail === 'open-social-modal') open = false" :isOpen="false" class="max-w-[700px]">
+    <x-ui.modal x-data="{ open: false }" @open-profile-social-modal.window="open = true" @close-profile-social-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
         <div class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
                 <h4 class="mb-2 text-2xl font-semibold text-zinc-800 dark:text-white/90">
@@ -101,7 +105,7 @@ new class extends Component {
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                                 Instagram
                             </label>
-                            <input type="text" wire:model="instagram" placeholder="https://instagram.com/seu_usuario"
+                            <input type="text" wire:model="instagram" placeholder="Ex: seu.usuario"
                                 class="dark:bg-dark-900 h-11 w-full rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             @error('instagram') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
@@ -110,7 +114,7 @@ new class extends Component {
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                                 Facebook
                             </label>
-                            <input type="text" wire:model="facebook" placeholder="https://facebook.com/seu_usuario"
+                            <input type="text" wire:model="facebook" placeholder="Ex: seu.usuario"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             @error('facebook') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
@@ -119,18 +123,36 @@ new class extends Component {
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                                 X (Twitter)
                             </label>
-                            <input type="text" wire:model="twitter" placeholder="https://x.com/seu_usuario"
+                            <input type="text" wire:model="x" placeholder="Ex: seu_usuario"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-                            @error('twitter') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            @error('x') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="col-span-2 lg:col-span-1">
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
-                                LinkedIn
+                                Youtube
                             </label>
-                            <input type="text" wire:model="linkedin" placeholder="https://linkedin.com/in/seu_usuario"
+                            <input type="text" wire:model="youtube" placeholder="Ex: seu_canal"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-                            @error('linkedin') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            @error('youtube') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="col-span-2 lg:col-span-1">
+                            <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
+                                TikTok
+                            </label>
+                            <input type="text" wire:model="tiktok" placeholder="Ex: @seu_usuario"
+                                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                            @error('tiktok') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                         <div class="col-span-2 lg:col-span-1">
+                            <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
+                                Mere
+                            </label>
+                            <input type="text" wire:model="mere" placeholder="URL ou usuário"
+                                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                            @error('mere') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                     </div>
                 </div>

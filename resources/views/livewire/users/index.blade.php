@@ -1,7 +1,7 @@
  <div>
     <x-common.page-breadcrumb title="Usuários" />
 
-    <div class="rounded-2xl border border-zinc-200 bg-white pt-4 dark:border-zinc-800 dark:bg-white/[0.03]">
+    <div class="rounded-2xl border border-zinc-200 bg-white pt-4 dark:border-zinc-800 dark:bg-white/3">
         <!-- Header -->
         <div class="flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
@@ -87,8 +87,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->image ? Storage::url($user->image) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF' }}" alt="{{ $user->name }}" />
+                                        <div class="shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->profile?->image ? Storage::url($user->profile->image) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF' }}" alt="{{ $user->name }}" />
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-zinc-900">
@@ -98,8 +98,8 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->plan === 'free' ? 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' }}">
-                                        {{ $user->plan === 'free' ? 'Gratuito' : 'Assinante' }}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ ($user->profile?->plan ?? 'free') === 'free' ? 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' }}">
+                                        {{ ($user->profile?->plan ?? 'free') === 'free' ? 'Gratuito' : 'Assinante' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
@@ -109,26 +109,33 @@
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-sm text-zinc-500 dark:text-zinc-400">
-                                        {{ $user->phone }}
+                                        {{ $user->profile?->phone ?? '-' }}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-sm text-zinc-500 dark:text-zinc-400">
-                                        {{ $user->city }} / {{ $user->state }}
+                                         @if($user->profile?->city)
+                                            {{ $user->profile->city }}{{ $user->profile->state ? ' / ' . $user->profile->state : '' }}
+                                        @else
+                                            -
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                                        @if($user->status === 'active')
-                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
-                                        @else
-                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full">Inactive</span>
-                                        @endif
-                                    </span>
+                                    <button 
+                                        wire:click="toggleStatus({{ $user->id }})"
+                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 {{ ($user->profile?->status ?? 'active') === 'active' ? 'bg-brand-600' : 'bg-zinc-200 dark:bg-zinc-700' }}"
+                                        role="switch" 
+                                        aria-checked="{{ ($user->profile?->status ?? 'active') === 'active' ? 'true' : 'false' }}">
+                                        <span class="sr-only">Use setting</span>
+                                        <span 
+                                            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ ($user->profile?->status ?? 'active') === 'active' ? 'translate-x-5' : 'translate-x-0' }}"
+                                        ></span>
+                                    </button>
                                 </td>
                                 <td class="px-4 py-4 text-sm font-medium text-right whitespace-nowrap">
                                     <div class="flex justify-center gap-2">
-                                        <a href="#" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive active:scale-[.95] cursor-pointer hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9 rounded-[50%] text-blue-500 bg-primary/10">
+                                        <a href="{{ route('users.show', $user->id) }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive active:scale-[.95] cursor-pointer hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9 rounded-[50%] text-blue-500 bg-primary/10">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round"
@@ -175,4 +182,159 @@
             {{ $users->links('components.pagination.custom') }}
         </div>
     </div>
+    {{-- Create / Edit Modal --}}
+    @if($showModal)
+        <div class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50" wire:click="closeModal" x-transition>
+            <div class="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" wire:click.stop>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                        {{ $isEditMode ? 'Editar Usuário' : 'Novo Usuário' }}
+                    </h3>
+                    <button wire:click="closeModal" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}" class="space-y-6">
+                    
+                    <!-- Tabs or Sections -->
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-lg text-zinc-800 dark:text-zinc-200 border-b pb-2 border-zinc-200 dark:border-zinc-700">Informações Pessoais</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Nome *</label>
+                                <input wire:model="name" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Email *</label>
+                                <input wire:model="email" type="email" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Password -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                                    {{ $isEditMode ? 'Senha (deixe em branco para manter)' : 'Senha *' }}
+                                </label>
+                                <input wire:model="password" type="password" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Phone -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Telefone</label>
+                                <input wire:model="phone" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- City -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Cidade</label>
+                                <input wire:model="city" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('city') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- State -->
+                             <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Estado</label>
+                                <input wire:model="state" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('state') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            
+                            @if(auth()->user()->isSuperAdmin())
+                            <!-- Role -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Função (Role)</label>
+                                <select wire:model="role" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                    <option value="user">Usuário</option>
+                                    <option value="manager">Gerenciador</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                                @error('role') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Plan -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Plano (Assinatura)</label>
+                                <select wire:model="plan" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                    <option value="free">Gratuito</option>
+                                    <option value="monthly">Mensal</option>
+                                    <option value="annual">Anual</option>
+                                </select>
+                                @error('plan') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Image -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Foto de Perfil</label>
+                            @if ($image)
+                                <img src="{{ $image->temporaryUrl() }}" class="w-20 h-20 rounded-full object-cover mb-2">
+                            @elseif ($currentImage)
+                                <img src="{{ $currentImage }}" class="w-20 h-20 rounded-full object-cover mb-2">
+                            @endif
+                            <input wire:model="image" type="file" class="block w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 dark:file:bg-zinc-800 dark:file:text-zinc-300">
+                            @error('image') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <h4 class="font-medium text-lg text-zinc-800 dark:text-zinc-200 border-b pb-2 border-zinc-200 dark:border-zinc-700 pt-4">Redes Sociais</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Instagram -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Instagram</label>
+                                <input wire:model="instagram" type="text" placeholder="https://instagram.com/..." class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('instagram') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                             <!-- Facebook -->
+                             <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Facebook</label>
+                                <input wire:model="facebook" type="text" placeholder="https://facebook.com/..." class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('facebook') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                             <!-- X -->
+                             <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">X (Twitter)</label>
+                                <input wire:model="x" type="text" placeholder="https://x.com/..." class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('x') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                             <!-- Youtube -->
+                             <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Youtube</label>
+                                <input wire:model="youtube" type="text" placeholder="https://youtube.com/..." class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('youtube') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                             <!-- Mere -->
+                             <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Mere (Link Extra)</label>
+                                <input wire:model="mere" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                                @error('mere') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                        <button type="button" wire:click="closeModal" class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            {{ $isEditMode ? 'Salvar Alterações' : 'Criar Usuário' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>

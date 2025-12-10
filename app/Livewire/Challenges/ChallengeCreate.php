@@ -64,7 +64,7 @@ class ChallengeCreate extends Component
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('message', 'Desafio criado com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
         
         return redirect()->route('challenges.index');
     }

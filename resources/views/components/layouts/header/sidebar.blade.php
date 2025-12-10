@@ -65,12 +65,12 @@
         'justify-start'">
         <a href="{{ route('dashboard') }}">
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" width="30" height="30" />
+                class="dark:hidden" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="merelogo" width="30" height="30" />
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="hidden dark:block" src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" width="30"
+                class="hidden dark:block" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="merelogo" width="30"
                 height="30" />
             <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" width="30" height="30" />
+                src="{{ asset('assets/images/logo/merelogo.png') }}" alt="merelogo" width="30" height="30" />
             
         </a>
     </div>

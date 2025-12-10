@@ -6,50 +6,53 @@ class MenuHelper
 {
     public static function getMainNavItems()
     {
-        return [
+        $items = [
             [
                 'icon' => 'dashboard',
                 'name' => 'Dashboard',
                 'path' => '/dashboard',
             ],
-
             [
                 'name' => 'Desafios',
                 'icon' => 'pages',
                 'path' => '/challenges',
-                
             ],
-
             [
                 'icon' => 'calendar',
                 'name' => 'Calendários',
                 'path' => '/schedule',
             ],
+        ];
 
-            [
+        if (\Illuminate\Support\Facades\Gate::allows('access-goals')) {
+            $items[] = [
                 'icon' => 'task',
                 'name' => 'Metas',
                 'path' => '/goals',
-            ],
+            ];
+        }
 
-            [
+        if (\Illuminate\Support\Facades\Gate::allows('access-subscriptions')) {
+            $items[] = [
                 'icon' => 'ui-elements',
                 'name' => 'Assinaturas',
                 'path' => '/subscriptions',
-            ],
+            ];
+        }
 
-            [
-                'icon' => 'user-profile',
-                'name' => 'Usuarios',
-                'path' => '/users',
-            ],
-
-            [
-                'name' => 'Categorias',
-                'icon' => 'forms',
-                'path' => '/categories',
-            ],
+        $items[] = [
+            'icon' => 'user-profile',
+            'name' => 'Usuarios',
+            'path' => '/users',
         ];
+
+        $items[] = [
+            'name' => 'Categorias',
+            'icon' => 'forms',
+            'path' => '/categories',
+        ];
+
+        return $items;
     }
 
     public static function getOthersItems()

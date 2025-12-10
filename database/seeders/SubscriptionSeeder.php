@@ -17,16 +17,18 @@ class SubscriptionSeeder extends Seeder
             User::factory(20)->create();
         }
 
-        // Set all to free first (optional, ensuring baseline)
-        User::query()->update(['plan' => 'free']);
+        // 3. Set all profiles to 'free' first (baseline)
+        \App\Models\Profile::query()->update(['plan' => 'free']);
 
-        // Set 30% of users as subscribers (various plans)
-        $users = User::inRandomOrder()->take((int) (User::count() * 0.3))->get();
+        // 4. Set 30% of users as subscribers (monthly or annual)
+        $users = User::with('profile')->inRandomOrder()->take((int) (User::count() * 0.3))->get();
 
         foreach ($users as $user) {
-            $user->update([
-                'plan' => fake()->randomElement(['premium', 'pro', 'basic']),
-            ]);
+            if ($user->profile) {
+                $user->profile->update([
+                    'plan' => fake()->randomElement(['monthly', 'annual']),
+                ]);
+            }
         }
     }
 }

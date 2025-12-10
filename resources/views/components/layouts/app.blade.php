@@ -155,6 +155,17 @@
 </div>
 <!-- ===== Page Wrapper End ===== -->
 
+<!-- Toast Container -->
+<x-toast.container />
+
+@if(session('message'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.showToast('success', "{{ session('message') }}");
+        });
+    </script>
+@endif
+
 <!-- Livewire scripts -->
 @livewireScripts
 @stack('scripts')

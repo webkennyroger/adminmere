@@ -76,7 +76,7 @@ class SupportList extends Component
         
         $ticket->delete();
         
-        session()->flash('message', 'Ticket deletado com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Ticket deletado com sucesso!']);
     }
 
     public function deleteSelected()
@@ -93,7 +93,7 @@ class SupportList extends Component
         $this->selected = [];
         $this->selectAll = false;
         
-        session()->flash('message', 'Tickets deletados com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Tickets deletados com sucesso!']);
     }
 
     protected function getTicketsQuery()

@@ -62,16 +62,14 @@
     <div class="pt-8 pb-7 flex"
         :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen) ?
         'xl:justify-center' :
-        'justify-start'">
+        'justify-start pl-6'">
         <a href="{{ route('dashboard') }}">
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" width="30" height="30" />
+                class="dark:hidden h-8 w-auto" src="{{ asset('assets/images/logo/logo.svg') }}" alt="Logo" />
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="hidden dark:block" src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" width="30"
-                height="30" />
+                class="hidden dark:block h-8 w-auto" src="{{ asset('assets/images/logo/logo-dark.svg') }}" alt="Logo" />
             <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" width="30" height="30" />
-            
+                class="mx-auto" src="{{ asset('assets/images/logo/logo-icon.svg') }}" alt="Logo" width="32" height="32" />
         </a>
     </div>
 

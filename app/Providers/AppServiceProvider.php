@@ -19,6 +19,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Gate::define('access-admin-panel', function (\App\Models\User $user) {
+             return $user->isAdmin() || $user->isManager();
+        });
+
+        \Illuminate\Support\Facades\Gate::define('access-goals', function (\App\Models\User $user) {
+             return $user->isAdmin() || !$user->isManager();
+        });
+
+        \Illuminate\Support\Facades\Gate::define('access-subscriptions', function (\App\Models\User $user) {
+             return $user->isAdmin() || !$user->isManager();
+        });
+
+        \Illuminate\Support\Facades\Gate::define('manage-subscriptions', function (\App\Models\User $user) {
+             return $user->isSuperAdmin();
+        });
+
+         \Illuminate\Support\Facades\Gate::define('manage-roles', function (\App\Models\User $user) {
+             return $user->isSuperAdmin();
+        });
+
+        \Illuminate\Support\Facades\Gate::define('manage-everything', function (\App\Models\User $user) {
+             return $user->isSuperAdmin();
+        });
     }
 }

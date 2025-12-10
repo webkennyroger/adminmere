@@ -97,7 +97,7 @@ class ChallengeEdit extends Component
             // Fecha o modal
             $this->confirmingImageRemoval = false;
             
-            session()->flash('message', 'Imagem removida com sucesso!');
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Imagem removida com sucesso!']);
         }
     }
 
@@ -130,7 +130,7 @@ class ChallengeEdit extends Component
         // Deleta o desafio
         $this->challenge->delete();
 
-        session()->flash('message', 'Desafio excluído com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio excluído com sucesso!']);
         
         return redirect()->route('challenges.index');
     }
@@ -167,7 +167,7 @@ class ChallengeEdit extends Component
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('message', 'Desafio atualizado com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio atualizado com sucesso!']);
         
         return redirect()->route('challenges.index');
     }

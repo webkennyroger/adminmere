@@ -79,7 +79,7 @@ class ChallengeIndex extends Component
         Challenge::whereIn('id', $this->selected)->delete();
         $this->selected = [];
         $this->selectAll = false;
-        session()->flash('message', 'Desafios selecionados foram excluídos com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafios selecionados foram excluídos com sucesso!']);
     }
 
     protected function rules()
@@ -160,7 +160,7 @@ class ChallengeIndex extends Component
         $this->showEditModal = false;
         $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_active']);
         
-        session()->flash('message', 'Desafio atualizado com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio atualizado com sucesso!']);
     }
 
     public function closeEditModal()
@@ -182,7 +182,7 @@ class ChallengeIndex extends Component
             Challenge::findOrFail($this->challengeId)->delete();
             $this->confirmingDeletion = false;
             $this->challengeId = null;
-            session()->flash('message', 'Desafio excluído com sucesso!');
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio excluído com sucesso!']);
         }
     }
 
@@ -222,7 +222,7 @@ class ChallengeIndex extends Component
         $this->showCreateModal = false;
         $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_active']);
         
-        session()->flash('message', 'Desafio criado com sucesso!');
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
     }
 
     public function closeCreateModal()

@@ -168,12 +168,6 @@
                     </div>
 
                     <div>
-                        <label for="description" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Descrição</label>
-                        <textarea wire:model.defer="description" id="description" rows="3" class="mt-1 block w-full border rounded-lg shadow-sm border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                        @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
                         <label for="color" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cor</label>
                         <div class="mt-2 grid grid-cols-5 sm:grid-cols-6 gap-2">
                             @foreach($availableColors as $colorCode => $colorName)

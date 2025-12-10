@@ -61,10 +61,20 @@ class GoalIndex extends Component
     
     public function deleteSelected()
     {
+        $count = count($this->selected);
         Goal::whereIn('id', $this->selected)->delete();
         $this->selected = [];
         $this->selectAll = false;
-        session()->flash('message', 'Metas selecionadas excluídas com sucesso!');
+        
+        $message = $count === 1 
+            ? 'A meta selecionada foi excluída com sucesso!' 
+            : "{$count} metas foram excluídas do sistema!";
+            
+        $this->dispatch('toast', [
+            'type' => 'error', 
+            'message' => $message,
+            'title' => 'Exclusão realizada'
+        ]);
     }
 
     public function updatedSearch()
@@ -107,7 +117,11 @@ class GoalIndex extends Component
         ]);
 
         $this->showCreateModal = false;
-        session()->flash('message', 'Meta criada com sucesso!');
+        $this->dispatch('toast', [
+            'type' => 'success', 
+            'message' => 'A meta "' . $this->title . '" foi criada e está disponível!',
+            'title' => 'Nova meta criada'
+        ]);
     }
 
     public function edit(Goal $goal)
@@ -143,7 +157,11 @@ class GoalIndex extends Component
         ]);
 
         $this->showEditModal = false;
-        session()->flash('message', 'Meta atualizada com sucesso!');
+        $this->dispatch('toast', [
+            'type' => 'info', 
+            'message' => 'As alterações na meta "' . $this->title . '" foram salvas!',
+            'title' => 'Meta atualizada'
+        ]);
     }
 
     public function confirmDelete($id)
@@ -159,9 +177,15 @@ class GoalIndex extends Component
 
     public function delete()
     {
-        Goal::findOrFail($this->goalId)->delete();
+        $goal = Goal::findOrFail($this->goalId);
+        $goalTitle = $goal->title;
+        $goal->delete();
         $this->showDeleteModal = false;
-        session()->flash('message', 'Meta excluída com sucesso!');
+        $this->dispatch('toast', [
+            'type' => 'error', 
+            'message' => 'A meta "' . $goalTitle . '" foi removida do sistema!',
+            'title' => 'Meta excluída'
+        ]);
     }
     
     private function getGoalsQuery()

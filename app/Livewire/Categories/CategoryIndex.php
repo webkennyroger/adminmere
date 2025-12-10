@@ -16,7 +16,7 @@ class CategoryIndex extends Component
     public ?Category $editing = null;
     public string $name = '';
     public string $color = 'zinc';
-    public string $description = '';
+
 
     // Controle dos modais
     public bool $showModal = false;
@@ -60,11 +60,30 @@ class CategoryIndex extends Component
 
     protected function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . ($this->editing ? $this->editing->id : 'NULL')],
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
             'color' => ['required', 'string', 'in:' . implode(',', array_keys($this->availableColors))],
-            'description' => ['nullable', 'string', 'max:500'],
         ];
+        
+        // Generate slug from name to validate it
+        $slug = \Illuminate\Support\Str::slug($this->name);
+        
+        // Add unique rule for name and slug, ignoring current record if editing
+        $uniqueNameRule = \Illuminate\Validation\Rule::unique('categories', 'name');
+        $uniqueSlugRule = \Illuminate\Validation\Rule::unique('categories', 'slug')
+            ->where(function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            });
+            
+        if ($this->editing) {
+            $uniqueNameRule->ignore($this->editing->id);
+            $uniqueSlugRule->ignore($this->editing->id);
+        }
+        
+        $rules['name'][] = $uniqueNameRule;
+        $rules['name'][] = $uniqueSlugRule;
+        
+        return $rules;
     }
 
     protected $messages = [
@@ -103,20 +122,19 @@ class CategoryIndex extends Component
 
     public function deleteSelected()
     {
-        $categories = Category::withCount('challenges')->find($this->selected);
-
-        $deletable = $categories->where('challenges_count', 0);
-        $undeletableCount = $categories->count() - $deletable->count();
-
-        if ($deletable->isNotEmpty()) {
-            Category::whereIn('id', $deletable->pluck('id'))->delete();
-            session()->flash('message', $deletable->count() . ' categorias foram excluídas com sucesso!');
-        }
-
-        if ($undeletableCount > 0) {
-            session()->flash('error', $undeletableCount . ' categorias não puderam ser excluídas por terem desafios associados.');
-        }
-
+        $count = count($this->selected);
+        Category::whereIn('id', $this->selected)->delete();
+        
+        $message = $count === 1 
+            ? 'A categoria selecionada foi excluída com sucesso!' 
+            : "{$count} categorias foram excluídas com sucesso!";
+            
+        $this->dispatch('toast', [
+            'type' => 'error', 
+            'message' => $message,
+            'title' => 'Exclusão realizada'
+        ]);
+        
         $this->selected = [];
         $this->selectAll = false;
     }
@@ -145,16 +163,22 @@ class CategoryIndex extends Component
             'name' => $this->name,
             'slug' => Str::slug($this->name),
             'color' => $this->color,
-            'description' => $this->description,
-            'is_active' => true,
         ];
 
         if ($this->editing) {
             $this->editing->update($data);
-            session()->flash('message', 'Categoria atualizada com sucesso!');
+            $this->dispatch('toast', [
+                'type' => 'info', 
+                'message' => 'As alterações na categoria "' . $this->name . '" foram salvas com sucesso!',
+                'title' => 'Categoria atualizada'
+            ]);
         } else {
             Category::create($data);
-            session()->flash('message', 'Categoria criada com sucesso!');
+            $this->dispatch('toast', [
+                'type' => 'success', 
+                'message' => 'A categoria "' . $this->name . '" foi criada e está disponível para uso!',
+                'title' => 'Nova categoria criada'
+            ]);
         }
 
         $this->showModal = false;
@@ -170,15 +194,13 @@ class CategoryIndex extends Component
     public function delete()
     {
         if ($this->categoryToDelete) {
-            // Verificar se há desafios usando esta categoria
-            if ($this->categoryToDelete->challenges()->count() > 0) {
-                session()->flash('error', 'Não é possível excluir esta categoria pois existem desafios associados a ela.');
-                $this->confirmingDeletion = false;
-                return;
-            }
-
+            $categoryName = $this->categoryToDelete->name;
             $this->categoryToDelete->delete();
-            session()->flash('message', 'Categoria excluída com sucesso!');
+            $this->dispatch('toast', [
+                'type' => 'error', 
+                'message' => 'A categoria "' . $categoryName . '" foi removida do sistema!',
+                'title' => 'Categoria excluída'
+            ]);
         }
         
         $this->confirmingDeletion = false;
@@ -190,7 +212,7 @@ class CategoryIndex extends Component
         $this->resetErrorBag();
         $this->editing = null;
         $this->name = '';
-        $this->description = '';
+
         $this->color = 'zinc';
     }
 

@@ -14,7 +14,7 @@
         ['label' => $displayTitle, 'url' => null]
     ];
 @endphp
-
+{{-- breadcrumb --}}
 <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
     <h2 class="text-xl font-semibold text-zinc-800 dark:text-white/90">
         {{ $displayTitle }}

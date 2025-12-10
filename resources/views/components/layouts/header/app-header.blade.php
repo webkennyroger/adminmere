@@ -50,7 +50,7 @@
 
             <!-- Logo (mobile only) -->
             <a href="/" class="xl:hidden">
-                <img class="w-10" src="{{ asset('assets/images/merelogo.png') }}" alt="merelogo" />
+                <img class="w-10" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="merelogo" />
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->

@@ -10,6 +10,7 @@ use Livewire\WithFileUploads;
 class UserIndex extends Component
 {
     use WithPagination;
+    use WithFileUploads;
 
     public $search = '';
     public $perPage = 10;
@@ -41,6 +42,8 @@ class UserIndex extends Component
     public $x = '';
     public $facebook = '';
     public $youtube = '';
+    public $role = 'user';
+    public $plan = 'free';
 
     protected function rules()
     {
@@ -57,15 +60,27 @@ class UserIndex extends Component
             'x' => 'nullable|string',
             'facebook' => 'nullable|string',
             'youtube' => 'nullable|string',
+            'role' => 'sometimes|in:admin,manager,user',
+            'plan' => 'sometimes|in:free,monthly,annual',
         ];
     }
 
     public function deleteSelected()
     {
+        $count = count($this->selected);
         User::whereIn('id', $this->selected)->delete();
         $this->selected = [];
         $this->selectAll = false;
-        session()->flash('message', 'Users deleted successfully.');
+        
+        $message = $count === 1 
+            ? 'O usuário selecionado foi excluído do sistema!' 
+            : "{$count} usuários foram excluídos com sucesso!";
+            
+        $this->dispatch('toast', [
+            'type' => 'error', 
+            'message' => $message,
+            'title' => 'Exclusão realizada'
+        ]);
     }
 
     public function updatedSelectAll($value)
@@ -103,7 +118,7 @@ class UserIndex extends Component
     public function create()
     {
         $this->resetValidation();
-        $this->reset(['name', 'email', 'password', 'phone', 'city', 'state', 'image', 'currentImage', 'mere', 'instagram', 'x', 'facebook', 'youtube', 'userId']);
+        $this->reset(['name', 'email', 'password', 'phone', 'city', 'state', 'image', 'currentImage', 'mere', 'instagram', 'x', 'facebook', 'youtube', 'userId', 'role', 'plan']);
         $this->isEditMode = false;
         $this->showModal = true;
     }
@@ -111,20 +126,25 @@ class UserIndex extends Component
     public function edit($id)
     {
         $this->resetValidation();
-        $user = User::findOrFail($id);
+        $user = User::with('profile')->findOrFail($id);
         $this->userId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
-        $this->phone = $user->phone;
-        $this->city = $user->city;
-        $this->state = $user->state;
-        $this->currentImage = $user->image ? \Storage::url($user->image) : null;
         
-        $this->mere = $user->mere;
-        $this->instagram = $user->instagram;
-        $this->x = $user->x;
-        $this->facebook = $user->facebook;
-        $this->youtube = $user->youtube;
+        // Profile Data
+        $profile = $user->profile;
+        $this->phone = $profile?->phone;
+        $this->city = $profile?->city;
+        $this->state = $profile?->state;
+        $this->currentImage = $profile?->image ? \Storage::url($profile->image) : null;
+        
+        $this->mere = $profile?->mere;
+        $this->instagram = $profile?->instagram;
+        $this->x = $profile?->x;
+        $this->facebook = $profile?->facebook;
+        $this->youtube = $profile?->youtube;
+        $this->role = $profile?->role ?? 'user';
+        $this->plan = $profile?->plan ?? 'free';
 
         $this->isEditMode = true;
         $this->showModal = true;
@@ -134,10 +154,13 @@ class UserIndex extends Component
     {
         $this->validate();
 
-        $data = [
+        $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => \Hash::make($this->password),
+        ]);
+
+        $profileData = [
             'phone' => $this->phone,
             'city' => $this->city,
             'state' => $this->state,
@@ -146,16 +169,27 @@ class UserIndex extends Component
             'x' => $this->x,
             'facebook' => $this->facebook,
             'youtube' => $this->youtube,
+            'status' => 'active', // Default
+            'plan' => 'free', // Default
         ];
 
-        if ($this->image) {
-            $data['image'] = $this->image->store('profile-photos', 'public');
+        if (auth()->user()->isSuperAdmin()) {
+            $profileData['role'] = $this->role;
+            $profileData['plan'] = $this->plan;
         }
 
-        User::create($data);
+        if ($this->image) {
+            $profileData['image'] = $this->image->store('profile-photos', 'public');
+        }
+
+        $user->profile()->create($profileData);
 
         $this->showModal = false;
-        session()->flash('message', 'User created successfully.');
+        $this->dispatch('toast', [
+            'type' => 'success', 
+            'message' => 'O usuário "' . $this->name . '" foi cadastrado com sucesso!',
+            'title' => 'Novo usuário criado'
+        ]);
     }
 
     public function update()
@@ -164,9 +198,16 @@ class UserIndex extends Component
 
         $user = User::findOrFail($this->userId);
 
-        $data = [
+        $user->update([
             'name' => $this->name,
             'email' => $this->email,
+        ]);
+
+        if ($this->password) {
+            $user->update(['password' => \Hash::make($this->password)]);
+        }
+
+        $profileData = [
             'phone' => $this->phone,
             'city' => $this->city,
             'state' => $this->state,
@@ -177,24 +218,63 @@ class UserIndex extends Component
             'youtube' => $this->youtube,
         ];
 
-        if ($this->password) {
-            $data['password'] = \Hash::make($this->password);
+        if (auth()->user()->isSuperAdmin()) {
+            $profileData['role'] = $this->role;
+            $profileData['plan'] = $this->plan;
         }
 
         if ($this->image) {
-            $data['image'] = $this->image->store('profile-photos', 'public');
+            $profileData['image'] = $this->image->store('profile-photos', 'public');
         }
 
-        $user->update($data);
+        if ($user->profile) {
+            $user->profile->update($profileData);
+        } else {
+            $user->profile()->create($profileData);
+        }
 
         $this->showModal = false;
-        session()->flash('message', 'User updated successfully.');
+        $this->dispatch('toast', [
+            'type' => 'info', 
+            'message' => 'Os dados do usuário "' . $this->name . '" foram atualizados!',
+            'title' => 'Usuário atualizado'
+        ]);
     }
 
     public function delete($id)
     {
-        User::findOrFail($id)->delete();
-        session()->flash('message', 'User deleted successfully.');
+        $user = User::findOrFail($id);
+        $userName = $user->name;
+        $user->delete();
+        $this->dispatch('toast', [
+            'type' => 'error', 
+            'message' => 'O usuário "' . $userName . '" foi removido do sistema!',
+            'title' => 'Usuário excluído'
+        ]);
+    }
+
+    public function toggleStatus($id)
+    {
+        $user = User::with('profile')->findOrFail($id);
+        if ($user->profile) {
+             $newStatus = $user->profile->status === 'active' ? 'inactive' : 'active';
+             $user->profile->status = $newStatus;
+             $user->profile->save();
+             
+             $statusText = $newStatus === 'active' ? 'ativado' : 'desativado';
+             $this->dispatch('toast', [
+                'type' => 'info', 
+                'message' => 'O usuário "' . $user->name . '" foi ' . $statusText . ' com sucesso!',
+                'title' => 'Status atualizado'
+            ]);
+        } else {
+            $user->profile()->create(['status' => 'active']);
+            $this->dispatch('toast', [
+                'type' => 'success', 
+                'message' => 'Perfil criado e ativado para "' . $user->name . '"!',
+                'title' => 'Perfil criado'
+            ]);
+        }
     }
 
     public function closeModal()
@@ -204,10 +284,10 @@ class UserIndex extends Component
 
     public function render()
     {
-
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
 
-        $users = User::where(function ($query) {
+        $users = User::with('profile')
+            ->where(function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%');
             })

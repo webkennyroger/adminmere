@@ -174,6 +174,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota de Gerenciamento de Usuários
     Route::get('/users', UserIndex::class)->name('users.index');
+    Route::get('/users/{user}', function (\App\Models\User $user) {
+        return view('pages.profile.profile-index', compact('user'));
+    })->name('users.show');
 
 
 

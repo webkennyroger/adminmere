@@ -1,40 +1,4 @@
-<?php
 
-use Illuminate\Support\Facades\Auth;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public $user;
-    public string $address = '';
-    public string $city = '';
-    public string $state = '';
-    public string $zip_code = '';
-
-    public function mount()
-    {
-        $this->user = Auth::user();
-        $this->address = $this->user->address ?? '';
-        $this->city = $this->user->city ?? '';
-        $this->state = $this->user->state ?? '';
-        $this->zip_code = $this->user->zip_code ?? '';
-    }
-
-    public function saveAddress()
-    {
-        $validated = $this->validate([
-            'address' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
-            'zip_code' => ['nullable', 'string', 'max:20'],
-        ]);
-
-        Auth::user()->update($validated);
-
-        $this->dispatch('profile-updated');
-        $this->dispatch('close-modal', 'open-profile-address-modal');
-        $this->user = Auth::user()->fresh();
-    }
-}; ?>
 
 <div>
     <div class="p-5 border border-zinc-200 rounded-2xl dark:border-zinc-800 lg:p-6">
@@ -42,22 +6,22 @@ new class extends Component {
 
             <div>
                 <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Endereço</p>
-                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->address }}</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->address ?? '-' }}</p>
             </div>
 
             <div>
                 <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Cidade</p>
-                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->city }}</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->city ?? '-' }}</p>
             </div>
 
             <div>
                 <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Estado</p>
-                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->state }}</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->state ?? '-' }}</p>
             </div>
 
             <div>
                 <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Código postal</p>
-                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->zip_code ?? '' }}</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->zip_code ?? '-' }}</p>
             </div>
                 
 
@@ -71,19 +35,19 @@ new class extends Component {
                         d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
                         fill="" />
                 </svg>
-                Edit
+                Editar
             </button>
         </div>
     </div>
-    <x-ui.modal x-data="{ open: false }" @open-profile-address-modal.window="open = true" @close-modal.window="if ($event.detail === 'open-profile-address-modal') open = false" :isOpen="false" class="max-w-[700px]">
+    <x-ui.modal x-data="{ open: false }" @open-profile-address-modal.window="open = true" @close-profile-address-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
         <div
             class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
                 <h4 class="mb-2 text-2xl font-semibold text-zinc-800 dark:text-white/90">
-                    Edit Address
+                    Editar Endereço
                 </h4>
                 <p class="mb-6 text-sm text-zinc-500 dark:text-zinc-400 lg:mb-7">
-                    Update your details to keep your profile up-to-date.
+                    Atualize os detalhes do seu endereço.
                 </p>
             </div>
             <form wire:submit="saveAddress" class="flex flex-col">
@@ -91,7 +55,7 @@ new class extends Component {
                     <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
-                                Address
+                                Endereço
                             </label>
                             <input type="text" wire:model="address"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
@@ -99,7 +63,7 @@ new class extends Component {
 
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
-                                City
+                                Cidade
                             </label>
                             <input type="text" wire:model="city"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
@@ -107,7 +71,7 @@ new class extends Component {
 
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
-                                State
+                                Estado
                             </label>
                             <input type="text" wire:model="state"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
@@ -115,7 +79,7 @@ new class extends Component {
 
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
-                                Postal Code
+                                Código Postal
                             </label>
                             <input type="text" wire:model="zip_code"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
@@ -125,11 +89,11 @@ new class extends Component {
                 <div class="flex items-center gap-3 mt-6 lg:justify-end">
                     <button @click="open = false" type="button"
                         class="flex w-full justify-center rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-white/[0.03] sm:w-auto">
-                        Close
+                        Fechar
                     </button>
                     <button type="submit"
                         class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">
-                        Save Changes
+                        Salvar Alterações
                     </button>
                 </div>
             </form>

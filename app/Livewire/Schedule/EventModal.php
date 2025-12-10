@@ -83,10 +83,10 @@ class EventModal extends Component
         if ($this->editMode) {
             $event = Schedule::findOrFail($this->eventId);
             $event->update($data);
-            session()->flash('message', 'Evento atualizado com sucesso!');
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Evento atualizado com sucesso!']);
         } else {
             Schedule::create($data);
-            session()->flash('message', 'Evento criado com sucesso!');
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Evento criado com sucesso!']);
         }
 
         $this->closeModal();
@@ -97,7 +97,7 @@ class EventModal extends Component
     {
         if ($this->eventId) {
             Schedule::findOrFail($this->eventId)->delete();
-            session()->flash('message', 'Evento excluído com sucesso!');
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Evento excluído com sucesso!']);
             $this->closeModal();
             $this->dispatch('eventSaved');
         }

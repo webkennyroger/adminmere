@@ -23,8 +23,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
-        'plan',
     ];
 
     /**
@@ -49,8 +47,12 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean',
         ];
+    }
+    
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
     }
 
     /**
@@ -63,5 +65,31 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->profile?->role === 'admin';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->email === 'webkennyroger@gmail.com';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->profile?->role === 'manager';
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->profile?->role === $role;
+    }
+
+    // Legacy support
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->isAdmin();
     }
 }
