@@ -18,14 +18,12 @@ class Challenge extends Model
         'end_date',
         'goal_km',
         'category_id',
-        'is_active',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'goal_km' => 'decimal:2',
-        'is_active' => 'boolean',
     ];
 
     public function category(): BelongsTo

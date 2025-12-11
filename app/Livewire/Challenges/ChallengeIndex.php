@@ -160,7 +160,7 @@ class ChallengeIndex extends Component
         $this->showEditModal = false;
         $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
         
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio atualizado com sucesso!']);
+        $this->dispatch('toast', ['type' => 'info', 'message' => 'Desafio atualizado com sucesso!']);
     }
 
     public function closeEditModal()
