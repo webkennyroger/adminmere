@@ -125,46 +125,39 @@
                         Status
                     </label>
                     @if(auth()->user()->is_admin)
-                        <form action="{{ route('support.update-status', $support->id) }}" method="POST" class="space-y-2">
-                            @csrf
-                            @method('PATCH')
-                            <div class="relative">
-                                <select name="status"
-                                    class="h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:border-brand-500">
-                                    <option value="open" @selected($support->status === 'open')>Aberto</option>
-                                    <option value="pending" @selected($support->status === 'pending')>Pendente</option>
-                                    <option value="resolved" @selected($support->status === 'resolved')>Resolvido</option>
-                                    <option value="closed" @selected($support->status === 'closed')>Fechado</option>
-                                </select>
-                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400">
-                                    <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M4.79199 7.396L10.0003 12.6043L15.2087 7.396" stroke="" stroke-width="1.5"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                            </div>
-                            <button type="submit"
-                                class="w-full rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
-                                Salvar Status
-                            </button>
-                        </form>
+                                    <form action="{{ route('support.update-status', $support->id) }}" method="POST" class="space-y-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="relative">
+                                            <x-form.multiple-select name="status" :multiple="false" :value="$support->status"
+                                                :options="[
+                            ['value' => 'open', 'label' => 'Aberto'],
+                            ['value' => 'pending', 'label' => 'Pendente'],
+                            ['value' => 'resolved', 'label' => 'Resolvido'],
+                            ['value' => 'closed', 'label' => 'Fechado']
+                        ]" />
+                                        </div>
+                                        <button type="submit"
+                                            class="w-full rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
+                                            Salvar Status
+                                        </button>
+                                    </form>
                     @else
                                     <span
                                         class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                                                                                @if($status === 'solved' || $status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
-                                                                                                @elseif($status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
-                                                                                                @elseif($status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
-                                                                                                @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
+                                                                                                                @if($status === 'solved' || $status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
+                                                                                                                @elseif($status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
+                                                                                                                @elseif($status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
+                                                                                                                @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
                                         {{ 
-                                                                                                    match ($status) {
+                                                                                                                    match ($status) {
                             'open' => 'Aberto',
                             'pending' => 'Pendente',
                             'resolved', 'solved' => 'Resolvido',
                             'closed' => 'Fechado',
                             default => ucfirst($status)
                         }
-                                                                                                }}
+                                                                                                                }}
                                     </span>
                     @endif
                 </div>

@@ -32,19 +32,12 @@
                         Prioridade
                     </label>
                     <div class="relative">
-                        <select name="priority"
-                            class="h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm text-zinc-800 focus:border-brand-500 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:border-brand-500">
-                            <option value="low" @selected(old('priority', 'low') === 'low')>Baixa</option>
-                            <option value="medium" @selected(old('priority') === 'medium')>Média</option>
-                            <option value="high" @selected(old('priority') === 'high')>Alta</option>
-                        </select>
-                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400">
-                            <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4.79199 7.396L10.0003 12.6043L15.2087 7.396" stroke="" stroke-width="1.5"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
+                        <x-form.multiple-select name="priority" :multiple="false" :value="old('priority', 'low')"
+                            :options="[
+        ['value' => 'low', 'label' => 'Baixa'],
+        ['value' => 'medium', 'label' => 'Média'],
+        ['value' => 'high', 'label' => 'Alta']
+    ]" />
                     </div>
                     @error('priority') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
@@ -54,7 +47,7 @@
                         Mensagem
                     </label>
                     <x-form.text-area name="message" :value="old('message')" height="h-32"
-                        placeholder="Descreva seu problema detalhadamente..."  />
+                        placeholder="Descreva seu problema detalhadamente..." />
                     @error('message') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
@@ -101,19 +94,19 @@
                                             </span>
                                             <span
                                                 class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                                                                            @if($ticket->status === 'solved' || $ticket->status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
-                                                                                            @elseif($ticket->status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
-                                                                                            @elseif($ticket->status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
-                                                                                            @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
+                                                                                                            @if($ticket->status === 'solved' || $ticket->status === 'resolved') bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500
+                                                                                                            @elseif($ticket->status === 'closed') bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500
+                                                                                                            @elseif($ticket->status === 'pending') bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-500
+                                                                                                            @else bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500 @endif">
                                                 {{ 
-                                                                                                match ($ticket->status) {
+                                                                                                                match ($ticket->status) {
                                 'open' => 'Aberto',
                                 'pending' => 'Pendente',
                                 'resolved', 'solved' => 'Resolvido',
                                 'closed' => 'Fechado',
                                 default => ucfirst($ticket->status)
                             }
-                                                                                            }}
+                                                                                                            }}
                                             </span>
                                         </div>
                                         <h4

@@ -36,7 +36,7 @@ class ChallengeIndex extends Component
     public $category_id;
     public $image;
     public $existing_image;
-    public $is_active = true;
+
 
     protected $queryString = ['search'];
 
@@ -92,7 +92,7 @@ class ChallengeIndex extends Component
             'goal_km' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|max:2048',
-            'is_active' => 'boolean',
+
         ];
     }
 
@@ -130,7 +130,7 @@ class ChallengeIndex extends Component
         $this->goal_km = $challenge->goal_km;
         $this->category_id = $challenge->category_id;
         $this->existing_image = $challenge->image;
-        $this->is_active = $challenge->is_active;
+
         
         $this->showEditModal = true;
     }
@@ -148,7 +148,7 @@ class ChallengeIndex extends Component
             'end_date' => $this->end_date,
             'goal_km' => $this->goal_km,
             'category_id' => $this->category_id,
-            'is_active' => $this->is_active,
+
         ];
 
         if ($this->image) {
@@ -158,7 +158,7 @@ class ChallengeIndex extends Component
         $challenge->update($data);
 
         $this->showEditModal = false;
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_active']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
         
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio atualizado com sucesso!']);
     }
@@ -166,7 +166,7 @@ class ChallengeIndex extends Component
     public function closeEditModal()
     {
         $this->showEditModal = false;
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_active']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
         $this->resetValidation();
     }
 
@@ -198,7 +198,7 @@ class ChallengeIndex extends Component
 
     public function create()
     {
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_active']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
         $this->resetValidation();
         $this->showCreateModal = true;
     }
@@ -214,7 +214,7 @@ class ChallengeIndex extends Component
             'end_date' => $this->end_date,
             'goal_km' => $this->goal_km,
             'category_id' => $this->category_id,
-            'is_active' => $this->is_active,
+
         ];
 
         if ($this->image) {
@@ -224,7 +224,7 @@ class ChallengeIndex extends Component
         Challenge::create($data);
 
         $this->showCreateModal = false;
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_active']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
         
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
     }

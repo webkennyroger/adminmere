@@ -14,10 +14,10 @@
         this.$nextTick(() => {
             this.flatpickrInstance = flatpickr(this.$refs.dateInput, {
                 mode: '{{ $mode }}',
-                static: true,
                 monthSelectorType: 'static',
                 dateFormat: '{{ $dateFormat }}',
-                defaultDate: {{ $defaultDate ? (is_array($defaultDate) ? json_encode($defaultDate) : "'" . $defaultDate . "'") : 'null' }},
+                defaultDate: @js($defaultDate),
+                appendTo: document.body,
                 onChange: (selectedDates, dateStr, instance) => {
                     this.$dispatch('date-change', {
                         selectedDates,
@@ -26,6 +26,11 @@
                     });
                 }
             });
+            
+            // Check if defaultDate is set and input is empty (for late binding)
+            if (this.flatpickrInstance.selectedDates.length === 0 && @js($defaultDate)) {
+                 this.flatpickrInstance.setDate(@js($defaultDate), false);
+            }
         });
     },
     destroy() {

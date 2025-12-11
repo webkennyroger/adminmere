@@ -10,23 +10,16 @@
             <div class="flex items-center gap-3">
                 <span class="text-zinc-500 dark:text-zinc-400">Mostrar</span>
                 <div class="relative z-20 bg-transparent">
-                    <select wire:model.live="perPage"
-                        class="w-full py-2 pl-3 pr-8 text-sm text-zinc-800 bg-transparent border border-zinc-300 rounded-lg appearance-none dark:bg-dark-900 h-9 bg-none shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="-1">Todos</option>
-                    </select>
-                    <span
-                        class="absolute z-30 text-zinc-500 -translate-y-1/2 pointer-events-none right-2 top-1/2 dark:text-zinc-400">
-                        <svg class="stroke-current" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165" stroke="" stroke-width="1.2"
-                                stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                    </span>
+                    <div class="relative z-20 w-24">
+                        <x-form.multiple-select wire:model.live="perPage" :multiple="false" :options="[
+        ['value' => 5, 'label' => '5'],
+        ['value' => 10, 'label' => '10'],
+        ['value' => 25, 'label' => '25'],
+        ['value' => 50, 'label' => '50'],
+        ['value' => 100, 'label' => '100'],
+        ['value' => -1, 'label' => 'Todos']
+    ]" />
+                    </div>
                 </div>
                 <span class="text-zinc-500 dark:text-zinc-400">entradas</span>
             </div>
@@ -282,13 +275,8 @@
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Categoria
                                 *</label>
-                            <select wire:model="category_id"
-                                class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
-                                <option value="">Selecione uma categoria</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
+                            <x-form.multiple-select wire:model="category_id" :multiple="false"
+                                placeholder="Selecione uma categoria" :options="$categories->map(fn($category) => ['value' => $category->id, 'label' => $category->name])->toArray()" />
                             @error('category_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -300,13 +288,7 @@
                         @error('image') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <div>
-                        <label class="flex items-center">
-                            <input wire:model="is_active" type="checkbox"
-                                class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Desafio ativo</span>
-                        </label>
-                    </div>
+
 
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="closeCreateModal"
@@ -390,12 +372,7 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Status</label>
-                        <p class="text-zinc-900 dark:text-zinc-100">
-                            {{ $selectedChallenge->is_active ? 'Ativo' : 'Inativo' }}
-                        </p>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -461,13 +438,8 @@
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Categoria
                                 *</label>
-                            <select wire:model="category_id"
-                                class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
-                                <option value="">Selecione uma categoria</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
+                            <x-form.multiple-select wire:model="category_id" :multiple="false"
+                                placeholder="Selecione uma categoria" :options="$categories->map(fn($category) => ['value' => $category->id, 'label' => $category->name])->toArray()" />
                             @error('category_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -479,18 +451,11 @@
                         @elseif($existing_image)
                             <img src="{{ Storage::url($existing_image) }}" class="h-32 rounded-lg mb-2">
                         @endif
-                        <input wire:model="image" type="file" accept="image/*"
-                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                        <x-form.file-input wire:model="image" id="edit_challenge_image" accept="image/*" />
                         @error('image') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <div>
-                        <label class="flex items-center">
-                            <input wire:model="is_active" type="checkbox"
-                                class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Desafio ativo</span>
-                        </label>
-                    </div>
+
 
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="closeEditModal"
