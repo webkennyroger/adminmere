@@ -241,17 +241,32 @@ class UserIndex extends Component
         ]);
     }
 
-    public function delete($id)
+    public $confirmingDeletion = false;
+    public $userToDelete;
+
+    public function confirmDelete($id)
     {
-        $user = User::findOrFail($id);
-        $userName = $user->name;
-        $user->delete();
-        $this->dispatch('toast', [
-            'type' => 'error', 
-            'message' => 'O usuário "' . $userName . '" foi removido do sistema!',
-            'title' => 'Usuário excluído'
-        ]);
+        $this->userToDelete = User::findOrFail($id);
+        $this->confirmingDeletion = true;
     }
+
+    public function delete()
+    {
+        if ($this->userToDelete) {
+            $userName = $this->userToDelete->name;
+            $this->userToDelete->delete();
+            
+            $this->dispatch('toast', [
+                'type' => 'error', 
+                'message' => 'O usuário "' . $userName . '" foi removido do sistema!',
+                'title' => 'Usuário excluído'
+            ]);
+        }
+        
+        $this->confirmingDeletion = false;
+        $this->userToDelete = null;
+    }
+
 
     public function toggleStatus($id)
     {

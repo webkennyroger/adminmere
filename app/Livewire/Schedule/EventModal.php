@@ -83,21 +83,48 @@ class EventModal extends Component
         if ($this->editMode) {
             $event = Schedule::findOrFail($this->eventId);
             $event->update($data);
-            $this->dispatch('toast', ['type' => 'success', 'message' => 'Evento atualizado com sucesso!']);
+            $this->dispatch('toast', [
+                'type' => 'info', 
+                'message' => 'Evento atualizado com sucesso!',
+                'title' => 'Evento Atualizado'
+            ]);
         } else {
             Schedule::create($data);
-            $this->dispatch('toast', ['type' => 'success', 'message' => 'Evento criado com sucesso!']);
+            $this->dispatch('toast', [
+                'type' => 'success', 
+                'message' => 'Evento criado com sucesso!',
+                'title' => 'Evento Criado'
+            ]);
         }
 
         $this->closeModal();
         $this->dispatch('eventSaved');
     }
 
+    public $confirmingDeletion = false;
+
+    public function confirmDelete()
+    {
+        $this->confirmingDeletion = true;
+    }
+
+    public function cancelDelete()
+    {
+        $this->confirmingDeletion = false;
+    }
+
     public function deleteEvent()
     {
         if ($this->eventId) {
-            Schedule::findOrFail($this->eventId)->delete();
-            $this->dispatch('toast', ['type' => 'success', 'message' => 'Evento excluído com sucesso!']);
+            $event = Schedule::findOrFail($this->eventId);
+            $event->delete();
+            
+            $this->dispatch('toast', [
+                'type' => 'error', 
+                'message' => 'O evento foi removido do sistema!',
+                'title' => 'Evento Excluído'
+            ]);
+            
             $this->closeModal();
             $this->dispatch('eventSaved');
         }

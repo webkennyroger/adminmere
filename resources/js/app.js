@@ -1,20 +1,125 @@
 import './bootstrap';
-import './toast';
+import './components/toast';
 // import Alpine from 'alpinejs';
 import ApexCharts from 'apexcharts';
 
 // flatpickr
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+
+const Portuguese = {
+  weekdays: {
+    shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+    longhand: [
+      "Domingo",
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado",
+    ],
+  },
+  months: {
+    shorthand: [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ],
+    longhand: [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ],
+  },
+  rangeSeparator: " até ",
+  time_24hr: true,
+};
+
 // FullCalendar
 import { Calendar } from '@fullcalendar/core';
-
-
 
 // window.Alpine = Alpine;
 window.ApexCharts = ApexCharts;
 window.flatpickr = flatpickr;
+flatpickr.localize(Portuguese);
 window.FullCalendar = Calendar;
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('quillEditor', ({ content, placeholder, name, theme, modelId }) => ({
+        content: content,
+        quill: null,
+        modelId: modelId,
+        init() {
+            this.quill = new Quill(this.$refs.editor, {
+                theme: theme || 'snow',
+                placeholder: placeholder,
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Set initial content
+            if (this.content) {
+                this.quill.root.innerHTML = this.content;
+            }
+
+            this.quill.on('text-change', () => {
+                this.content = this.quill.root.innerHTML;
+                if (name && this.$refs.hiddenInput) {
+                    this.$refs.hiddenInput.value = this.content;
+                    // Dispatch input event for wire:model handling if needed
+                    this.$refs.hiddenInput.dispatchEvent(new Event('input'));
+                }
+            });
+
+            this.$watch('content', (value) => {
+                if (value !== this.quill.root.innerHTML) {
+                    this.quill.root.innerHTML = value || '';
+                }
+            });
+
+            // Listener for external updates via custom event
+            if (this.modelId) {
+                window.addEventListener('update-quill-' + this.modelId, (e) => {
+                    this.content = e.detail;
+                    this.quill.root.innerHTML = e.detail;
+                });
+            }
+        }
+    }));
+});
 
 // Alpine.start();
 

@@ -42,14 +42,37 @@
         'rose' => 'bg-rose-500',
         default => 'bg-zinc-500',
     };
+
+    $hoverRingColorClass = match ($colorCode) {
+        'red' => 'hover:ring-red-500',
+        'orange' => 'hover:ring-orange-500',
+        'amber' => 'hover:ring-amber-500',
+        'yellow' => 'hover:ring-yellow-500',
+        'lime' => 'hover:ring-lime-500',
+        'green' => 'hover:ring-green-500',
+        'emerald' => 'hover:ring-emerald-500',
+        'teal' => 'hover:ring-teal-500',
+        'cyan' => 'hover:ring-cyan-500',
+        'sky' => 'hover:ring-sky-500',
+        'blue' => 'hover:ring-blue-500',
+        'indigo' => 'hover:ring-indigo-500',
+        'violet' => 'hover:ring-violet-500',
+        'purple' => 'hover:ring-purple-500',
+        'fuchsia' => 'hover:ring-fuchsia-500',
+        'pink' => 'hover:ring-pink-500',
+        'rose' => 'hover:ring-rose-500',
+        default => 'hover:ring-zinc-500',
+    };
 @endphp
 
 <div
     @class([
-        'w-10 h-10 rounded-full transition-transform transform',
+        'w-10 h-10 rounded-full transition-all duration-200',
         $bgColorClass,
         'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-zinc-800 scale-110' => $color === $colorCode,
         $ringColorClass => $color === $colorCode,
+        'hover:ring-2 hover:ring-offset-2 hover:ring-offset-white dark:hover:ring-offset-zinc-800 hover:scale-110' => $color !== $colorCode,
+        $hoverRingColorClass => $color !== $colorCode,
     ])
 >
 </div>

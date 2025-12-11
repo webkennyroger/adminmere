@@ -1,5 +1,3 @@
-
-
 <div class="p-5 mb-6 border border-zinc-200 rounded-2xl dark:border-zinc-800 lg:p-6">
     <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
@@ -15,12 +13,16 @@
 
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Sobrenome</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->last_name ?? '-' }}</p>
+                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">
+                        {{ $user->profile?->last_name ?? '-' }}
+                    </p>
                 </div>
 
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Apelido</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->nickname ?? '-' }}</p>
+                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">
+                        {{ $user->profile?->nickname ?? '-' }}
+                    </p>
                 </div>
 
                 <div>
@@ -34,7 +36,8 @@
 
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Telefone</p>
-                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->phone ?? '-' }}</p>
+                    <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->phone ?? '-' }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -51,11 +54,13 @@
     </div>
 
     <!-- Profile Info Modal -->
-    <x-ui.modal x-data="{ open: false }" @open-profile-info-modal.window="open = true" @close-profile-info-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
-        <div class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
+    <x-ui.modal x-data="{ open: false }" @open-profile-info-modal.window="open = true"
+        @close-profile-info-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
+        <div
+            class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
                 <h4 class="mb-2 text-2xl font-semibold text-zinc-800 dark:text-white/90">
-                   Editar informações pessoais
+                    Editar informações pessoais
                 </h4>
                 <p class="mb-6 text-sm text-zinc-500 dark:text-zinc-400 lg:mb-7">
                     Atualize seus dados para manter seu perfil atualizado.
@@ -69,27 +74,27 @@
                         </h5>
 
                         <div class="mb-5 lg:mb-6">
-                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
+                            <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                                 Foto de perfil
                             </label>
                             <div class="flex items-center gap-5">
                                 @if ($image)
-                                     <img src="{{ $image->temporaryUrl() }}" class="w-16 h-16 rounded-full object-cover">
+                                    <img src="{{ $image->temporaryUrl() }}" class="w-16 h-16 rounded-full object-cover">
                                 @elseif ($user->profile?->image)
-                                     <img src="{{ Storage::url($user->profile->image) }}" class="w-16 h-16 rounded-full object-cover">
+                                    <img src="{{ Storage::url($user->profile->image) }}"
+                                        class="w-16 h-16 rounded-full object-cover">
                                 @else
-                                     <div class="w-16 h-16 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-400">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                     </div>
+                                    <div
+                                        class="w-16 h-16 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-400">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                            </path>
+                                        </svg>
+                                    </div>
                                 @endif
                                 <div class="flex-1">
-                                    <input type="file" wire:model="image" class="block w-full text-sm text-zinc-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-full file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-brand-50 file:text-brand-700
-                                    hover:file:bg-brand-100
-                                    dark:file:bg-zinc-800 dark:file:text-zinc-300" />
+                                    <x-form.file-input wire:model="image" id="profile_info_image" accept="image/*" />
                                     <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">PNG, JPG até 1MB.</p>
                                     @error('image') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
@@ -158,4 +163,3 @@
         </div>
     </x-ui.modal>
 </div>
-

@@ -50,6 +50,6 @@ class UserGrowthChart extends Component
 
     public function render()
     {
-        return view('livewire.dashboard.user-growth-chart');
+        return view('livewire.dashboard.charts.user-growth-chart');
     }
 }

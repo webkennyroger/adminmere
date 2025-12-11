@@ -12,7 +12,7 @@
                             :class="checkboxToggle ? 'bg-white' : 'bg-white dark:bg-[#171f2e]'"></span>
                     </div>
                 </div>
-                Default
+                Padrão
             </label>
         </div>
 
@@ -29,7 +29,7 @@
                             :class="checkboxToggle ? 'bg-white' : 'bg-white dark:bg-[#171f2e]'"></span>
                     </div>
                 </div>
-                Secondary
+                secundário
             </label>
         </div>
 
@@ -46,7 +46,7 @@
                             :class="checkboxToggle ? 'bg-white' : 'bg-white dark:bg-[#171f2e]'"></span>
                     </div>
                 </div>
-                Disabled Secondary
+                Desabilitado
             </label>
         </div>
     </div>

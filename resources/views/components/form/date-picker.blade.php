@@ -8,7 +8,7 @@
     'dateFormat' => 'Y-m-d',
 ])
 
-<div x-data="{
+<div wire:ignore x-data="{
     flatpickrInstance: null,
     init() {
         this.$nextTick(() => {
@@ -34,7 +34,7 @@
             this.flatpickrInstance = null;
         }
     }
-}" x-init="init()" x-destroy="destroy()">
+}" x-init="init()" x-destroy="destroy()" {{ $attributes }}>
     @if($label)
         <label for="{{ $id }}" class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
             {{ $label }}

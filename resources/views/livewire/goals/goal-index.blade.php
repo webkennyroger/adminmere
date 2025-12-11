@@ -78,7 +78,7 @@
                 <thead>
                     <tr class="border-zinc-200 border-y dark:border-zinc-700">
                         <th scope="col" class="w-12 px-4 py-3">
-                            <input type="checkbox" wire:model.live="selectAll" class="h-4 w-4 rounded border-zinc-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 focus:ring-offset-0 disabled:cursor-not-allowed disabled:text-zinc-400" />
+                            <x-form.checkbox wire:model.live="selectAll" />
                         </th>
                         <th scope="col" class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
                             Título
@@ -107,7 +107,7 @@
                      @forelse ($goals as $goal)
                         <tr wire:key="{{ $goal->id }}">
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <input type="checkbox" wire:model.live="selected" value="{{ $goal->id }}" class="h-4 w-4 rounded border-zinc-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 focus:ring-offset-0 disabled:cursor-not-allowed disabled:text-zinc-400" />
+                                <x-form.checkbox wire:model.live="selected" value="{{ $goal->id }}" />
                             </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -242,14 +242,30 @@
                     
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Data de Início *</label>
-                            <input wire:model="start_date" type="date" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <x-form.date-picker
+                                label="Data de Início *"
+                                name="start_date"
+                                id="create_start_date"
+                                placeholder="Selecione a data"
+                                :default-date="$start_date"
+                                x-on:date-change="$wire.set('start_date', $event.detail.dateStr)"
+                            />
+                            <div class="mt-1">
+                                @error('start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Data de Fim *</label>
-                            <input wire:model="end_date" type="date" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('end_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <x-form.date-picker
+                                label="Data de Fim *"
+                                name="end_date"
+                                id="create_end_date"
+                                placeholder="Selecione a data"
+                                :default-date="$end_date"
+                                x-on:date-change="$wire.set('end_date', $event.detail.dateStr)"
+                            />
+                            <div class="mt-1">
+                                @error('end_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                     </div>
                     
@@ -317,14 +333,30 @@
                     
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Data de Início *</label>
-                            <input wire:model="start_date" type="date" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <x-form.date-picker
+                                label="Data de Início *"
+                                name="start_date"
+                                id="edit_start_date"
+                                placeholder="Selecione a data"
+                                :default-date="$start_date"
+                                x-on:date-change="$wire.set('start_date', $event.detail.dateStr)"
+                            />
+                            <div class="mt-1">
+                                @error('start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Data de Fim *</label>
-                            <input wire:model="end_date" type="date" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('end_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <x-form.date-picker
+                                label="Data de Fim *"
+                                name="end_date"
+                                id="edit_end_date"
+                                placeholder="Selecione a data"
+                                :default-date="$end_date"
+                                x-on:date-change="$wire.set('end_date', $event.detail.dateStr)"
+                            />
+                            <div class="mt-1">
+                                @error('end_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                     </div>
                     
@@ -349,23 +381,29 @@
 
     {{-- Delete Confirmation Modal --}}
     @if($showDeleteModal)
-        <div class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50" wire:click="cancelDelete" x-transition>
-            <div class="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full mx-4" wire:click.stop>
-                <div class="p-6 text-center">
-                    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600 dark:text-red-400"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        <div class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4" wire:click="cancelDelete">
+            <div class="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full" wire:click.stop>
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
                     </div>
-                    <h3 class="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">Excluir Meta?</h3>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                        Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita.
-                    </p>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Confirmar Exclusão</h3>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                            Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita.
+                        </p>
+                    </div>
                 </div>
-                <div class="flex justify-end gap-3 px-6 pb-2">
-                    <button wire:click="cancelDelete" class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200">
+                
+                <div class="flex justify-end gap-3 pt-5">
+                    <button type="button" wire:click="cancelDelete" 
+                        class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200">
                         Cancelar
                     </button>
                     <button wire:click="delete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                        Excluir
+                        Sim, Excluir
                     </button>
                 </div>
             </div>

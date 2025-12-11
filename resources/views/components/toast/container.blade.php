@@ -9,12 +9,13 @@
                 x-transition:leave="transition ease-in duration-100"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="pointer-events-auto w-full overflow-hidden rounded-lg shadow-lg"
-                x-bind:style="`background-color: ${toast.type === 'success' ? '#10b981' : toast.type === 'info' ? '#3b82f6' : toast.type === 'warning' ? '#f59e0b' : toast.type === 'error' ? '#ef4444' : '#f97316'}`">
+                x-transition:leave-end="opacity-0"
+                class="pointer-events-auto w-full overflow-hidden rounded-lg shadow-lg bg-white dark:bg-zinc-800 ring-1 ring-black ring-opacity-5"
+                >
                 <div class="p-4">
                     <div class="flex items-start">
                         <div class="shrink-0">
-                            <div class="rounded-lg p-2 bg-white bg-opacity-20">
+                            <div class="rounded-lg p-2" :class="toast.bgClass">
                                 <!-- Success Icon -->
                                 <svg x-show="toast.type === 'success'" class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -34,16 +35,15 @@
                             </div>
                         </div>
                         <div class="ml-3 w-0 flex-1 pt-0.5">
-                            <p class="text-sm font-medium text-white" x-text="toast.title"></p>
-                            <p class="mt-1 text-sm text-white text-opacity-90" x-text="toast.message"></p>
+                            <p class="text-sm font-medium" :class="toast.textClass" x-text="toast.title"></p>
+                            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300" x-text="toast.message"></p>
                         </div>
-                        <button @click="removeToast(toast.id)" class="ml-4 shrink-0 text-white text-opacity-70 hover:text-opacity-100">
+                        <button @click="removeToast(toast.id)" class="ml-4 shrink-0 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
-                    <div class="mt-3 w-full h-1 rounded-full bg-white bg-opacity-30"></div>
                 </div>
             </div>
         </template>

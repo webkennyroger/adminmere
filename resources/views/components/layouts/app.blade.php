@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $title ?? 'Dashboard' }} | MERE APP</title>
+
 
     <!-- Theme initialization (runs before CSS loads) -->
     <script>
@@ -21,8 +23,12 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- Quill CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+
     <!-- Alpine.js -->
-    {{-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
+    {{--
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
 
 
     <!-- Livewire styles -->
@@ -94,7 +100,7 @@
 
     <!-- Apply dark mode  -->
     <script>
-        (function() {
+        (function () {
             const savedTheme = localStorage.getItem('theme');
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             const theme = savedTheme || systemTheme;
@@ -111,11 +117,10 @@
             }
         })();
     </script>
-    
+
 </head>
-<body
-    x-data="{ 'loaded': true}"
-    x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
+
+<body x-data="{ 'loaded': true}" x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
     const checkMobile = () => {
         if (window.innerWidth < 1280) {
             $store.sidebar.setMobileOpen(false);
@@ -128,18 +133,17 @@
     window.addEventListener('resize', checkMobile);">
 
     {{-- preloader --}}
-    <x-common.preloader/>
+    <x-common.preloader />
     {{-- preloader end --}}
 
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="min-h-screen xl:flex">
-               <!-- ===== Sidebar Start ===== -->
+        <!-- ===== Sidebar Start ===== -->
         <x-layouts.sidebar.sidebar />
         <!-- ===== Sidebar End ===== -->
         <!-- ===== Content Area Start ===== -->
-        <div class="flex-1 transition-all duration-300 ease-in-out"
-            :class="{
+        <div class="flex-1 transition-all duration-300 ease-in-out" :class="{
                 'xl:ml-[290px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
                 'xl:ml-[90px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
                 'ml-0': $store.sidebar.isMobileOpen
@@ -151,23 +155,27 @@
                 {{ $slot }}
             </div>
         </div>
-    <!-- ===== Content Area End ===== -->
-</div>
-<!-- ===== Page Wrapper End ===== -->
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
 
-<!-- Toast Container -->
-<x-toast.container />
+    <!-- Toast Container -->
+    <x-toast.container />
 
-@if(session('message'))
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            window.showToast('success', "{{ session('message') }}");
-        });
-    </script>
-@endif
+    @if(session('message'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.showToast('success', "{{ session('message') }}");
+            });
+        </script>
+    @endif
 
-<!-- Livewire scripts -->
-@livewireScripts
-@stack('scripts')
+    <!-- Quill JS -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+    <!-- Livewire scripts -->
+    @livewireScripts
+    @stack('scripts')
 </body>
+
 </html>

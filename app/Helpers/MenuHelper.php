@@ -85,7 +85,7 @@ class MenuHelper
                 'items' => self::getMainNavItems()
             ],
             [
-                'title' => 'Others',
+                'title' => 'Outros',
                 'items' => self::getOthersItems()
             ]
         ];

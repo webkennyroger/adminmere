@@ -1,69 +1,8 @@
-
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
-// Toast notification function
-const showToast = (type, message, duration = 4000) => {
-  // Criar container de toasts se não existir
-  let toastContainer = document.getElementById('toast-container');
-  if (!toastContainer) {
-    toastContainer = document.createElement('div');
-    toastContainer.id = 'toast-container';
-    toastContainer.className = 'fixed top-4 right-4 z-[9999] space-y-3';
-    document.body.appendChild(toastContainer);
-  }
-
-  // Cores e ícones por tipo
-  const toastConfig = {
-    success: {
-      bg: 'bg-green-50 dark:bg-green-900',
-      border: 'border-green-200 dark:border-green-700',
-      text: 'text-green-800 dark:text-green-200',
-      icon: '✓'
-    },
-    error: {
-      bg: 'bg-red-50 dark:bg-red-900',
-      border: 'border-red-200 dark:border-red-700',
-      text: 'text-red-800 dark:text-red-200',
-      icon: '✕'
-    },
-    warning: {
-      bg: 'bg-yellow-50 dark:bg-yellow-900',
-      border: 'border-yellow-200 dark:border-yellow-700',
-      text: 'text-yellow-800 dark:text-yellow-200',
-      icon: '⚠'
-    },
-    info: {
-      bg: 'bg-blue-50 dark:bg-blue-900',
-      border: 'border-blue-200 dark:border-blue-700',
-      text: 'text-blue-800 dark:text-blue-200',
-      icon: 'ℹ'
-    }
-  };
-
-  const config = toastConfig[type] || toastConfig.info;
-
-  // Criar elemento do toast
-  const toast = document.createElement('div');
-  toast.className = `${config.bg} ${config.border} ${config.text} border rounded-lg p-4 shadow-lg flex items-center gap-3 animate-slide-in-right`;
-  toast.innerHTML = `
-    <span class="text-lg font-bold">${config.icon}</span>
-    <p class="text-sm font-medium">${message}</p>
-  `;
-
-  toastContainer.appendChild(toast);
-
-  // Remover toast após a duração
-  setTimeout(() => {
-    toast.classList.add('animate-slide-out-right');
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, duration);
-};
 
 export function calendarInit() {
   const calendarWrapper = document.querySelector("#calendar");
@@ -146,7 +85,10 @@ export function calendarInit() {
     // Reset modal fields
     function resetModalFields() {
       if (getModalTitleEl) getModalTitleEl.value = "";
-      if (getModalDescriptionEl) getModalDescriptionEl.value = "";
+      if (getModalDescriptionEl) {
+        getModalDescriptionEl.value = "";
+        window.dispatchEvent(new CustomEvent('update-quill-event-description', { detail: '' }));
+      }
       if (getModalStartDateEl) getModalStartDateEl.value = "";
       if (getModalTimeEl) getModalTimeEl.value = "";
       if (getModalPhotoEl) getModalPhotoEl.value = "";
@@ -208,7 +150,7 @@ export function calendarInit() {
       if (info.jsEvent.target.closest('.event-edit-btn') || info.jsEvent.target.closest('.event-delete-btn')) {
         return;
       }
-      
+
       const eventObj = info.event;
 
       // Populate view modal
@@ -225,15 +167,21 @@ export function calendarInit() {
 
       // Description
       if (eventObj.extendedProps.description) {
-        document.getElementById('view-event-description').textContent = eventObj.extendedProps.description;
+        document.getElementById('view-event-description').innerHTML = eventObj.extendedProps.description;
         document.getElementById('view-event-description-container').classList.remove('hidden');
       } else {
         document.getElementById('view-event-description-container').classList.add('hidden');
       }
 
       // Time
+      // Time
       if (eventObj.extendedProps.time && eventObj.extendedProps.time !== '00:00') {
-        document.getElementById('view-event-time').textContent = eventObj.extendedProps.time;
+        let timeStr = eventObj.extendedProps.time;
+        // Parse if it is a full ISO string
+        if (timeStr.includes('T')) {
+            timeStr = timeStr.split('T')[1].substring(0, 5);
+        }
+        document.getElementById('view-event-time').textContent = timeStr;
         document.getElementById('view-event-time-container').classList.remove('hidden');
       } else {
         document.getElementById('view-event-time-container').classList.add('hidden');
@@ -332,12 +280,19 @@ export function calendarInit() {
           }
 
           if (getModalTitleEl) getModalTitleEl.value = event.title;
-          if (getModalDescriptionEl)
+          if (getModalDescriptionEl) {
             getModalDescriptionEl.value = event.extendedProps.description || "";
+            window.dispatchEvent(new CustomEvent('update-quill-event-description', { detail: event.extendedProps.description || "" }));
+          }
           if (getModalStartDateEl)
             getModalStartDateEl.value = event.startStr.split("T")[0];
-          if (getModalTimeEl)
-            getModalTimeEl.value = event.extendedProps.time || "";
+          if (getModalTimeEl) {
+            let timeVal = event.extendedProps.time || "";
+            if (timeVal.includes('T')) {
+                timeVal = timeVal.split('T')[1].substring(0, 5);
+            }
+            getModalTimeEl.value = timeVal;
+          }
 
           const eventLevel = event.extendedProps.calendar;
           const radioBtn = document.querySelector(`input[value="${eventLevel}"]`);
@@ -376,12 +331,13 @@ export function calendarInit() {
             if (!response.ok) throw new Error("Erro ao excluir evento");
 
             calendar.refetchEvents();
-            showToast("success", "Evento excluído com sucesso!");
+            window.showToast("error", "O evento foi removido do sistema!", "Evento Excluído");
           } catch (error) {
             console.error("Erro ao excluir evento:", error);
-            showToast(
+            window.showToast(
               "error",
-              "Erro ao excluir evento. Por favor, tente novamente."
+              "Erro ao excluir evento. Por favor, tente novamente.",
+              "Erro"
             );
           }
         });
@@ -404,9 +360,18 @@ export function calendarInit() {
       }
 
       if (getModalTitleEl) getModalTitleEl.value = eventData.title;
-      if (getModalDescriptionEl) getModalDescriptionEl.value = eventData.extendedProps.description || '';
+      if (getModalDescriptionEl) {
+        getModalDescriptionEl.value = eventData.extendedProps.description || '';
+        window.dispatchEvent(new CustomEvent('update-quill-event-description', { detail: eventData.extendedProps.description || '' }));
+      }
       if (getModalStartDateEl) getModalStartDateEl.value = eventData.startStr.split("T")[0];
-      if (getModalTimeEl) getModalTimeEl.value = eventData.extendedProps.time || '';
+      if (getModalTimeEl) {
+          let timeVal = eventData.extendedProps.time || '';
+          if (timeVal.includes('T')) {
+              timeVal = timeVal.split('T')[1].substring(0, 5);
+          }
+          getModalTimeEl.value = timeVal;
+      }
 
       const eventLevel = eventData.extendedProps.calendar;
       const radioBtn = document.querySelector(`input[value="${eventLevel}"]`);
@@ -441,7 +406,7 @@ export function calendarInit() {
             : "Primary";
 
         if (!getTitleUpdatedValue) {
-          showToast('warning', 'Por favor, insira um título para o evento');
+          window.showToast('warning', 'Por favor, insira um título para o evento', 'Atenção');
           return;
         }
 
@@ -471,10 +436,10 @@ export function calendarInit() {
           // Reload calendar
           calendar.refetchEvents();
           closeModal();
-          showToast('success', 'Evento atualizado com sucesso!');
+          window.showToast('info', 'Evento atualizado com sucesso!', 'Evento Atualizado');
         } catch (error) {
           console.error('Erro ao atualizar evento:', error);
-          showToast('error', 'Erro ao atualizar evento. Por favor, tente novamente.');
+          window.showToast('error', 'Erro ao atualizar evento. Por favor, tente novamente.', 'Erro');
         }
       });
     }
@@ -498,10 +463,10 @@ export function calendarInit() {
 
             calendar.refetchEvents();
             closeModal();
-            showToast('success', 'Evento excluído com sucesso!');
+            window.showToast('error', 'O evento foi removido do sistema!', 'Evento Excluído');
           } catch (error) {
             console.error('Erro ao excluir evento:', error);
-            showToast('error', 'Erro ao excluir evento. Por favor, tente novamente.');
+            window.showToast('error', 'Erro ao excluir evento. Por favor, tente novamente.', 'Erro');
           }
         });
       });
@@ -523,7 +488,7 @@ export function calendarInit() {
           : "Primary";
 
         if (!getTitleValue) {
-          showToast('warning', 'Por favor, insira um título para o evento');
+          window.showToast('warning', 'Por favor, insira um título para o evento', 'Atenção');
           return;
         }
 
@@ -552,12 +517,10 @@ export function calendarInit() {
           // Reload calendar
           calendar.refetchEvents();
           closeModal();
+          window.showToast('success', 'Evento criado com sucesso!', 'Evento Criado');
         } catch (error) {
           console.error('Erro ao criar evento:', error);
-          showToast('error', 'Erro ao criar evento. Por favor, tente novamente.');
-
-          // Show success message
-          showToast('success', 'Evento criado com sucesso!');
+          window.showToast('error', 'Erro ao criar evento. Por favor, tente novamente.', 'Erro');
         }
       });
     }

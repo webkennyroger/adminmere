@@ -111,7 +111,11 @@ class SubscriptionIndex extends Component
         }
 
         $this->showEditModal = false;
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Assinante atualizado com sucesso!']);
+        $this->dispatch('toast', [
+            'type' => 'info', 
+            'message' => 'Os dados da assinatura de "' . $this->name . '" foram atualizados!',
+            'title' => 'Assinatura Atualizada'
+        ]);
         $this->reset(['userId', 'name', 'email', 'plan']);
     }
 
@@ -131,7 +135,11 @@ class SubscriptionIndex extends Component
     {
         User::findOrFail($this->userId)->delete();
         $this->showDeleteModal = false;
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Usuário excluído com sucesso!']);
+        $this->dispatch('toast', [
+            'type' => 'error', 
+            'message' => 'Usuário excluído do sistema!',
+            'title' => 'Assinante Excluído'
+        ]);
         $this->reset(['userId']);
     }
     

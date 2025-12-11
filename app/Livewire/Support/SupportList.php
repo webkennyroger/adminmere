@@ -65,18 +65,34 @@ class SupportList extends Component
         }
     }
 
-    public function delete($id)
+    public $confirmingDeletion = false;
+    public $ticketToDelete;
+
+    public function confirmDelete($id)
     {
-        $ticket = Support::findOrFail($id);
-        
-        // Only admin or ticket owner can delete
-        if (!auth()->user()->is_admin && $ticket->user_id !== auth()->id()) {
-            abort(403);
+        $this->ticketToDelete = Support::findOrFail($id);
+        $this->confirmingDeletion = true;
+    }
+
+    public function delete()
+    {
+        if ($this->ticketToDelete) {
+             // Only admin or ticket owner can delete
+            if (!auth()->user()->is_admin && $this->ticketToDelete->user_id !== auth()->id()) {
+                abort(403);
+            }
+
+            $this->ticketToDelete->delete();
+            
+            $this->dispatch('toast', [
+                'type' => 'error', 
+                'message' => 'O ticket foi excluído do sistema!',
+                'title' => 'Ticket Deletado'
+            ]);
         }
         
-        $ticket->delete();
-        
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Ticket deletado com sucesso!']);
+        $this->confirmingDeletion = false;
+        $this->ticketToDelete = null;
     }
 
     public function deleteSelected()

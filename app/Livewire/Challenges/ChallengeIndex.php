@@ -88,7 +88,7 @@ class ChallengeIndex extends Component
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'goal_km' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|max:2048',
@@ -182,7 +182,11 @@ class ChallengeIndex extends Component
             Challenge::findOrFail($this->challengeId)->delete();
             $this->confirmingDeletion = false;
             $this->challengeId = null;
-            $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio excluído com sucesso!']);
+            $this->dispatch('toast', [
+                'type' => 'error', 
+                'message' => 'O desafio foi removido do sistema!',
+                'title' => 'Desafio excluído'
+            ]);
         }
     }
 
