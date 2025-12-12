@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Support;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class SupportSeeder extends Seeder
@@ -12,23 +13,23 @@ class SupportSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ensure we have a user to attach tickets to, or use factory
-        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
+        $this->command->info('Creating 10 Support Tickets...');
 
-        \App\Models\Support::factory(10)->create([
-            'user_id' => $user->id,
+        // Ensure we have users
+        if (User::count() === 0) {
+            User::factory(1)->create();
+        }
+
+        // Create exactly 10 tickets distributed among random users
+        Support::factory(10)->create([
+            'user_id' => fn () => User::inRandomOrder()->first()->id,
         ])->each(function ($support) {
             // Randomly add replies to some tickets
             if (rand(0, 1)) {
+                 // 1-3 replies
                 \App\Models\SupportReply::factory(rand(1, 3))->create([
                     'support_id' => $support->id,
-                    'user_id' => $support->user_id, // Simulate user reply
-                ]);
-                
-                // Simulate admin reply using an existing user (mocking admin)
-                 \App\Models\SupportReply::factory(rand(1, 2))->create([
-                    'support_id' => $support->id,
-                    'user_id' => \App\Models\User::inRandomOrder()->first()->id, 
+                    'user_id' => $support->user_id, 
                 ]);
             }
         });

@@ -32,13 +32,19 @@ class SupportIndex extends Component
 
         $this->validate();
 
-        Support::create([
+        $ticket = Support::create([
             'user_id' => auth()->id(),
             'subject' => $this->subject,
             'priority' => $this->priority,
             'message' => $this->message,
             'status' => 'pending',
         ]);
+
+        // Notify Admin
+        $admin = \App\Models\User::where('email', 'webkennyroger@gmail.com')->first();
+        if ($admin) {
+            $admin->notify(new \App\Notifications\TicketCreated($ticket));
+        }
 
         $this->reset();
         

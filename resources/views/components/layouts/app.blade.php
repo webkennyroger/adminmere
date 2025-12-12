@@ -37,6 +37,130 @@
     <!-- Livewire styles -->
     @livewireStyles
 
+    <style>
+        /* Flatpickr Dark Mode Overrides */
+        .dark .flatpickr-calendar {
+            background: #18181b !important;
+            border-color: #27272a !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .dark .flatpickr-calendar.arrowTop:before,
+        .dark .flatpickr-calendar.arrowTop:after {
+            border-bottom-color: #18181b !important;
+        }
+
+        .dark .flatpickr-calendar.arrowBottom:before,
+        .dark .flatpickr-calendar.arrowBottom:after {
+            border-top-color: #18181b !important;
+        }
+
+        .dark .flatpickr-months .flatpickr-month {
+            background: #18181b !important;
+            color: #e4e4e7 !important;
+            fill: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-months .flatpickr-prev-month,
+        .dark .flatpickr-months .flatpickr-next-month {
+            color: #e4e4e7 !important;
+            fill: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-months .flatpickr-prev-month:hover svg,
+        .dark .flatpickr-months .flatpickr-next-month:hover svg {
+            fill: #fff !important;
+        }
+
+        .dark .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #18181b !important;
+            color: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+            background-color: #18181b !important;
+        }
+
+        .dark .flatpickr-current-month input.cur-year {
+            color: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-weekdays {
+            background: #18181b !important;
+        }
+
+        .dark span.flatpickr-weekday {
+            background: #18181b !important;
+            color: #a1a1aa !important;
+        }
+
+        .dark .flatpickr-day {
+            color: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-day.inRange,
+        .dark .flatpickr-day.prevMonthDay.inRange,
+        .dark .flatpickr-day.nextMonthDay.inRange,
+        .dark .flatpickr-day.today.inRange,
+        .dark .flatpickr-day.prevMonthDay.today.inRange,
+        .dark .flatpickr-day.nextMonthDay.today.inRange,
+        .dark .flatpickr-day:hover,
+        .dark .flatpickr-day.prevMonthDay:hover,
+        .dark .flatpickr-day.nextMonthDay:hover,
+        .dark .flatpickr-day:focus,
+        .dark .flatpickr-day.prevMonthDay:focus,
+        .dark .flatpickr-day.nextMonthDay:focus {
+            background: #27272a !important;
+            border-color: #27272a !important;
+            color: #fff !important;
+        }
+
+        .dark .flatpickr-day.selected,
+        .dark .flatpickr-day.startRange,
+        .dark .flatpickr-day.endRange,
+        .dark .flatpickr-day.selected.inRange,
+        .dark .flatpickr-day.startRange.inRange,
+        .dark .flatpickr-day.endRange.inRange,
+        .dark .flatpickr-day.selected:focus,
+        .dark .flatpickr-day.startRange:focus,
+        .dark .flatpickr-day.endRange:focus,
+        .dark .flatpickr-day.selected:hover,
+        .dark .flatpickr-day.startRange:hover,
+        .dark .flatpickr-day.endRange:hover,
+        .dark .flatpickr-day.selected.prevMonthDay,
+        .dark .flatpickr-day.startRange.prevMonthDay,
+        .dark .flatpickr-day.endRange.prevMonthDay,
+        .dark .flatpickr-day.selected.nextMonthDay,
+        .dark .flatpickr-day.startRange.nextMonthDay,
+        .dark .flatpickr-day.endRange.nextMonthDay {
+            background: #16a34a !important;
+            /* brand-600 */
+            border-color: #16a34a !important;
+            color: #fff !important;
+        }
+
+        .dark .flatpickr-time {
+            background: #18181b !important;
+            border-top: 1px solid #27272a !important;
+        }
+
+        .dark .flatpickr-time .flatpickr-time-separator,
+        .dark .flatpickr-time .flatpickr-am-pm {
+            color: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-time input {
+            color: #e4e4e7 !important;
+        }
+
+        .dark .flatpickr-time input:hover,
+        .dark .flatpickr-time .flatpickr-am-pm:hover,
+        .dark .flatpickr-time input:focus,
+        .dark .flatpickr-time .flatpickr-am-pm:focus {
+            background: #27272a !important;
+        }
+    </style>
+
     <!-- Additional styles -->
     @stack('styles')
 

@@ -38,7 +38,6 @@ class ChallengeFactory extends Factory
             'goal_km' => $this->faker->randomFloat(2, 50, 300), // Entre 50km e 300km
             'category_id' => Category::factory(),
             'image' => null, // Pode adicionar imagens fake depois
-            'is_active' => $this->faker->boolean(85), // 85% chance de ser ativo
         ];
     }
 
@@ -53,23 +52,19 @@ class ChallengeFactory extends Factory
     }
 
     /**
-     * Desafio ativo
+     * Desafio ativo (deprecated/noop as column removed)
      */
     public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'is_active' => true,
-        ]);
+        return $this->state(fn (array $attributes) => []);
     }
 
     /**
-     * Desafio inativo
+     * Desafio inativo (deprecated/noop)
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'is_active' => false,
-        ]);
+        return $this->state(fn (array $attributes) => []);
     }
 
     /**
@@ -110,7 +105,6 @@ class ChallengeFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'start_date' => now()->subDays(10),
             'end_date' => now()->addDays(20),
-            'is_active' => true,
         ]);
     }
 
@@ -122,7 +116,6 @@ class ChallengeFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(35),
-            'is_active' => true,
         ]);
     }
 
@@ -134,7 +127,6 @@ class ChallengeFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'start_date' => now()->subDays(40),
             'end_date' => now()->subDays(10),
-            'is_active' => false,
         ]);
     }
 }

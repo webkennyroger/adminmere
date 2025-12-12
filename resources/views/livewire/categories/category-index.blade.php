@@ -76,7 +76,8 @@
                 <thead>
                     <tr class="border-zinc-200 border-y dark:border-zinc-700">
                         <th scope="col" class="w-12 px-4 py-3">
-                            <x-form.checkbox wire:model.live="selectAll" />
+                            <x-form.checkbox wire:click="toggleSelectAll" :checked="$selectAll"
+                                :indeterminate="!$selectAll && count($selected) > 0" />
                         </th>
                         <th scope="col"
                             class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
@@ -94,8 +95,10 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @forelse($categories as $category)
-                        <tr wire:key="{{ $category->id }}">
-                            <td class="px-4 py-4 whitespace-nowrap">
+                        <tr wire:key="{{ $category->id }}" @class(['hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors duration-200', 'relative' => in_array($category->id, $selected)])
+                            @style(['background-color: rgba(251, 101, 20, 0.15)' => in_array($category->id, $selected)])>
+                            <td class="px-4 py-4 whitespace-nowrap" @if(in_array($category->id, $selected))
+                            style="border-left: 3px solid #fb6514;" @endif>
                                 <x-form.checkbox wire:model.live="selected" value="{{ $category->id }}" />
                             </td>
 
@@ -167,7 +170,7 @@
                         <label for="name" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Nome da
                             categoria</label>
                         <input wire:model="name" type="text"
-                            class="mt-1 block w-full border rounded-lg disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5">
+                            class="mt-1 block w-full border rounded-lg disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-100 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5">
                         @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 

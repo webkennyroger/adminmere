@@ -7,6 +7,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Category;
+use App\Notifications\ChallengeCreated;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ChallengeIndex extends Component
 {
@@ -40,28 +45,43 @@ class ChallengeIndex extends Component
 
     protected $queryString = ['search'];
 
-    public function updatedSelectAll($value)
+    public function toggleSelectAll()
     {
-        if ($value) {
-            $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+        // If all visible are already selected, we want to deselect them.
+        // Otherwise, we want to select all visible.
+        
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
 
-            $this->selected = Challenge::when($this->search, function ($query) {
-                    $query->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('description', 'like', '%' . $this->search . '%');
-                })
-                ->latest()
-                ->paginate($perPage)
-                ->pluck('id')
-                ->toArray();
+        $visibleQuery = Challenge::when($this->search, function ($query) {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                    ->orWhere('description', 'like', '%' . $this->search . '%');
+            })
+            ->latest()
+            ->paginate($perPage);
+
+        $visibleIds = $visibleQuery->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        
+        $intersection = array_intersect($visibleIds, $this->selected);
+        
+        if (count($intersection) === count($visibleIds) && count($visibleIds) > 0) {
+            // All visible are selected, so deselect them
+            $this->selected = array_values(array_diff($this->selected, $visibleIds));
+            $this->selectAll = false;
         } else {
-            $this->selected = [];
+            // Select all visible
+            $this->selected = array_values(array_unique(array_merge($this->selected, $visibleIds)));
+            $this->selectAll = true;
         }
     }
 
     public function updatedSelected()
     {
+        if (!is_array($this->selected)) {
+            $this->selected = [];
+        }
+        
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
+        
         $visibleIds = Challenge::when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%')
                     ->orWhere('description', 'like', '%' . $this->search . '%');
@@ -69,10 +89,22 @@ class ChallengeIndex extends Component
             ->latest()
             ->paginate($perPage)
             ->pluck('id')
+            ->map(fn($id) => (string) $id)
             ->toArray();
-
-        $this->selectAll = !empty($visibleIds) && count(array_intersect($visibleIds, $this->selected)) === count($visibleIds);
+            
+        $intersection = array_intersect($visibleIds, $this->selected);
+        
+        // If the number of selected visible items equals the number of total visible items
+        // AND there are visible items (to avoid checking 0 vs 0), then SelectAll is TRUE.
+        // Otherwise it is FALSE (or Indeterminate, logic for which is in Blade).
+        if (count($visibleIds) > 0 && count($intersection) === count($visibleIds)) {
+            $this->selectAll = true;
+        } else {
+            $this->selectAll = false;
+        }
     }
+
+
 
     public function deleteSelected()
     {
@@ -221,7 +253,9 @@ class ChallengeIndex extends Component
             $data['image'] = $this->image->store('challenges', 'public');
         }
 
-        Challenge::create($data);
+        $challenge = Challenge::create($data);
+
+        auth()->user()->notify(new ChallengeCreated($challenge));
 
         $this->showCreateModal = false;
         $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);

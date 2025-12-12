@@ -92,22 +92,7 @@ class CategoryIndex extends Component
         'color.required' => 'Selecione uma cor para a categoria',
     ];
 
-    public function updatedSelectAll($value)
-    {
-        if ($value) {
-            $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-            $this->selected = Category::where('name', 'like', '%' . $this->search . '%')
-                ->latest()
-                ->paginate($perPage)
-                ->pluck('id')
-                ->toArray();
-        } else {
-            $this->selected = [];
-        }
-    }
-
-    public function updatedSelected()
+    public function toggleSelectAll()
     {
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
 
@@ -115,9 +100,45 @@ class CategoryIndex extends Component
             ->latest()
             ->paginate($perPage)
             ->pluck('id')
+            ->map(fn($id) => (string) $id)
             ->toArray();
+            
+        $intersection = array_intersect($visibleIds, $this->selected);
+        
+        if (count($intersection) === count($visibleIds) && count($visibleIds) > 0) {
+            $this->selected = array_values(array_diff($this->selected, $visibleIds));
+            $this->selectAll = false;
+        } else {
+            $this->selected = array_values(array_unique(array_merge($this->selected, $visibleIds)));
+            $this->selectAll = true;
+        }
+    }
 
-        $this->selectAll = !empty($visibleIds) && count(array_intersect($visibleIds, $this->selected)) === count($visibleIds);
+    public function updatedSelected()
+    {
+        if (!is_array($this->selected)) {
+            $this->selected = [];
+        }
+        
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+        
+        $visibleIds = Category::when($this->search, function ($query) {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                    ->orWhere('description', 'like', '%' . $this->search . '%');
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->pluck('id')
+            ->map(fn($id) => (string) $id)
+            ->toArray();
+            
+        $intersection = array_intersect($visibleIds, $this->selected);
+        
+        if (count($visibleIds) > 0 && count($intersection) === count($visibleIds)) {
+            $this->selectAll = true;
+        } else {
+            $this->selectAll = false;
+        }
     }
 
     public function deleteSelected()

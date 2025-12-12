@@ -1,22 +1,34 @@
-@props(['label' => null])
+@props(['label' => null, 'indeterminate' => false])
 
 <label {{ $attributes->merge(['class' => 'flex cursor-pointer items-center text-sm font-medium text-zinc-700 select-none dark:text-zinc-400']) }}>
     <div class="relative">
         <input type="checkbox" {{ $attributes->except('class') }} class="peer sr-only" />
 
-        <div class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] 
-            bg-transparent border-zinc-300 dark:border-zinc-700
-            hover:border-brand-500 dark:hover:border-brand-500
-            peer-checked:border-brand-500 peer-checked:bg-brand-500
-            peer-disabled:opacity-50 peer-disabled:cursor-not-allowed
-            text-transparent peer-checked:text-white transition-all duration-200">
+        <div @class([
+            'mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] transition-all duration-200',
+            'bg-transparent border-zinc-300 dark:border-zinc-700 hover:border-brand-500 dark:hover:border-brand-500 text-transparent' => !$indeterminate,
+            'peer-checked:border-brand-500 peer-checked:bg-brand-500 peer-checked:text-white' => !$indeterminate,
+            'border-orange-500 bg-orange-500 text-white' => $indeterminate, // Orange for indeterminate as requested/implied by image
+            'peer-disabled:opacity-50 peer-disabled:cursor-not-allowed'
+        ])>
 
-            <span>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </span>
+            @if($indeterminate)
+                <!-- Dash Icon -->
+                <span>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.91675 7H11.0834" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </span>
+            @else
+                <!-- Check Icon -->
+                <span>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </span>
+            @endif
 
         </div>
     </div>

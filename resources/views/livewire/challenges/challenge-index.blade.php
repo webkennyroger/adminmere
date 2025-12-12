@@ -3,8 +3,7 @@
         <x-common.page-breadcrumb title="Desafios" />
     @endunless
 
-    <div
-        class="@if(!$isEmbedded) rounded-2xl border border-zinc-200 bg-white pt-4 dark:border-zinc-800 dark:bg-white/[0.03] @endif">
+    <div class="rounded-2xl border border-zinc-200 bg-white pt-4 dark:border-zinc-800 dark:bg-white/[0.03]">
         <!-- Header -->
         <div class="flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
@@ -59,6 +58,18 @@
                 </button>
             </div>
         </div>
+        {{-- Success Message --}}
+        @if (session()->has('message'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('message') }}
+            </div>
+        @endif
+        {{-- Error Message --}}
+        @if (session()->has('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <!-- Table -->
         <div class="max-w-full px-5 overflow-x-auto">
@@ -66,7 +77,8 @@
                 <thead>
                     <tr class="border-zinc-200 border-y dark:border-zinc-700">
                         <th scope="col" class="px-4 py-3">
-                            <x-form.checkbox wire:model.live="selectAll" />
+                            <x-form.checkbox wire:click="toggleSelectAll" :checked="$selectAll"
+                                :indeterminate="!$selectAll && count($selected) > 0" />
                         </th>
                         <th scope="col"
                             class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
@@ -104,13 +116,15 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @forelse($challenges as $challenge)
-                        <tr wire:key="{{ $challenge->id }}">
-                            <td class="px-4 py-4 whitespace-nowrap">
+                        <tr wire:key="{{ $challenge->id }}" @class(['hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors duration-200', 'relative' => in_array($challenge->id, $selected)])
+                            @style(['background-color: rgba(251, 101, 20, 0.15)' => in_array($challenge->id, $selected)])>
+                            <td class="px-4 py-4 whitespace-nowrap" @if(in_array($challenge->id, $selected))
+                            style="border-left: 3px solid #fb6514;" @endif>
                                 <x-form.checkbox wire:model.live="selected" value="{{ $challenge->id }}" />
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="shrink-0 h-10 w-10">
                                         @if($challenge->image)
                                             <img src="{{ Storage::url($challenge->image) }}" alt="{{ $challenge->title }}"
                                                 class="h-12 w-12 rounded-lg object-cover">
@@ -235,7 +249,7 @@
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
                         <input wire:model="title" type="text"
-                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -269,7 +283,7 @@
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Meta (KM)
                                 *</label>
                             <input wire:model="goal_km" type="number" step="0.01"
-                                class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                                class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                             @error('goal_km') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                         <div>
@@ -398,7 +412,7 @@
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
                         <input wire:model="title" type="text"
-                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -432,7 +446,7 @@
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Meta (KM)
                                 *</label>
                             <input wire:model="goal_km" type="number" step="0.01"
-                                class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                                class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                             @error('goal_km') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                         <div>

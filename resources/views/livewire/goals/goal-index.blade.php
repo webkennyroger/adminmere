@@ -79,7 +79,11 @@
                 <thead>
                     <tr class="border-zinc-200 border-y dark:border-zinc-700">
                         <th scope="col" class="w-12 px-4 py-3">
-                            <x-form.checkbox wire:model.live="selectAll" />
+                            <x-form.checkbox 
+                                wire:click="toggleSelectAll" 
+                                :checked="$selectAll"
+                                :indeterminate="!$selectAll && count($selected) > 0"
+                             />
                         </th>
                         <th scope="col" class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
                             Título
@@ -106,49 +110,64 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                      @forelse ($goals as $goal)
-                        <tr wire:key="{{ $goal->id }}">
-                            <td class="px-4 py-4 whitespace-nowrap">
+                        <tr wire:key="{{ $goal->id }}" 
+                            @class(['hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors duration-200', 'relative' => in_array($goal->id, $selected)])
+                            @style(['background-color: rgba(251, 101, 20, 0.15)' => in_array($goal->id, $selected)])
+                        >
+                            <td class="px-4 py-4 whitespace-nowrap" @if(in_array($goal->id, $selected)) style="border-left: 3px solid #fb6514;" @endif>
                                 <x-form.checkbox wire:model.live="selected" value="{{ $goal->id }}" />
                             </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap">
-                               {{ $goal->title ?: '-' }}
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                   {{ $goal->title ?: '-' }}
+                                </div>
                             </td>
 
                             <td class="px-4 py-4 whitespace-nowrap text-center">
-                                @switch($goal->metric)
-                                    @case('users') Usuários @break
-                                    @case('sales') Vendas @break
-                                    @case('expenses') Despesas @break
-                                    @case('revenue') Renda @break
-                                    @default {{ ucfirst($goal->metric) }}
-                                @endswitch
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    @switch($goal->metric)
+                                        @case('users') Usuários @break
+                                        @case('sales') Vendas @break
+                                        @case('expenses') Despesas @break
+                                        @case('revenue') Renda @break
+                                        @default {{ ucfirst($goal->metric) }}
+                                    @endswitch
+                                </div>
                             </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap text-center">
-                                @switch($goal->period)
-                                    @case('monthly') Mensal @break
-                                    @case('quarterly') Trimestral @break
-                                    @case('semiannual') Semestral @break
-                                    @case('annual') Anual @break
-                                    @default {{ ucfirst($goal->period) }}
-                                @endswitch
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    @switch($goal->period)
+                                        @case('monthly') Mensal @break
+                                        @case('quarterly') Trimestral @break
+                                        @case('semiannual') Semestral @break
+                                        @case('annual') Anual @break
+                                        @default {{ ucfirst($goal->period) }}
+                                    @endswitch
+                                </div>
                             </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap text-center">
-                                 @if(in_array($goal->metric, ['revenue', 'expenses']))
-                                        R$ {{ number_format($goal->target_value, 2, ',', '.') }}
-                                    @else
-                                        {{ number_format($goal->target_value, 0, ',', '.') }}
-                                    @endif
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                     @if(in_array($goal->metric, ['revenue', 'expenses']))
+                                            R$ {{ number_format($goal->target_value, 2, ',', '.') }}
+                                        @else
+                                            {{ number_format($goal->target_value, 0, ',', '.') }}
+                                        @endif
+                                </div>
                             </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap text-center">
-                                {{ $goal->start_date->format('d/m/Y') }}
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    {{ $goal->start_date->format('d/m/Y') }}
+                                </div>
                             </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap text-center">
-                                {{ $goal->end_date->format('d/m/Y') }}
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    {{ $goal->end_date->format('d/m/Y') }}
+                                </div>
                             </td>
                             
             
@@ -214,7 +233,7 @@
                 <form wire:submit="save" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
-                        <input wire:model="title" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                        <input wire:model="title" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -280,7 +299,7 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Valor Alvo *</label>
-                        <input wire:model="target_value" type="number" step="0.01" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                        <input wire:model="target_value" type="number" step="0.01" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('target_value') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     
@@ -313,7 +332,7 @@
                 <form wire:submit="update" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
-                        <input wire:model="title" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                        <input wire:model="title" type="text" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -379,7 +398,7 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Valor Alvo *</label>
-                        <input wire:model="target_value" type="number" step="0.01" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700">
+                        <input wire:model="target_value" type="number" step="0.01" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('target_value') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     

@@ -45,18 +45,35 @@ class GoalIndex extends Component
         $this->selectAll = false;
     }
 
-    public function updatedSelectAll($value)
+    public function toggleSelectAll()
     {
-        if ($value) {
-            $this->selected = $this->getGoalsQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        $visibleIds = $this->getGoalsQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        
+        $intersection = array_intersect($visibleIds, $this->selected);
+        
+        if (count($intersection) === count($visibleIds) && count($visibleIds) > 0) {
+            $this->selected = array_values(array_diff($this->selected, $visibleIds));
+            $this->selectAll = false;
         } else {
-            $this->selected = [];
+            $this->selected = array_values(array_unique(array_merge($this->selected, $visibleIds)));
+            $this->selectAll = true;
         }
     }
     
     public function updatedSelected()
     {
-        $this->selectAll = false;
+        if (!is_array($this->selected)) {
+            $this->selected = [];
+        }
+        
+        $visibleIds = $this->getGoalsQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        $intersection = array_intersect($visibleIds, $this->selected);
+        
+        if (count($visibleIds) > 0 && count($intersection) === count($visibleIds)) {
+            $this->selectAll = true;
+        } else {
+            $this->selectAll = false;
+        }
     }
     
     public function deleteSelected()

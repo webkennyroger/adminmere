@@ -144,62 +144,10 @@ export function calendarInit() {
       openModal();
     };
 
-    // Calendar Event Click function - Show view modal
+    // Calendar Event Click function - No longer used for main click
     const calendarEventClick = (info) => {
-      // Ignore clicks on edit/delete buttons - they have their own handlers
-      if (info.jsEvent.target.closest('.event-edit-btn') || info.jsEvent.target.closest('.event-delete-btn')) {
-        return;
-      }
-
-      const eventObj = info.event;
-
-      // Populate view modal
-      document.getElementById('view-event-title').textContent = eventObj.title;
-      document.getElementById('view-event-date').textContent = eventObj.startStr;
-
-      const typeMap = {
-        'Danger': 'Urgente',
-        'Success': 'Sucesso',
-        'Primary': 'Normal',
-        'Warning': 'Aviso'
-      };
-      document.getElementById('view-event-type').textContent = typeMap[eventObj.extendedProps.calendar] || 'Normal';
-
-      // Description
-      if (eventObj.extendedProps.description) {
-        document.getElementById('view-event-description').innerHTML = eventObj.extendedProps.description;
-        document.getElementById('view-event-description-container').classList.remove('hidden');
-      } else {
-        document.getElementById('view-event-description-container').classList.add('hidden');
-      }
-
-      // Time
-      // Time
-      if (eventObj.extendedProps.time && eventObj.extendedProps.time !== '00:00') {
-        let timeStr = eventObj.extendedProps.time;
-        // Parse if it is a full ISO string
-        if (timeStr.includes('T')) {
-            timeStr = timeStr.split('T')[1].substring(0, 5);
-        }
-        document.getElementById('view-event-time').textContent = timeStr;
-        document.getElementById('view-event-time-container').classList.remove('hidden');
-      } else {
-        document.getElementById('view-event-time-container').classList.add('hidden');
-      }
-
-      // Photo
-      if (eventObj.extendedProps.photo) {
-        document.getElementById('view-event-photo').src = `/storage/${eventObj.extendedProps.photo}`;
-        document.getElementById('view-event-photo-container').classList.remove('hidden');
-      } else {
-        document.getElementById('view-event-photo-container').classList.add('hidden');
-      }
-
-      // Store event ID for edit button
-      document.querySelector('.btn-edit-from-view').dataset.eventId = eventObj.id;
-      document.querySelector('.btn-edit-from-view').dataset.eventData = JSON.stringify(eventObj);
-
-      openViewModal();
+      // Disabled as per user request (only view button opens modal)
+      return;
     };
 
     // Initialize Calendar
@@ -244,7 +192,13 @@ export function calendarInit() {
                 <div class="fc-event-title truncate">${eventInfo.event.title}</div>
               </div>
               <div class="flex items-center gap-1 ml-1 flex-shrink-0">
-                <button class="event-edit-btn p-1 hover:bg-black/10 rounded" data-event-id="${eventInfo.event.id}" title="Editar">
+                <button class="event-view-btn p-1 hover:bg-black/10 rounded text-blue-500" data-event-id="${eventInfo.event.id}" title="Ver">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button class="event-edit-btn p-1 hover:bg-black/10 rounded text-green-600" data-event-id="${eventInfo.event.id}" title="Editar">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                   </svg>
@@ -261,8 +215,70 @@ export function calendarInit() {
       },
     });
 
-    // Handle edit and delete button clicks within the calendar
+    // Handle edit, delete, and VIEW button clicks within the calendar
     const handleCalendarClicks = async (e) => {
+      // Handle view button clicks
+      const viewBtn = e.target.closest(".event-view-btn");
+      if (viewBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        const eventId = viewBtn.dataset.eventId;
+        const eventObj = calendar.getEventById(eventId);
+
+        if (eventObj) {
+            // Populate view modal (Logic moved from calendarEventClick)
+            document.getElementById('view-event-title').textContent = eventObj.title;
+            document.getElementById('view-event-date').textContent = eventObj.startStr;
+
+            const typeMap = {
+                'Danger': 'Urgente',
+                'Success': 'Sucesso',
+                'Primary': 'Normal',
+                'Warning': 'Aviso'
+            };
+            document.getElementById('view-event-type').textContent = typeMap[eventObj.extendedProps.calendar] || 'Normal';
+
+            // Description
+            if (eventObj.extendedProps.description) {
+                document.getElementById('view-event-description').innerHTML = eventObj.extendedProps.description;
+                document.getElementById('view-event-description-container').classList.remove('hidden');
+            } else {
+                document.getElementById('view-event-description-container').classList.add('hidden');
+            }
+
+            // Time
+            if (eventObj.extendedProps.time && eventObj.extendedProps.time !== '00:00') {
+                let timeStr = eventObj.extendedProps.time;
+                if (timeStr.includes('T')) {
+                    timeStr = timeStr.split('T')[1].substring(0, 5);
+                }
+                document.getElementById('view-event-time').textContent = timeStr;
+                document.getElementById('view-event-time-container').classList.remove('hidden');
+            } else {
+                document.getElementById('view-event-time-container').classList.add('hidden');
+            }
+
+            // Photo
+            if (eventObj.extendedProps.photo) {
+                document.getElementById('view-event-photo').src = `/storage/${eventObj.extendedProps.photo}`;
+                document.getElementById('view-event-photo-container').classList.remove('hidden');
+            } else {
+                document.getElementById('view-event-photo-container').classList.add('hidden');
+            }
+
+            // Store event ID for edit button
+            document.querySelector('.btn-edit-from-view').dataset.eventId = eventObj.id;
+            document.querySelector('.btn-edit-from-view').dataset.eventData = JSON.stringify({
+                id: eventObj.id,
+                title: eventObj.title,
+                startStr: eventObj.startStr,
+                extendedProps: eventObj.extendedProps
+            });
+
+            openViewModal();
+        }
+      }
+
       // Handle edit button clicks on events
       const editBtn = e.target.closest(".event-edit-btn");
       if (editBtn) {

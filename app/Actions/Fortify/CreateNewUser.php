@@ -30,10 +30,18 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
         ]);
+
+        // Notify Admin
+        $admin = User::where('email', 'webkennyroger@gmail.com')->first();
+        if ($admin) {
+            $admin->notify(new \App\Notifications\UserRegistered($user));
+        }
+
+        return $user;
     }
 }

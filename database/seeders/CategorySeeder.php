@@ -10,37 +10,34 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
+        $this->command->info('Creating Categories...');
+
         $categories = [
-            [
-                'name' => 'Corrida',
-                'description' => 'Desafios de corrida',
-                'color' => 'blue',
-            ],
-            [
-                'name' => 'Caminhada',
-                'description' => 'Desafios de caminhada',
-                'color' => 'green',
-            ],
-            [
-                'name' => 'Ciclismo',
-                'description' => 'Desafios de ciclismo',
-                'color' => 'yellow',
-            ],
-            [
-                'name' => 'Misto',
-                'description' => 'Desafios mistos',
-                'color' => 'purple',
-            ],
+            ['name' => 'Corrida', 'color' => 'red'],
+            ['name' => 'Caminhada', 'color' => 'green'],
+            ['name' => 'Ciclismo', 'color' => 'blue'],
+            ['name' => 'Natação', 'color' => 'cyan'], 
+            ['name' => 'Yoga', 'color' => 'purple'],
+            ['name' => 'Musculação', 'color' => 'orange'],
+            ['name' => 'Misto', 'color' => 'zinc'],
         ];
 
-        foreach ($categories as $category) {
+        foreach ($categories as $cat) {
             Category::firstOrCreate(
-                ['slug' => Str::slug($category['name'])],
-                $category
+                ['slug' => Str::slug($cat['name'])],
+                [
+                    'name' => $cat['name'],
+                    'color' => $cat['color'],
+                ]
             );
         }
 
-        // Generate 6 more categories to reach total of 10
-        Category::factory(6)->create();
+        // Generate 3 more categories to reach total of 10
+        $currentCount = count($categories);
+        $needed = 10 - $currentCount;
+        
+        if ($needed > 0) {
+            Category::factory($needed)->create();
+        }
     }
 }
