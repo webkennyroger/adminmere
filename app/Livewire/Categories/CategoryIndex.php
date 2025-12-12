@@ -91,53 +91,35 @@ class CategoryIndex extends Component
         'name.unique' => 'Já existe uma categoria com este nome',
         'color.required' => 'Selecione uma cor para a categoria',
     ];
+    private function getCategoriesQuery()
+    {
+        $query = Category::withCount('challenges');
+        if ($this->search) {
+            $query->where('name', 'like', '%' . $this->search . '%');
+        }
+        return $query->latest();
+    }
 
     public function toggleSelectAll()
     {
-        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-        $visibleIds = Category::where('name', 'like', '%' . $this->search . '%')
-            ->latest()
-            ->paginate($perPage)
-            ->pluck('id')
-            ->map(fn($id) => (string) $id)
-            ->toArray();
-            
-        $intersection = array_intersect($visibleIds, $this->selected);
-        
-        if (count($intersection) === count($visibleIds) && count($visibleIds) > 0) {
-            $this->selected = array_values(array_diff($this->selected, $visibleIds));
-            $this->selectAll = false;
-        } else {
-            $this->selected = array_values(array_unique(array_merge($this->selected, $visibleIds)));
-            $this->selectAll = true;
-        }
-    }
-
-    public function updatedSelected()
-    {
+        // Ensure $selected is always an array
         if (!is_array($this->selected)) {
             $this->selected = [];
         }
         
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
         
-        $visibleIds = Category::when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%')
-                    ->orWhere('description', 'like', '%' . $this->search . '%');
-            })
-            ->latest()
-            ->paginate($perPage)
-            ->pluck('id')
-            ->map(fn($id) => (string) $id)
-            ->toArray();
-            
-        $intersection = array_intersect($visibleIds, $this->selected);
-        
-        if (count($visibleIds) > 0 && count($intersection) === count($visibleIds)) {
-            $this->selectAll = true;
-        } else {
+        if (count($this->selected) > 0) {
+            // If any are selected, deselect all
+            $this->selected = [];
             $this->selectAll = false;
+        } else {
+            // Select all on current page
+            $this->selected = $this->getCategoriesQuery()
+                ->paginate($perPage)
+                ->pluck('id')
+                ->toArray();
+            $this->selectAll = true;
         }
     }
 
@@ -239,14 +221,22 @@ class CategoryIndex extends Component
 
     public function render()
     {
-        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-        $query = Category::withCount('challenges');
-        if ($this->search) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+        if ($this->perPage == -1) {
+            $categories = $this->getCategoriesQuery()->get();
+            
+            $categories = new \Illuminate\Pagination\LengthAwarePaginator(
+                $categories,
+                $categories->count(),
+                $categories->count(),
+                1,
+                ['path' => request()->url()]
+            );
+        } else {
+            $categories = $this->getCategoriesQuery()->paginate($this->perPage);
         }
+
         return view('livewire.categories.category-index', [
-            'categories' => $query->latest()->paginate($perPage),
+            'categories' => $categories,
         ]);
     }
 }

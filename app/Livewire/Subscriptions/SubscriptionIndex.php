@@ -53,18 +53,28 @@ class SubscriptionIndex extends Component
         $this->selectAll = false;
     }
 
-    public function updatedSelectAll($value)
+    public function toggleSelectAll()
     {
-        if ($value) {
-            $this->selected = $this->getSubscribersQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
-        } else {
+        // Ensure $selected is always an array
+        if (!is_array($this->selected)) {
             $this->selected = [];
         }
-    }
-
-    public function updatedSelected()
-    {
-        $this->selectAll = false;
+        
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+        
+        if (count($this->selected) > 0) {
+            // If any are selected, deselect all
+            $this->selected = [];
+            $this->selectAll = false;
+        } else {
+            // Select all on current page
+            $this->selected = $this->getSubscribersQuery()
+                ->latest()
+                ->paginate($perPage)
+                ->pluck('id')
+                ->toArray();
+            $this->selectAll = true;
+        }
     }
 
     public function deleteSelected()
@@ -159,9 +169,21 @@ class SubscriptionIndex extends Component
 
     public function render()
     {
-        $subscribers = $this->getSubscribersQuery()
-            ->latest()
-            ->paginate($this->perPage);
+        if ($this->perPage == -1) {
+            $subscribers = $this->getSubscribersQuery()->latest()->get();
+            
+            $subscribers = new \Illuminate\Pagination\LengthAwarePaginator(
+                $subscribers,
+                $subscribers->count(),
+                $subscribers->count(),
+                1,
+                ['path' => request()->url()]
+            );
+        } else {
+            $subscribers = $this->getSubscribersQuery()
+                ->latest()
+                ->paginate($this->perPage);
+        }
 
         return view('livewire.subscriptions.subscription-index', [
             'subscribers' => $subscribers

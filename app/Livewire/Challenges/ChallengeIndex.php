@@ -45,66 +45,38 @@ class ChallengeIndex extends Component
 
     protected $queryString = ['search'];
 
-    public function toggleSelectAll()
+    private function getChallengesQuery()
     {
-        // If all visible are already selected, we want to deselect them.
-        // Otherwise, we want to select all visible.
-        
-        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-        $visibleQuery = Challenge::when($this->search, function ($query) {
+        return Challenge::with('category')
+            ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%')
                     ->orWhere('description', 'like', '%' . $this->search . '%');
             })
-            ->latest()
-            ->paginate($perPage);
-
-        $visibleIds = $visibleQuery->pluck('id')->map(fn($id) => (string) $id)->toArray();
-        
-        $intersection = array_intersect($visibleIds, $this->selected);
-        
-        if (count($intersection) === count($visibleIds) && count($visibleIds) > 0) {
-            // All visible are selected, so deselect them
-            $this->selected = array_values(array_diff($this->selected, $visibleIds));
-            $this->selectAll = false;
-        } else {
-            // Select all visible
-            $this->selected = array_values(array_unique(array_merge($this->selected, $visibleIds)));
-            $this->selectAll = true;
-        }
+            ->latest();
     }
 
-    public function updatedSelected()
+    public function toggleSelectAll()
     {
+        // Ensure $selected is always an array
         if (!is_array($this->selected)) {
             $this->selected = [];
         }
         
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
         
-        $visibleIds = Challenge::when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%')
-                    ->orWhere('description', 'like', '%' . $this->search . '%');
-            })
-            ->latest()
-            ->paginate($perPage)
-            ->pluck('id')
-            ->map(fn($id) => (string) $id)
-            ->toArray();
-            
-        $intersection = array_intersect($visibleIds, $this->selected);
-        
-        // If the number of selected visible items equals the number of total visible items
-        // AND there are visible items (to avoid checking 0 vs 0), then SelectAll is TRUE.
-        // Otherwise it is FALSE (or Indeterminate, logic for which is in Blade).
-        if (count($visibleIds) > 0 && count($intersection) === count($visibleIds)) {
-            $this->selectAll = true;
-        } else {
+        if (count($this->selected) > 0) {
+            // If any are selected, deselect all
+            $this->selected = [];
             $this->selectAll = false;
+        } else {
+            // Select all on current page
+            $this->selected = $this->getChallengesQuery()
+                ->paginate($perPage)
+                ->pluck('id')
+                ->toArray();
+            $this->selectAll = true;
         }
     }
-
-
 
     public function deleteSelected()
     {
@@ -270,17 +242,21 @@ class ChallengeIndex extends Component
 
     public function render()
     {
-        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-        $challenges = Challenge::with('category')
-            ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%')
-                    ->orWhere('description', 'like', '%' . $this->search . '%');
-            })
-            ->latest()
-            ->paginate($perPage);
-
         $categories = Category::orderBy('name')->get();
+
+        if ($this->perPage == -1) {
+            $challenges = $this->getChallengesQuery()->get();
+            
+            $challenges = new \Illuminate\Pagination\LengthAwarePaginator(
+                $challenges,
+                $challenges->count(),
+                $challenges->count(),
+                1,
+                ['path' => request()->url()]
+            );
+        } else {
+            $challenges = $this->getChallengesQuery()->paginate($this->perPage);
+        }
 
         return view('livewire.challenges.challenge-index', [
             'challenges' => $challenges,

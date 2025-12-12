@@ -43,7 +43,7 @@
                     </div>
                 </form>
 
-                @if (count($selected) > 0)
+                @if (is_array($selected) && count($selected) > 0)
                     <button wire:click="deleteSelected"
                         class="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 bg-red-200 px-4 py-[11px] text-sm font-medium text-red-700 shadow-theme-xs dark:border-red-700 dark:bg-red-800 dark:text-zinc-400 sm:w-auto">
                         Deletar Selecionados ({{ count($selected) }})
@@ -73,11 +73,17 @@
         <!-- Table -->
         <div class="max-w-full px-5 overflow-x-auto">
             <table class="min-w-full">
-                <thead>
+                <thead class="border-t border-zinc-100 border-y bg-zinc-50 dark:bg-zinc-900">
                     <tr class="border-zinc-200 border-y dark:border-zinc-700">
                         <th scope="col" class="w-12 px-4 py-3">
-                            <x-form.checkbox wire:click="toggleSelectAll" :checked="$selectAll"
-                                :indeterminate="!$selectAll && count($selected) > 0" />
+                            <div wire:click="toggleSelectAll" class="cursor-pointer inline-flex">
+                                <div class="flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] transition-all duration-200"
+                                    :class="@js($selectAll) ? 'border-orange-500 bg-orange-500 text-white' : 'bg-transparent border-zinc-300 dark:border-zinc-700 text-transparent'">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <th scope="col"
                             class="px-4 py-3 font-normal text-zinc-500 text-start text-theme-sm dark:text-zinc-400">
@@ -95,11 +101,18 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @forelse($categories as $category)
-                        <tr wire:key="{{ $category->id }}" @class(['hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors duration-200', 'relative' => in_array($category->id, $selected)])
-                            @style(['background-color: rgba(251, 101, 20, 0.15)' => in_array($category->id, $selected)])>
-                            <td class="px-4 py-4 whitespace-nowrap" @if(in_array($category->id, $selected))
+                        <tr wire:key="{{ $category->id }}" @class(['hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors duration-200', 'relative' => is_array($selected) && in_array($category->id, $selected)])
+                            @style(['background-color: rgba(251, 101, 20, 0.15)' => is_array($selected) && in_array($category->id, $selected)])>
+                            <td class="px-4 py-4 whitespace-nowrap" @if(is_array($selected) && in_array($category->id, $selected))
                             style="border-left: 3px solid #fb6514;" @endif>
-                                <x-form.checkbox wire:model.live="selected" value="{{ $category->id }}" />
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" wire:model.live="selected" value="{{ $category->id }}" class="sr-only peer" />
+                                    <div class="flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] transition-all duration-200 bg-transparent border-zinc-300 dark:border-zinc-700 peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white text-transparent">
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </label>
                             </td>
 
                             <td class="px-4 py-4 whitespace-nowrap">

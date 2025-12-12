@@ -83,36 +83,36 @@ class UserIndex extends Component
         ]);
     }
 
-    public function updatedSelectAll($value)
+    private function getUsersQuery()
     {
-        if ($value) {
-            $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+        return User::with('profile')
+            ->where(function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('email', 'like', '%' . $this->search . '%');
+            });
+    }
 
-            $this->selected = User::where(function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%');
-                })
+    public function toggleSelectAll()
+    {
+        // Ensure $selected is always an array
+        if (!is_array($this->selected)) {
+            $this->selected = [];
+        }
+        
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
+        
+        if (count($this->selected) > 0) {
+            // If any are selected, deselect all
+            $this->selected = [];
+            $this->selectAll = false;
+        } else {
+            // Select all on current page
+            $this->selected = $this->getUsersQuery()
                 ->paginate($perPage)
                 ->pluck('id')
                 ->toArray();
-        } else {
-            $this->selected = [];
+            $this->selectAll = true;
         }
-    }
-
-    public function updatedSelected()
-    {
-        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-        $visibleIds = User::where(function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
-            })
-            ->paginate($perPage)
-            ->pluck('id')
-            ->toArray();
-
-        $this->selectAll = !empty($visibleIds) && count(array_intersect($visibleIds, $this->selected)) === count($visibleIds);
     }
 
     public function create()
@@ -299,14 +299,21 @@ class UserIndex extends Component
 
     public function render()
     {
-        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-
-        $users = User::with('profile')
-            ->where(function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
-            })
-            ->paginate($perPage);
+        if ($this->perPage == -1) {
+            // Show all without pagination
+            $users = $this->getUsersQuery()->get();
+            
+            // Create a manual paginator for compatibility with the view
+            $users = new \Illuminate\Pagination\LengthAwarePaginator(
+                $users,
+                $users->count(),
+                $users->count(),
+                1,
+                ['path' => request()->url()]
+            );
+        } else {
+            $users = $this->getUsersQuery()->paginate($this->perPage);
+        }
 
         return view('livewire.users.index', [
             'users' => $users,

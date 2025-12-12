@@ -24,11 +24,23 @@
             @endif
         </div>
 
-        <!-- Desktop View (Grid for Perfect Alignment) -->
-        <div class="hidden sm:grid sm:grid-cols-3 sm:w-full sm:items-center">
+        <!-- Desktop View (Flex for Left/Right Alignment) -->
+        <div class="hidden sm:flex sm:items-center sm:justify-between sm:w-full">
             
-            <!-- Left: Previous Button -->
-            <div class="justify-self-start">
+            <!-- Left: Showing Entries Info -->
+            <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                Exibindo de 
+                <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ $paginator->firstItem() ?? 0 }}</span>
+                a 
+                <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ $paginator->lastItem() ?? 0 }}</span>
+                de 
+                <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ $paginator->total() }}</span>
+                entradas
+            </div>
+
+            <!-- Right: Pagination Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Previous Button -->
                 @if ($paginator->onFirstPage())
                     <button disabled class="flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-3 text-theme-sm font-medium text-zinc-700 shadow-theme-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 sm:px-3.5 opacity-50 cursor-not-allowed">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,10 +56,8 @@
                         <span class="hidden sm:inline">Anterior</span>
                     </a>
                 @endif
-            </div>
 
-            <!-- Center: Numbers -->
-            <div class="justify-self-center">
+                <!-- Page Numbers -->
                 <ul class="flex items-center gap-0.5">
                     {{-- Pagination Elements --}}
                     @foreach ($elements as $element)
@@ -76,10 +86,8 @@
                         @endif
                     @endforeach
                 </ul>
-            </div>
 
-            <!-- Right: Next Button -->
-            <div class="justify-self-end">
+                <!-- Next Button -->
                 @if ($paginator->hasMorePages())
                     <a href="{{ $paginator->nextPageUrl() }}" class="flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-3 text-theme-sm font-medium text-zinc-700 shadow-theme-xs hover:bg-zinc-50 hover:text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-white/[0.03] dark:hover:text-zinc-200 sm:px-3.5">
                         <span class="hidden sm:inline">Próxima</span>

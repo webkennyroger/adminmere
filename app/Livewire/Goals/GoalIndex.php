@@ -47,32 +47,24 @@ class GoalIndex extends Component
 
     public function toggleSelectAll()
     {
-        $visibleIds = $this->getGoalsQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
-        
-        $intersection = array_intersect($visibleIds, $this->selected);
-        
-        if (count($intersection) === count($visibleIds) && count($visibleIds) > 0) {
-            $this->selected = array_values(array_diff($this->selected, $visibleIds));
-            $this->selectAll = false;
-        } else {
-            $this->selected = array_values(array_unique(array_merge($this->selected, $visibleIds)));
-            $this->selectAll = true;
-        }
-    }
-    
-    public function updatedSelected()
-    {
+        // Ensure $selected is always an array
         if (!is_array($this->selected)) {
             $this->selected = [];
         }
         
-        $visibleIds = $this->getGoalsQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
-        $intersection = array_intersect($visibleIds, $this->selected);
+        $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
         
-        if (count($visibleIds) > 0 && count($intersection) === count($visibleIds)) {
-            $this->selectAll = true;
-        } else {
+        if (count($this->selected) > 0) {
+            // If any are selected, deselect all
+            $this->selected = [];
             $this->selectAll = false;
+        } else {
+            // Select all on current page
+            $this->selected = $this->getGoalsQuery()
+                ->paginate($perPage)
+                ->pluck('id')
+                ->toArray();
+            $this->selectAll = true;
         }
     }
     
@@ -217,11 +209,19 @@ class GoalIndex extends Component
 
     public function render()
     {
-        $query = $this->getGoalsQuery();
+        if ($this->perPage === -1) {
+            $goals = $this->getGoalsQuery()->get();
             
-        $goals = $this->perPage === -1 
-            ? $query->paginate($query->count()) 
-            : $query->paginate($this->perPage);
+            $goals = new \Illuminate\Pagination\LengthAwarePaginator(
+                $goals,
+                $goals->count(),
+                $goals->count(),
+                1,
+                ['path' => request()->url()]
+            );
+        } else {
+            $goals = $this->getGoalsQuery()->paginate($this->perPage);
+        }
 
         return view('livewire.goals.goal-index', [
             'goals' => $goals
