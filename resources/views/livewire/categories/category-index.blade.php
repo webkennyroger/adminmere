@@ -121,7 +121,7 @@
                                 </x-category-badge>
                             </td>
 
-                            <td class="px-4 py-4 whitespace-nowrap text-center">
+                            <td class="px-4 py-4 whitespace-nowrap text-center text-sm text-zinc-500 dark:text-zinc-400"">
                                 {{ $category->challenges_count }}
                             </td>
 
@@ -175,20 +175,27 @@
         <div class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50"
             wire:click="$set('showModal', false)">
             <div class="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full mx-4" wire:click.stop>
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
-                    {{ $editing ? 'Editar Categoria' : 'Nova Categoria' }}
-                </h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                        {{ $editing ? 'Editar Categoria' : 'Nova Categoria' }}
+                    </h3>
+                    <button wire:click="$set('showModal', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
                 <form wire:submit.prevent="save" class="space-y-4">
                     <div>
-                        <label for="name" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Nome da
-                            categoria</label>
+                        <label for="name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Nome da categoria</label>
                         <input wire:model="name" type="text"
-                            class="mt-1 block w-full border rounded-lg disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-100 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5">
+                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                         @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
-                        <label for="color" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cor</label>
+                        <label for="color" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Cor</label>
                         <div class="mt-2 grid grid-cols-5 sm:grid-cols-6 gap-2">
                             @foreach($availableColors as $colorCode => $colorName)
                                 <label class="relative flex items-center justify-center cursor-pointer">
@@ -203,7 +210,7 @@
 
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="$set('showModal', false)"
-                            class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300">
+                            class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600">
                             Cancelar
                         </button>
                         <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -220,27 +227,33 @@
         <div class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50"
             wire:click="$set('confirmingDeletion', false)">
             <div class="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full mx-4" wire:click.stop>
-                <div class="flex items-center gap-4 mb-4">
-                    <div
-                        class="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Confirmar Exclusão</h3>
+                        </div>
+                    </div>
+                    <button wire:click="$set('confirmingDeletion', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Confirmar Exclusão</h3>
-                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-                            Tem certeza que deseja excluir a categoria "<strong>{{ $categoryToDelete?->name }}</strong>"?
-                            Esta ação não pode ser desfeita.
-                        </p>
-                    </div>
+                    </button>
                 </div>
 
-                <div class="flex justify-end gap-3 pt-5">
+                <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6 ml-16">
+                    Tem certeza que deseja excluir a categoria "<strong>{{ $categoryToDelete?->name }}</strong>"?
+                    Esta ação não pode ser desfeita.
+                </p>
+
+                <div class="flex justify-end gap-3">
                     <button type="button" wire:click="$set('confirmingDeletion', false)"
-                        class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300">
+                        class="px-4 py-2 bg-zinc-200 text-zinc-800 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600">
                         Cancelar
                     </button>
                     <button wire:click="delete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">

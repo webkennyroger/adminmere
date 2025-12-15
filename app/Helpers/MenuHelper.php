@@ -6,51 +6,65 @@ class MenuHelper
 {
     public static function getMainNavItems()
     {
-        $items = [
-            [
+        $items = [];
+        
+        // Regular users see their profile as main page
+        if (auth()->check() && !auth()->user()->isAdmin() && !auth()->user()->isManager()) {
+            $items[] = [
+                'icon' => 'user-profile',
+                'name' => 'Meu Perfil',
+                'path' => '/profile',
+            ];
+        }
+        
+        // Only show admin pages to admins and managers
+        if (auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isManager())) {
+            $items[] = [
                 'icon' => 'dashboard',
                 'name' => 'Dashboard',
                 'path' => '/dashboard',
-            ],
-            [
+            ];
+            
+            $items[] = [
                 'name' => 'Desafios',
                 'icon' => 'pages',
                 'path' => '/challenges',
-            ],
-            [
+            ];
+            
+            $items[] = [
                 'icon' => 'calendar',
                 'name' => 'Calendários',
                 'path' => '/schedule',
-            ],
-        ];
+            ];
 
-        if (\Illuminate\Support\Facades\Gate::allows('access-goals')) {
+            if (\Illuminate\Support\Facades\Gate::allows('access-goals')) {
+                $items[] = [
+                    'icon' => 'task',
+                    'name' => 'Metas',
+                    'path' => '/goals',
+                ];
+            }
+
+            if (\Illuminate\Support\Facades\Gate::allows('access-subscriptions')) {
+                $items[] = [
+                    'icon' => 'ui-elements',
+                    'name' => 'Assinaturas',
+                    'path' => '/subscriptions',
+                ];
+            }
+
             $items[] = [
-                'icon' => 'task',
-                'name' => 'Metas',
-                'path' => '/goals',
+                'icon' => 'user-profile',
+                'name' => 'Usuarios',
+                'path' => '/users',
+            ];
+
+            $items[] = [
+                'name' => 'Categorias',
+                'icon' => 'forms',
+                'path' => '/categories',
             ];
         }
-
-        if (\Illuminate\Support\Facades\Gate::allows('access-subscriptions')) {
-            $items[] = [
-                'icon' => 'ui-elements',
-                'name' => 'Assinaturas',
-                'path' => '/subscriptions',
-            ];
-        }
-
-        $items[] = [
-            'icon' => 'user-profile',
-            'name' => 'Usuarios',
-            'path' => '/users',
-        ];
-
-        $items[] = [
-            'name' => 'Categorias',
-            'icon' => 'forms',
-            'path' => '/categories',
-        ];
 
         return $items;
     }
@@ -67,13 +81,10 @@ class MenuHelper
                 'icon' => 'support-ticket',
                 'name' => 'Suporte',
                 'subItems' => [
-                    ['name' => 'Lista de Tickets', 'path' => '/support-list', 'pro' => false],
-                    ['name' => 'Novo Ticket', 'path' => '/support', 'pro' => false],
+                    ['name' => 'Lista de Tickets', 'path' => '/support-list'],
+                    ['name' => 'Novo Ticket', 'path' => '/support'],
                 ],
-               
-                
             ],
-            
         ];
     }
 

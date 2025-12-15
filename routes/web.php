@@ -13,16 +13,21 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+Route::get('/dashboard', function () {
+    // Regular users go to profile, admins/managers see dashboard
+    if (!auth()->user()->isAdmin() && !auth()->user()->isManager()) {
+        return redirect()->route('profile');
+    }
+    return view('dashboard');
+})
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
-     // Rota do Aplicativo de Chat
-    Route::get('/chat', ChatApp::class)->name('chat.index');
-
-    // Rota da Agenda/Calendário
-    Route::get('/schedule', ScheduleIndex::class)->name('schedule.index');
+    // ===== ADMIN/MANAGER ONLY ROUTES =====
+    Route::middleware(['check.admin.or.manager'])->group(function () {
+        // Rota da Agenda/Calendário
+        Route::get('/schedule', ScheduleIndex::class)->name('schedule.index');
     
     // API routes for calendar events
     Route::get('/api/events', function () {
@@ -91,16 +96,36 @@ Route::middleware(['auth'])->group(function () {
         
         return response()->json(['success' => true]);
     })->name('api.events.destroy');
+        
+        // Rota de Gerenciamento de Desafios Mensais
+        Route::get('/challenges', ChallengeIndex::class)->name('challenges.index');
+        
+        // Rota de Gerenciamento de Categorias
+        Route::get('/categories', CategoryIndex::class)->name('categories.index');
+        Route::view('/categories/create', 'livewire.categories.create')->name('categories.create');
+        Route::get('/categories/{category}/edit', function ($category) {
+            return view('livewire.categories.edit', compact('category'));
+        })->name('categories.edit');
+        
+        // Goals (Metas)
+        Route::get('/goals', \App\Livewire\Goals\GoalIndex::class)->name('goals.index');
+
+        // Subscriptions (Assinaturas)
+        Route::get('/subscriptions', \App\Livewire\Subscriptions\SubscriptionIndex::class)->name('subscriptions.index');
+
+        // Rota de Gerenciamento de Usuários
+        Route::get('/users', UserIndex::class)->name('users.index');
+        Route::get('/users/{user}', function (\App\Models\User $user) {
+            return view('pages.profile.profile-index', compact('user'));
+        })->name('users.show');
+    });
     
-    // Rota de Gerenciamento de Desafios Mensais
-    Route::get('/challenges', ChallengeIndex::class)->name('challenges.index');
+    // ===== PUBLIC ROUTES (All authenticated users) =====
+    // Rota do Aplicativo de Chat
+    Route::get('/chat', ChatApp::class)->name('chat.index');
     
-    // Rota de Gerenciamento de Categorias
-    Route::get('/categories', CategoryIndex::class)->name('categories.index');
-    Route::view('/categories/create', 'livewire.categories.create')->name('categories.create');
-    Route::get('/categories/{category}/edit', function ($category) {
-        return view('livewire.categories.edit', compact('category'));
-    })->name('categories.edit');
+    // Rota do Perfil do Usuário
+    Route::get('/profile', \App\Livewire\Profile\UserProfile::class)->name('profile');
 
 
 
@@ -166,17 +191,7 @@ Route::middleware(['auth'])->group(function () {
     // Rotas de coming
     Route::view('/coming', 'pages.coming-soon')->name('coming');
 
-    // Goals (Metas)
-    Route::get('/goals', \App\Livewire\Goals\GoalIndex::class)->name('goals.index');
 
-    // Subscriptions (Assinaturas)
-    Route::get('/subscriptions', \App\Livewire\Subscriptions\SubscriptionIndex::class)->name('subscriptions.index');
-
-    // Rota de Gerenciamento de Usuários
-    Route::get('/users', UserIndex::class)->name('users.index');
-    Route::get('/users/{user}', function (\App\Models\User $user) {
-        return view('pages.profile.profile-index', compact('user'));
-    })->name('users.show');
 
 
 
