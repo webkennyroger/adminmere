@@ -11,12 +11,12 @@
         @click="dropdownOpen = !dropdownOpen"
         type="button"
     >
-        <!-- Notification Badge -->
-        @if($this->unreadCount > 0)
-        <span class="absolute right-0 top-0.5 z-1 h-2 w-2 rounded-full bg-orange-400">
-            <span class="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 -z-1 animate-ping"></span>
+        {{-- Notification Badge --}}
+        <span class="absolute right-0 top-0.5 z-1 h-2 w-2 rounded-full {{ $this->badgeColor }}">
+            @if($this->notificationStatus === 'new')
+            <span class="absolute inline-flex w-full h-full {{ $this->badgeColor }} rounded-full opacity-75 -z-1 animate-ping"></span>
+            @endif
         </span>
-        @endif
 
         <!-- Bell Icon -->
         <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

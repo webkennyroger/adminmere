@@ -35,7 +35,9 @@
         "lightningcss-linux-x64-gnu": "^1.29.1"
     },
     "devDependencies": {
+        "laravel-echo": "^2.2.6",
         "prettier": "^3.7.4",
-        "prettier-plugin-tailwindcss": "^0.7.2"
+        "prettier-plugin-tailwindcss": "^0.7.2",
+        "pusher-js": "^8.4.0"
     }
 }

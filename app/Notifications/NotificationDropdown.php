@@ -43,6 +43,45 @@ class NotificationDropdown extends Component
         return auth()->user()->unreadNotifications()->count();
     }
 
+    /**
+     * Get notification status for badge color
+     * Returns: 'new' (orange), 'responded' (green), 'empty' (gray)
+     */
+    public function getNotificationStatusProperty()
+    {
+        $user = auth()->user();
+        
+        // Check for unread notifications
+        $unreadCount = $user->unreadNotifications()->count();
+        
+        if ($unreadCount > 0) {
+            return 'new'; // Orange - has unread notifications
+        }
+        
+        // Check if user has any notifications at all
+        $hasNotifications = $user->notifications()->exists();
+        
+        if (!$hasNotifications) {
+            return 'empty'; // Gray - no notifications
+        }
+        
+        // If has notifications but all are read
+        return 'responded'; // Green - all responded/read
+    }
+
+    /**
+     * Get badge color class based on notification status
+     */
+    public function getBadgeColorProperty()
+    {
+        return match($this->notificationStatus) {
+            'new' => 'bg-orange-500',
+            'responded' => 'bg-green-500',
+            'empty' => 'bg-gray-400',
+            default => 'bg-gray-400'
+        };
+    }
+
     public function markAsRead()
     {
         // When opening dropdown, maybe mark as read? Or keep them unread until archived?
@@ -88,6 +127,6 @@ class NotificationDropdown extends Component
 
     public function render()
     {
-        return view('livewire.notification-dropdown');
+        return view('livewire.layouts.header.notification-dropdown');
     }
 }
