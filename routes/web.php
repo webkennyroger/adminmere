@@ -97,8 +97,8 @@ Route::middleware(['auth'])->group(function () {
         return response()->json(['success' => true]);
     })->name('api.events.destroy');
         
-        // Rota de Gerenciamento de Desafios Mensais
-        Route::get('/challenges', ChallengeIndex::class)->name('challenges.index');
+        // Rota de Gerenciamento de Desafios Mensais (Admin)
+        Route::get('/admin/challenges', ChallengeIndex::class)->name('admin.challenges.index');
         
         // Rota de Gerenciamento de Categorias
         Route::get('/categories', CategoryIndex::class)->name('categories.index');
@@ -110,17 +110,23 @@ Route::middleware(['auth'])->group(function () {
         // Goals (Metas)
         Route::get('/goals', \App\Livewire\Goals\GoalIndex::class)->name('goals.index');
 
-        // Subscriptions (Assinaturas)
-        Route::get('/subscriptions', \App\Livewire\Subscriptions\SubscriptionIndex::class)->name('subscriptions.index');
-
         // Rota de Gerenciamento de Usuários
         Route::get('/users', UserIndex::class)->name('users.index');
         Route::get('/users/{user}', function (\App\Models\User $user) {
             return view('pages.profile.profile-index', compact('user'));
         })->name('users.show');
+
+        // Subscription Plans Management
+        Route::get('/plans', \App\Livewire\Plans\PlanIndex::class)->name('plans.index');
     });
     
     // ===== PUBLIC ROUTES (All authenticated users) =====
+    // Billing / Minha Assinatura
+    Route::get('/billing', [\App\Http\Controllers\BillingController::class, 'index'])->name('billing.index');
+    Route::get('/billing/subscribe/{plan}', [\App\Http\Controllers\BillingController::class, 'subscribe'])->name('billing.subscribe');
+    Route::post('/billing/cancel', [\App\Http\Controllers\BillingController::class, 'cancel'])->name('billing.cancel');
+    Route::post('/billing/resume', [\App\Http\Controllers\BillingController::class, 'resume'])->name('billing.resume');
+    Route::get('/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
     // Rota do Aplicativo de Chat
     Route::get('/chat', ChatApp::class)->name('chat.index');
     
@@ -129,6 +135,9 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+    // Rota de Desafios (Usuários)
+    Route::get('/challenges', \App\Livewire\App\Challenges\ChallengeList::class)->name('challenges.index');
 
     // Rota para o componente Support/Index
     Route::get('/support', \App\Livewire\Support\SupportIndex::class)->name('support.index');

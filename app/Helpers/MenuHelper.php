@@ -15,6 +15,18 @@ class MenuHelper
                 'name' => 'Meu Perfil',
                 'path' => '/profile',
             ];
+            
+            $items[] = [
+                'icon' => 'pages',
+                'name' => 'Desafios',
+                'path' => '/challenges',
+            ];
+            
+            $items[] = [
+                'icon' => 'ecommerce', // Using existing icon key for now, or add 'credit-card'
+                'name' => 'Minha Assinatura',
+                'path' => '/billing',
+            ];
         }
         
         // Only show admin pages to admins and managers
@@ -28,7 +40,7 @@ class MenuHelper
             $items[] = [
                 'name' => 'Desafios',
                 'icon' => 'pages',
-                'path' => '/challenges',
+                'path' => '/admin/challenges',
             ];
             
             $items[] = [
@@ -48,8 +60,8 @@ class MenuHelper
             if (\Illuminate\Support\Facades\Gate::allows('access-subscriptions')) {
                 $items[] = [
                     'icon' => 'ui-elements',
-                    'name' => 'Assinaturas',
-                    'path' => '/subscriptions',
+                    'name' => 'Planos',
+                    'path' => '/plans',
                 ];
             }
 
@@ -58,6 +70,7 @@ class MenuHelper
                 'name' => 'Usuarios',
                 'path' => '/users',
             ];
+
 
             $items[] = [
                 'name' => 'Categorias',
