@@ -11,6 +11,12 @@ class MenuHelper
         // Regular users see their profile as main page
         if (auth()->check() && !auth()->user()->isAdmin() && !auth()->user()->isManager()) {
             $items[] = [
+                'icon' => 'home',
+                'name' => 'Página Inicial',
+                'path' => '/home',
+            ];
+
+            $items[] = [
                 'icon' => 'user-profile',
                 'name' => 'Meu Perfil',
                 'path' => '/profile',

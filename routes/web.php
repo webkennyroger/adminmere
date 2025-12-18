@@ -11,17 +11,21 @@ use App\Livewire\Users\UserIndex;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('home');
+})->name('welcome');
 
 Route::get('/dashboard', function () {
-    // Regular users go to profile, admins/managers see dashboard
+    // Regular users go to home, admins/managers see dashboard
     if (!auth()->user()->isAdmin() && !auth()->user()->isManager()) {
-        return redirect()->route('profile');
+        return redirect()->route('home');
     }
     return view('dashboard');
 })
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/home', \App\Livewire\Home\UserHome::class)->name('home');
+});
 
 Route::middleware(['auth'])->group(function () {
     // ===== ADMIN/MANAGER ONLY ROUTES =====
@@ -138,6 +142,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota de Desafios (Usuários)
     Route::get('/challenges', \App\Livewire\App\Challenges\ChallengeList::class)->name('challenges.index');
+    Route::get('/challenges/demo', \App\Livewire\App\Challenges\ChallengeDemo::class)->name('challenges.demo');
 
     // Rota para o componente Support/Index
     Route::get('/support', \App\Livewire\Support\SupportIndex::class)->name('support.index');
@@ -197,6 +202,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas de faq
     Route::view('/faq', 'pages.faq')->name('faq');
+    
+    // Rotas de Termos e Privacidade
+    Route::view('/terms', 'pages.terms')->name('terms.show');
+    Route::view('/policy', 'pages.policy')->name('policy.show');
+
     // Rotas de coming
     Route::view('/coming', 'pages.coming-soon')->name('coming');
 

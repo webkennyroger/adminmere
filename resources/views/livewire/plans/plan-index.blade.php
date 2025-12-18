@@ -55,11 +55,13 @@
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-sm text-zinc-500 dark:text-zinc-400">
-                                        {{ ucfirst($plan->billing_period) }}</div>
+                                        {{ ucfirst($plan->billing_period) }}
+                                    </div>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-                                        {{ $plan->stripe_plan_id }}</div>
+                                        {{ $plan->stripe_plan_id }}
+                                    </div>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-center">
                                     @if($plan->is_active)
@@ -202,7 +204,7 @@
             <div class="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full mx-4" wire:click.stop>
                 <div class="flex items-center gap-4 mb-4">
                     <div
-                        class="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                        class="shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
                         <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
