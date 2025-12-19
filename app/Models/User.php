@@ -110,4 +110,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Challenge::class)->withPivot('progress', 'status')->withTimestamps();
     }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
 }

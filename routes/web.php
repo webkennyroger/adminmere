@@ -131,14 +131,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/billing/cancel', [\App\Http\Controllers\BillingController::class, 'cancel'])->name('billing.cancel');
     Route::post('/billing/resume', [\App\Http\Controllers\BillingController::class, 'resume'])->name('billing.resume');
     Route::get('/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
+    
     // Rota do Aplicativo de Chat
     Route::get('/chat', ChatApp::class)->name('chat.index');
     
     // Rota do Perfil do Usuário
     Route::get('/profile', \App\Livewire\Profile\UserProfile::class)->name('profile');
-
-
-
+    // Public Profile Route (Strava Style)
+    Route::get('/athletes/{user}', \App\Livewire\Profile\UserProfile::class)->name('profile.view');
 
     // Rota de Desafios (Usuários)
     Route::get('/challenges', \App\Livewire\App\Challenges\ChallengeList::class)->name('challenges.index');

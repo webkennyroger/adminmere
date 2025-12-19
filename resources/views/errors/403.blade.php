@@ -1,6 +1,4 @@
-@extends('layouts.fullscreen-layout')
-
-@section('content')
+<x-layouts.fullscreen-layout>
     @php
         $currentYear = date('Y');
     @endphp
@@ -30,4 +28,4 @@
             &copy; {{ $currentYear }} - Mere App
         </p>
     </div>
-@endsection
+</x-layouts.fullscreen-layout>

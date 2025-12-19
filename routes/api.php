@@ -20,4 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/plans', [\App\Http\Controllers\Api\SubscriptionController::class, 'index']);
     Route::get('/subscription/status', [\App\Http\Controllers\Api\SubscriptionController::class, 'status']);
     Route::post('/subscribe', [\App\Http\Controllers\Api\SubscriptionController::class, 'subscribe']);
+
+    // Activities Sync
+    Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);
+    Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
 });
