@@ -54,6 +54,7 @@ class UserRelationships extends Component
             $currentUser->unfollow($targetUser);
         } else {
             $currentUser->follow($targetUser);
+            $targetUser->notify(new \App\Notifications\NewFollower($currentUser));
         }
     }
 

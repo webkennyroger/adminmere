@@ -89,11 +89,11 @@
                 <div class="space-y-4">
                     @foreach($this->filteredNotifications as $notification)
                         <div class="group flex items-center justify-between gap-3 p-1 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors relative">
-                            <div class="flex min-w-0 gap-3">
+                            <a href="{{ $notification->data['link'] ?? '#' }}" class="flex min-w-0 gap-3 flex-1">
                                 <!-- Icon / Image -->
                                 <div class="relative inline-flex shrink-0 h-10 w-10">
                                     @if(isset($notification->data['image']) && $notification->data['image'])
-                                         <img src="{{ Storage::url($notification->data['image']) }}" class="h-full w-full rounded-lg object-cover" alt="Image">
+                                         <img src="{{ Str::startsWith($notification->data['image'], 'http') ? $notification->data['image'] : Storage::url($notification->data['image']) }}" class="h-full w-full rounded-lg object-cover" alt="Image">
                                     @else
                                         <div 
                                             class="flex h-full w-full items-center justify-center rounded-lg {{ $notification->data['icon_bg'] ?? 'bg-zinc-100' }} {{ $notification->data['icon_color'] ?? 'text-zinc-500' }}"
@@ -115,7 +115,7 @@
                                         {{ $notification->created_at->diffForHumans() }}
                                     </div>
                                 </div>
-                            </div>
+                            </a>
 
                             <!-- Individual Archive Button (Visible on Hover) -->
                             <button 

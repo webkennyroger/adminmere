@@ -29,11 +29,11 @@
 
             <div class="space-y-6">
                 @forelse($myChallenges as $challenge)
-                    <div
+                    <a href="{{ route('challenges.demo') }}"
                         class="flex gap-4 items-start group cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 p-2 rounded-lg transition-colors -mx-2"
                         wire:key="challenge-{{ $challenge->id }}">
                         <div class="relative flex-shrink-0">
-                             <img src="{{ $challenge->image ? Storage::url($challenge->image) : 'https://placehold.co/48x48/374151/9ca3af?text=Img' }}"
+                            <img src="{{ $challenge->image ? Storage::url($challenge->image) : 'https://placehold.co/48x48/374151/9ca3af?text=Img' }}"
                                 class="w-12 h-12 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 object-cover">
                             <span
                                 class="absolute -bottom-1 -right-1 bg-[#FC4C02] text-[9px] text-white px-1.5 py-0.5 rounded font-bold">{{ $challenge->goal_value ?? 'Go' }}</span>
@@ -41,7 +41,8 @@
                         <div class="flex flex-col">
                             <p
                                 class="text-sm font-bold text-zinc-700 dark:text-zinc-200 leading-tight group-hover:text-brand-600 dark:group-hover:text-white transition line-clamp-2">
-                                {{ $challenge->title }}</p>
+                                {{ $challenge->title }}
+                            </p>
                             <div class="flex items-center gap-1 mt-1 text-zinc-500 dark:text-zinc-400">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -50,9 +51,9 @@
                                 <span class="text-[11px]">{{ $challenge->users_count ?? 0 }} participantes</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @empty
-                     <div class="text-center text-zinc-500 text-xs py-2">
+                    <div class="text-center text-zinc-500 text-xs py-2">
                         Você não está participando de nenhum desafio.
                     </div>
                 @endforelse

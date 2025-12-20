@@ -65,9 +65,46 @@
             </button>
         </div>
 
+        <!-- Middle Navigation (Icons) -->
+        <div class="hidden xl:flex items-center justify-center flex-1 gap-12">
+            <a href="{{ route('home') }}" class="relative group">
+                <div
+                    class="p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors {{ request()->routeIs('home') ? 'text-brand-600' : 'text-zinc-500 dark:text-zinc-400' }}">
+                    <svg class="w-7 h-7" fill="{{ request()->routeIs('home') ? 'currentColor' : 'none' }}"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </div>
+                @if(request()->routeIs('home'))
+                    <div class="absolute -bottom-4 left-0 right-0 h-1 bg-brand-600 rounded-t-full"></div>
+                @endif
+            </a>
+
+            <!-- Notification Dropdown (Functional, with Badge) -->
+            <div class="relative group">
+                <livewire:layouts.header.notification-dropdown />
+            </div>
+
+            <!-- Community Icon -->
+            <a href="{{ route('users.index') }}" class="relative group">
+                <div
+                    class="p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors {{ request()->routeIs('users.*') ? 'text-brand-600' : 'text-zinc-500 dark:text-zinc-400' }}">
+                    <svg class="w-7 h-7" fill="{{ request()->routeIs('users.*') ? 'currentColor' : 'none' }}"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                @if(request()->routeIs('users.*'))
+                    <div class="absolute -bottom-4 left-0 right-0 h-1 bg-brand-600 rounded-t-full"></div>
+                @endif
+            </a>
+        </div>
+
         <!-- Application Menu (mobile) and Right Side Actions (desktop) -->
         <div :class="isApplicationMenuOpen ? 'flex' : 'hidden'"
-            class="items-center justify-between w-full gap-4 px-5 py-4 xl:flex shadow-theme-md xl:justify-end xl:px-0 xl:shadow-none">
+            class="items-center justify-between w-full gap-4 px-5 py-4 xl:flex shadow-theme-md xl:justify-end xl:w-auto xl:px-0 xl:shadow-none">
             <div class="flex items-center gap-2 2xsm:gap-3">
                 <!-- Theme Toggle Button -->
                 <button
@@ -86,10 +123,6 @@
                             fill="currentColor" />
                     </svg>
                 </button>
-
-                <!-- Notifications -->
-                <!-- Notifications -->
-                <livewire:layouts.header.notification-dropdown />
             </div>
 
             <!-- User Dropdown -->

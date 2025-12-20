@@ -135,7 +135,7 @@ class ChatApp extends Component
         ]);
 
         // Send notification to receiver
-        $this->selectedUser->notify(new \App\Notifications\MessageSent($message));
+        $this->selectedUser->notify(new \App\Notifications\NewMessage(Auth::user(), $message->content));
 
         // Broadcast the message
         broadcast(new MessageSent($message))->toOthers();

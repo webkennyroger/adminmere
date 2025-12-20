@@ -12,8 +12,7 @@ class RightSidebar extends Component
         
         // Challenges the user has joined (participating)
         $myChallenges = $user->challenges()
-            ->where('is_active', true)
-            ->whereDate('end_date', '>=', now())
+            ->orderBy('challenges.created_at', 'desc')
             ->take(4)
             ->get();
 
