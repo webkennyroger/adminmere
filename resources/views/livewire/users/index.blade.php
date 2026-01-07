@@ -112,7 +112,7 @@
                                     <div class="flex items-center">
                                         <div class="shrink-0 h-10 w-10">
                                             <img class="h-10 w-10 rounded-full object-cover"
-                                                src="{{ $user->profile?->image ? Storage::url($user->profile->image) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&color=7F9CF5&background=EBF4FF' }}"
+                                                src="{{ $user->image_url }}"
                                                 alt="{{ $user->name }}" />
                                         </div>
                                         <div class="ml-4">

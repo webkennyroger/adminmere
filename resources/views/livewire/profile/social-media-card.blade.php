@@ -11,7 +11,9 @@
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Instagram</p>
                     @if ($user->profile?->instagram)
-                        <a href="{{ str_starts_with($user->profile->instagram, 'http') ? $user->profile->instagram : 'https://www.instagram.com/'.$user->profile->instagram }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                        <a href="{{ str_starts_with($user->profile->instagram, 'http') ? $user->profile->instagram : 'https://www.instagram.com/' . $user->profile->instagram }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
                             {{ $user->profile->instagram }}
                         </a>
                     @else
@@ -22,7 +24,9 @@
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Facebook</p>
                     @if ($user->profile?->facebook)
-                        <a href="{{ str_starts_with($user->profile->facebook, 'http') ? $user->profile->facebook : 'https://www.facebook.com/'.$user->profile->facebook }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                        <a href="{{ str_starts_with($user->profile->facebook, 'http') ? $user->profile->facebook : 'https://www.facebook.com/' . $user->profile->facebook }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
                             {{ $user->profile->facebook }}
                         </a>
                     @else
@@ -33,7 +37,9 @@
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">X (Twitter)</p>
                     @if ($user->profile?->x)
-                        <a href="{{ str_starts_with($user->profile->x, 'http') ? $user->profile->x : 'https://x.com/'.$user->profile->x }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                        <a href="{{ str_starts_with($user->profile->x, 'http') ? $user->profile->x : 'https://x.com/' . $user->profile->x }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
                             {{ $user->profile->x }}
                         </a>
                     @else
@@ -44,7 +50,9 @@
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Youtube</p>
                     @if ($user->profile?->youtube)
-                        <a href="{{ str_starts_with($user->profile->youtube, 'http') ? $user->profile->youtube : 'https://www.youtube.com/'.$user->profile->youtube }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                        <a href="{{ str_starts_with($user->profile->youtube, 'http') ? $user->profile->youtube : 'https://www.youtube.com/' . $user->profile->youtube }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
                             {{ $user->profile->youtube }}
                         </a>
                     @else
@@ -55,7 +63,9 @@
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">TikTok</p>
                     @if ($user->profile?->tiktok)
-                        <a href="{{ str_starts_with($user->profile->tiktok, 'http') ? $user->profile->tiktok : 'https://www.tiktok.com/@'.ltrim($user->profile->tiktok, '@') }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                        <a href="{{ str_starts_with($user->profile->tiktok, 'http') ? $user->profile->tiktok : 'https://www.tiktok.com/@' . ltrim($user->profile->tiktok, '@') }}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
                             {{ $user->profile->tiktok }}
                         </a>
                     @else
@@ -66,7 +76,8 @@
                 <div>
                     <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Mere</p>
                     @if ($user->profile?->mere)
-                        <a href="{{ $user->profile->mere }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
+                        <a href="{{ $user->profile->mere }}" target="_blank" rel="noopener noreferrer"
+                            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline truncate block">
                             {{ $user->profile->mere }}
                         </a>
                     @else
@@ -88,8 +99,10 @@
     </div>
 
     <!-- Social Media Modal -->
-    <x-ui.modal x-data="{ open: false }" @open-profile-social-modal.window="open = true" @close-profile-social-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
-        <div class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
+    <x-ui.modal x-data="{ open: false }" @open-profile-social-modal.window="open = true"
+        @close-profile-social-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
+        <div
+            class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
                 <h4 class="mb-2 text-2xl font-semibold text-zinc-800 dark:text-white/90">
                     Editar Redes Sociais
@@ -146,7 +159,7 @@
                             @error('tiktok') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
-                         <div class="col-span-2 lg:col-span-1">
+                        <div class="col-span-2 lg:col-span-1">
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                                 Mere
                             </label>

@@ -1,48 +1,4 @@
-<?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\ValidationException;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public $user;
-    public string $current_password = '';
-    public string $password = '';
-    public string $password_confirmation = '';
-    public bool $twoFactorEnabled = false;
-
-    public function mount()
-    {
-        $this->user = Auth::user();
-        $this->twoFactorEnabled = $this->user->hasEnabledTwoFactorAuthentication();
-    }
-
-    /**
-     * Update the password for the currently authenticated user.
-     */
-    public function updatePassword(): void
-    {
-        try {
-            $validated = $this->validate([
-                'current_password' => ['required', 'string', 'current_password'],
-                'password' => ['required', 'string', Password::defaults(), 'confirmed'],
-            ]);
-        } catch (ValidationException $e) {
-            $this->reset('current_password', 'password', 'password_confirmation');
-
-            throw $e;
-        }
-
-        Auth::user()->update([
-            'password' => $validated['password'],
-        ]);
-
-        $this->reset('current_password', 'password', 'password_confirmation');
-
-        $this->dispatch('password-updated');
-    }
-}; ?>
 
 <section class="w-full">
     <div class="p-5 my-6 border border-zinc-200 rounded-2xl dark:border-zinc-800 lg:p-6">
@@ -59,13 +15,16 @@ new class extends Component {
                     </div>
 
                     <div>
-                        <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Autenticação de Dois Fatores</p>
+                        <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Autenticação de Dois
+                            Fatores</p>
                         @if($twoFactorEnabled)
-                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">
+                            <span
+                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">
                                 Ativado
                             </span>
                         @else
-                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-300">
+                            <span
+                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-300">
                                 Desativado
                             </span>
                         @endif
@@ -97,8 +56,11 @@ new class extends Component {
         </div>
     </div>
 
-    <x-ui.modal x-data="{ open: false }" @open-password-modal.window="open = true" @close-modal.window="if ($event.detail === 'open-password-modal') open = false" :isOpen="false" class="max-w-[700px]">
-        <div class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
+    <x-ui.modal x-data="{ open: false }" @open-password-modal.window="open = true"
+        @close-modal.window="if ($event.detail === 'open-password-modal') open = false" :isOpen="false"
+        class="max-w-[700px]">
+        <div
+            class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
                 <h4 class="mb-2 text-2xl font-semibold text-zinc-800 dark:text-white/90">
                     Update Password
@@ -108,30 +70,36 @@ new class extends Component {
                 </p>
             </div>
             <form wire:submit="updatePassword" class="flex flex-col space-y-6">
-                <div class="px-2">
-                    <flux:input
-                        wire:model="current_password"
-                        :label="__('Current password')"
-                        type="password"
-                        required
-                        autocomplete="current-password"
-                    />
-                    <flux:input
-                        wire:model="password"
-                        :label="__('New password')"
-                        type="password"
-                        required
-                        autocomplete="new-password"
-                        class="mt-4"
-                    />
-                    <flux:input
-                        wire:model="password_confirmation"
-                        :label="__('Confirm Password')"
-                        type="password"
-                        required
-                        autocomplete="new-password"
-                        class="mt-4"
-                    />
+                <div class="px-2 space-y-4">
+                    <div>
+                        <label for="current_password"
+                            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('Current password') }}</label>
+                        <input wire:model="current_password" id="current_password" type="password" required
+                            autocomplete="current-password"
+                            class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-900 dark:text-zinc-100 sm:text-sm">
+                        @error('current_password') <span
+                        class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <label for="password"
+                            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('New password') }}</label>
+                        <input wire:model="password" id="password" type="password" required autocomplete="new-password"
+                            class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-900 dark:text-zinc-100 sm:text-sm">
+                        @error('password') <span
+                            class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation"
+                            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('Confirm Password') }}</label>
+                        <input wire:model="password_confirmation" id="password_confirmation" type="password" required
+                            autocomplete="new-password"
+                            class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-900 dark:text-zinc-100 sm:text-sm">
+                        @error('password_confirmation') <span
+                        class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
@@ -149,8 +117,11 @@ new class extends Component {
     </x-ui.modal>
 
     <!-- Two-Factor Authentication Modal -->
-    <x-ui.modal x-data="{ open: false }" @open-twofactor-modal.window="open = true" @close-modal.window="if ($event.detail === 'open-twofactor-modal') open = false" :isOpen="false" class="max-w-[700px]">
-        <div class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
+    <x-ui.modal x-data="{ open: false }" @open-twofactor-modal.window="open = true"
+        @close-modal.window="if ($event.detail === 'open-twofactor-modal') open = false" :isOpen="false"
+        class="max-w-[700px]">
+        <div
+            class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
                 <h4 class="mb-2 text-2xl font-semibold text-zinc-800 dark:text-white/90">
                     Autenticação de Dois Fatores
@@ -160,8 +131,8 @@ new class extends Component {
                 </p>
             </div>
             <div class="px-2">
-            <livewire:profile.two-factor-card />
+                <livewire:profile.two-factor-card />
+            </div>
         </div>
-    </div>
-</x-ui.modal>
+    </x-ui.modal>
 </section>

@@ -129,8 +129,14 @@ class ActivityItem extends Component
                      $this->showMentions = true;
                      $this->filteredUsers = \App\Models\User::where('name', 'like', "%{$search}%")
                         ->take(5)
-                        ->select('id', 'name', 'avatar') // Ensure avatar is selected
                         ->get()
+                        ->map(function($user) {
+                            return [
+                                'id' => $user->id,
+                                'name' => $user->name,
+                                'image_url' => $user->image_url,
+                            ];
+                        })
                         ->toArray();
                  } else {
                      $this->showMentions = false;

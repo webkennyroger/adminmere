@@ -42,13 +42,14 @@
                     wire:key="user-{{ $user->id }}">
 
                     <a href="{{ route('profile.view', $user) }}">
-                        <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&color=7F9CF5&background=EBF4FF' }}"
+                        <img src="{{ $user->image_url }}"
                             class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 shadow-md object-cover mb-4 hover:ring-2 hover:ring-brand-500 transition-all">
                     </a>
 
                     <a href="{{ route('profile.view', $user) }}">
                         <h3 class="text-lg font-bold text-zinc-900 dark:text-white hover:text-brand-600 transition-colors">
-                            {{ $user->name }}</h3>
+                            {{ $user->name }}
+                        </h3>
                     </a>
 
                     @if($user->profile && $user->profile->city)

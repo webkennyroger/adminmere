@@ -1,12 +1,11 @@
-
-
 <div>
     <div class="p-5 border border-zinc-200 rounded-2xl dark:border-zinc-800 lg:p-6">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 
             <div>
                 <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Endereço</p>
-                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->address ?? '-' }}</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->address ?? '-' }}
+                </p>
             </div>
 
             <div>
@@ -21,11 +20,12 @@
 
             <div>
                 <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Código postal</p>
-                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->zip_code ?? '-' }}</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-white/90">{{ $user->profile?->zip_code ?? '-' }}
+                </p>
             </div>
-                
 
-       
+
+
 
             <button @click="$dispatch('open-profile-address-modal')"
                 class="flex w-full items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-3 text-sm font-medium text-zinc-700 shadow-theme-xs hover:bg-zinc-50 hover:text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-white/[0.03] dark:hover:text-zinc-200 lg:inline-flex lg:w-auto">
@@ -39,7 +39,8 @@
             </button>
         </div>
     </div>
-    <x-ui.modal x-data="{ open: false }" @open-profile-address-modal.window="open = true" @close-profile-address-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
+    <x-ui.modal x-data="{ open: false }" @open-profile-address-modal.window="open = true"
+        @close-profile-address-modal.window="open = false" :isOpen="false" class="max-w-[700px]">
         <div
             class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-zinc-900 lg:p-11">
             <div class="px-2 pr-14">
@@ -81,7 +82,7 @@
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
                                 Código Postal
                             </label>
-                            <input type="text" wire:model="zip_code"
+                            <input type="text" wire:model.blur="zip_code"
                                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                         </div>
                     </div>

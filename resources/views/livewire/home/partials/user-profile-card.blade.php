@@ -9,8 +9,7 @@
         <!-- Avatar -->
         <div class="relative -mt-10 mb-3 inline-block">
             <a href="{{ route('profile.view', $user) }}">
-                <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                    alt="{{ $user->name }}"
+                <img src="{{ $user->image_url }}" alt="{{ $user->name }}"
                     class="w-20 h-20 rounded-full border-4 border-white dark:border-zinc-900 shadow-md object-cover hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer">
             </a>
 

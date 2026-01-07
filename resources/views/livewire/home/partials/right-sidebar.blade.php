@@ -29,7 +29,7 @@
 
             <div class="space-y-6">
                 @forelse($myChallenges as $challenge)
-                    <a href="{{ route('challenges.demo') }}"
+                    <a href="{{ route('challenges.show', $challenge) }}"
                         class="flex gap-4 items-start group cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 p-2 rounded-lg transition-colors -mx-2"
                         wire:key="challenge-{{ $challenge->id }}">
                         <div class="relative flex-shrink-0">

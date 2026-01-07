@@ -59,6 +59,26 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's profile image path.
+     */
+    public function getImageAttribute()
+    {
+        return $this->profile?->image;
+    }
+
+    /**
+     * Get the user's profile image URL.
+     */
+    public function getImageUrlAttribute()
+    {
+        if ($this->profile?->image) {
+            return asset('storage/' . $this->profile->image);
+        }
+
+        return $this->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string

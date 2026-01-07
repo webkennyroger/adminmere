@@ -256,11 +256,20 @@
             </div>
 
             <form wire:submit="save" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
-                    <input wire:model="title" type="text"
-                        class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
-                    @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
+                        <input wire:model="title" type="text"
+                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                        @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="flex items-center pt-8">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" wire:model="is_featured" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-zinc-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-brand-600"></div>
+                            <span class="ms-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">Destaque do Mês</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div>
@@ -419,11 +428,20 @@
             </div>
 
             <form wire:submit="update" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
-                    <input wire:model="title" type="text"
-                        class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
-                    @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Título *</label>
+                        <input wire:model="title" type="text"
+                            class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
+                        @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="flex items-center pt-8">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" wire:model="is_featured" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-zinc-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-brand-600"></div>
+                            <span class="ms-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">Destaque do Mês</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div>

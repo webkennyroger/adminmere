@@ -1,19 +1,17 @@
 @auth
     <div class="relative" x-data="{
-        dropdownOpen: false,
-        toggleDropdown() {
-            this.dropdownOpen = !this.dropdownOpen;
-        },
-        closeDropdown() {
-            this.dropdownOpen = false;
-        }
-    }" @click.away="closeDropdown()">
+            dropdownOpen: false,
+            toggleDropdown() {
+                this.dropdownOpen = !this.dropdownOpen;
+            },
+            closeDropdown() {
+                this.dropdownOpen = false;
+            }
+        }" @click.away="closeDropdown()">
         <!-- User Button -->
         <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
             <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-                <img class="h-full w-full object-cover"
-                    src="{{ Auth::user()->image ? Storage::url(Auth::user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                    alt="User" />
+                <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
             </span>
 
             <span class="block mr-1 font-medium text-theme-sm">{{ Auth::user()->name }}</span>

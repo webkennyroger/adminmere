@@ -122,8 +122,7 @@
             <!-- Comment Section -->
             <div x-show="showComments" style="display: none;" x-transition
                 class="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex gap-3">
-                <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                    class="w-8 h-8 rounded-full object-cover">
+                <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover">
                 <div class="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center pr-2">
                     <input type="text" placeholder="Adicione um comentário..."
                         class="bg-transparent border-none w-full text-sm px-3 py-2 focus:ring-0 text-zinc-700 dark:text-zinc-200">
@@ -191,8 +190,7 @@
         <!-- Comment Section -->
         <div x-show="showComments" style="display: none;" x-transition
             class="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex gap-3">
-            <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                class="w-8 h-8 rounded-full object-cover">
+            <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover">
             <div class="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center pr-2">
                 <input type="text" placeholder="Adicione um comentário..."
                     class="bg-transparent border-none w-full text-sm px-3 py-2 focus:ring-0 text-zinc-700 dark:text-zinc-200">

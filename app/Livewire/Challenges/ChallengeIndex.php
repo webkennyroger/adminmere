@@ -41,6 +41,7 @@ class ChallengeIndex extends Component
     public $category_id;
     public $image;
     public $existing_image;
+    public $is_featured = false;
 
 
     protected $queryString = ['search'];
@@ -96,6 +97,7 @@ class ChallengeIndex extends Component
             'goal_km' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|max:2048',
+            'is_featured' => 'boolean',
 
         ];
     }
@@ -133,6 +135,8 @@ class ChallengeIndex extends Component
         $this->end_date = $challenge->end_date->format('Y-m-d');
         $this->goal_km = $challenge->goal_km;
         $this->category_id = $challenge->category_id;
+        $this->category_id = $challenge->category_id;
+        $this->is_featured = $challenge->is_featured;
         $this->existing_image = $challenge->image;
 
         
@@ -152,6 +156,7 @@ class ChallengeIndex extends Component
             'end_date' => $this->end_date,
             'goal_km' => $this->goal_km,
             'category_id' => $this->category_id,
+            'is_featured' => $this->is_featured,
 
         ];
 
@@ -159,10 +164,14 @@ class ChallengeIndex extends Component
             $data['image'] = $this->image->store('challenges', 'public');
         }
 
+        if ($this->is_featured) {
+             Challenge::where('id', '!=', $challenge->id)->update(['is_featured' => false]);
+        }
+        
         $challenge->update($data);
 
         $this->showEditModal = false;
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_featured']);
         
         $this->dispatch('toast', ['type' => 'info', 'message' => 'Desafio atualizado com sucesso!']);
     }
@@ -170,7 +179,7 @@ class ChallengeIndex extends Component
     public function closeEditModal()
     {
         $this->showEditModal = false;
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_featured']);
         $this->resetValidation();
     }
 
@@ -202,7 +211,7 @@ class ChallengeIndex extends Component
 
     public function create()
     {
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_featured']);
         $this->resetValidation();
         $this->showCreateModal = true;
     }
@@ -218,11 +227,15 @@ class ChallengeIndex extends Component
             'end_date' => $this->end_date,
             'goal_km' => $this->goal_km,
             'category_id' => $this->category_id,
-
+            'is_featured' => $this->is_featured,
         ];
 
         if ($this->image) {
             $data['image'] = $this->image->store('challenges', 'public');
+        }
+
+        if ($this->is_featured) {
+             Challenge::where('id', '>', 0)->update(['is_featured' => false]);
         }
 
         $challenge = Challenge::create($data);
@@ -230,7 +243,7 @@ class ChallengeIndex extends Component
         auth()->user()->notify(new ChallengeCreated($challenge));
 
         $this->showCreateModal = false;
-        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image']);
+        $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_featured']);
         
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
     }

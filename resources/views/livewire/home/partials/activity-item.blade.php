@@ -2,67 +2,100 @@
     <!-- Activity Header -->
     <div class="flex justify-between items-start mb-4">
         <div class="flex items-center gap-3">
-            <a href="{{ route('profile.view', $activity->user->id) }}">
-                <img src="{{ $activity->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($activity->user->name) . '&color=7F9CF5&background=EBF4FF' }}"
+            <a href="{{ route('profile.view', $activity->user) }}" class="block shrink-0">
+                <img src="{{ $activity->user->image_url }}"
                     class="w-10 h-10 rounded-full border border-zinc-100 dark:border-zinc-800 hover:ring-2 hover:ring-brand-500 transition-all">
             </a>
             <div>
-                <a href="{{ route('profile.view', $activity->user->id) }}" class="font-bold text-zinc-900 dark:text-white hover:text-brand-600 hover:underline transition-colors">
+                <a href="{{ route('profile.view', $activity->user) }}" class="font-bold text-zinc-900 dark:text-white hover:text-brand-600 hover:underline transition-colors block leading-tight">
                     {{ $activity->user->name }}
                 </a>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     {{ $activity->start_time->isoFormat('D [de] MMMM [de] YYYY [às] HH:mm') }} · {{ $activity->app_name ?? 'Garmin' }}
                 </p>
             </div>
         </div>
         
         <!-- Activity Icon/Type -->
-        <div class="text-zinc-400">
-            @if($activity->sport_type === 'run')
-                <i class="fas fa-running text-xl"></i>
-            @elseif($activity->sport_type === 'ride')
-                <i class="fas fa-bicycle text-xl"></i>
-            @elseif($activity->sport_type === 'swim')
-                <i class="fas fa-swimmer text-xl"></i>
+        <div class="shrink-0 mt-1">
+            @if($activity->sport_type == 'run')
+                 <img src="https://cdn-icons-png.flaticon.com/512/55/55239.png" class="w-6 h-6 opacity-60 dark:invert" alt="Run">
+            @elseif($activity->sport_type == 'bike')
+                 <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" class="w-6 h-6 opacity-60 dark:invert" alt="Bike">
             @else
-                <i class="fas fa-dumbbell text-xl"></i>
+                 <img src="https://cdn-icons-png.flaticon.com/512/2928/2928158.png" class="w-6 h-6 opacity-60 dark:invert" alt="Activity">
             @endif
         </div>
     </div>
 
     <!-- Title and Stats -->
-    <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-4">{{ $activity->title }}</h3>
+    <h3 class="text-xl font-bold text-zinc-900 dark:text-white leading-tight mb-4">{{ $activity->title }}</h3>
 
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-3 gap-4 mb-6 text-center divide-x divide-zinc-200 dark:divide-zinc-700">
         <div>
             <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5">Distância</p>
             <p class="text-xl font-medium text-zinc-900 dark:text-white">{{ number_format($activity->distance / 1000, 2, ',', '.') }}<span class="text-sm text-zinc-500 ml-1">km</span></p>
         </div>
-        <div class="border-l border-zinc-100 dark:border-zinc-800 pl-4">
+        <div class="pl-4">
             <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5">Tempo</p>
             <p class="text-xl font-medium text-zinc-900 dark:text-white">
-                {{ floor($activity->duration / 3600) }}h {{ floor(($activity->duration % 3600) / 60) }}min
+                {{ gmdate("H:i:s", $activity->duration) }}
             </p>
         </div>
-        <div class="border-l border-zinc-100 dark:border-zinc-800 pl-4">
-            <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5">Calorias</p>
-            <p class="text-xl font-medium text-zinc-900 dark:text-white">{{ number_format($activity->calories, 0, ',', '.') }} <span class="text-sm text-zinc-500 ml-1">kcal</span></p>
+        <div class="pl-4">
+            <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5">Ritmo</p>
+             <p class="text-xl font-medium text-zinc-900 dark:text-white">
+                @php
+                    $pace = $activity->distance > 0 ? ($activity->duration / 60) / ($activity->distance / 1000) : 0;
+                    $paceMin = floor($pace);
+                    $paceSec = round(($pace - $paceMin) * 60);
+                @endphp
+                {{ $paceMin }}:{{ str_pad($paceSec, 2, '0', STR_PAD_LEFT) }} <span class="text-sm text-zinc-500">/km</span>
+            </p>
         </div>
     </div>
+    
+    @if($activity->description)
+        <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4 whitespace-pre-line">{{ $activity->description }}</p>
+    @endif
 
-    <!-- Map/Media Placeholder -->
-    @if(empty($activity->media))
-    <div class="rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 mb-6 aspect-video flex items-center justify-center relative group cursor-pointer">
-        <!-- Mock Map Background -->
-        <div class="absolute inset-0 opacity-50 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=-23.550520,-46.633308&zoom=13&size=600x300&maptype=roadmap&key=YOUR_API_KEY&style=feature:all|element:all|saturation:-100|visibility:simplified')] bg-cover bg-center"></div>
-        <p class="relative z-10 text-zinc-500 text-sm font-medium bg-white/80 dark:bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
-            Mapa da atividade
-        </p>
-    </div>
+    <!-- Map (If exists) -->
+    @if(!empty($activity->polylines))
+        @php
+            $poly = is_array($activity->polylines) 
+                    ? ($activity->polylines['summary_polyline'] ?? $activity->polylines['polyline'] ?? null) 
+                    : $activity->polylines;
+        @endphp
+        
+        @if($poly)
+            <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden relative mb-2">
+                 <img src="https://maps.googleapis.com/maps/api/staticmap?size=600x300&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}" 
+                      class="w-full h-full object-cover" 
+                      alt="Mapa da atividade">
+            </div>
+        @endif
+    @endif
+
+    <!-- Media Grid -->
+    @if(empty($activity->media) && empty($activity->polylines))
+     <!-- No media placeholder if wanted, or just nothing -->
+    @elseif(!empty($activity->media))
     @else
         <!-- Display Media Logic -->
-        <div class="rounded-2xl overflow-hidden mb-6 aspect-video">
-             <img src="{{ $activity->media[0] }}" class="w-full h-full object-cover">
+        @php 
+            $mediaCount = count($activity->media);
+            $gridClass = $mediaCount == 1 ? 'grid-cols-1' : ($mediaCount == 2 ? 'grid-cols-2' : 'grid-cols-3');
+        @endphp
+        <div class="grid {{ $gridClass }} gap-2 mb-6">
+            @foreach($activity->media as $mediaUrl)
+                <div class="h-48 rounded-lg overflow-hidden bg-zinc-100 relative group cursor-pointer aspect-video">
+                    @if(str_contains($mediaUrl, '.mp4'))
+                        <video src="{{ $mediaUrl }}" controls class="w-full h-full object-cover"></video>
+                    @else
+                        <img src="{{ $mediaUrl }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    @endif
+                </div>
+            @endforeach
         </div>
     @endif
 
@@ -99,7 +132,7 @@
                 <!-- Parent Comment -->
                 <div class="flex gap-3">
                     <a href="{{ route('profile.view', $comment->user->id) }}">
-                        <img src="{{ $comment->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user->name) . '&color=7F9CF5&background=EBF4FF' }}"
+                        <img src="{{ $comment->user->image_url }}"
                             class="w-8 h-8 rounded-full border border-zinc-100 dark:border-zinc-800 shrink-0 hover:ring-2 hover:ring-brand-500 transition-all">
                     </a>
                     <div class="flex-1">
@@ -153,7 +186,7 @@
                             @foreach($comment->replies as $reply)
                             <div class="flex gap-3 group/reply" wire:key="reply-{{ $reply->id }}">
                                 <a href="{{ route('profile.view', $reply->user->id) }}">
-                                    <img src="{{ $reply->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($reply->user->name) . '&color=F3E8FF&background=7E22CE' }}"
+                                    <img src="{{ $reply->user->image_url }}"
                                         class="w-6 h-6 rounded-full border border-zinc-100 dark:border-zinc-800 shrink-0 hover:ring-2 hover:ring-brand-500 transition-all">
                                 </a>
                                 <div class="flex-1">
@@ -204,7 +237,7 @@
 
         <!-- Input Area with Mentions Dropdown -->
         <div class="flex gap-3 relative">
-            <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
+            <img src="{{ auth()->user()->image_url }}"
                 class="w-8 h-8 rounded-full object-cover border border-zinc-100 dark:border-zinc-800">
             <div class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg flex items-center pr-2 relative">
                 <input type="text" 
@@ -216,21 +249,21 @@
                 <button wire:click="postComment" class="text-brand-600 font-semibold text-sm hover:text-brand-700 px-2 transition-colors">Enviar</button>
                 
                 <!-- Mentions Dropdown -->
-                <div x-show="showMentions && filteredUsers.length > 0" 
-                        style="display: none;"
-                        class="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden z-10">
+                @if($showMentions && count($filteredUsers) > 0)
+                <div class="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden z-20">
                     <ul>
-                        <template x-for="user in filteredUsers" :key="user.id">
-                            <li @click="selectUser(user)" 
+                        @foreach($filteredUsers as $user)
+                            <li wire:click="selectUser({{ json_encode($user) }})" 
                                 class="flex items-center gap-3 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer transition-colors">
-                                <img :src="user.avatar || 'https://ui-avatars.com/api/?name=' + user.name + '&color=7F9CF5&background=EBF4FF'" class="w-8 h-8 rounded-full object-cover">
+                                <img src="{{ $user['image_url'] }}" class="w-8 h-8 rounded-full object-cover">
                                 <div>
-                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white" x-text="user.name"></p>
+                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $user['name'] }}</p>
                                 </div>
                             </li>
-                        </template>
+                        @endforeach
                     </ul>
                 </div>
+                @endif
             </div>
         </div>
     </div>

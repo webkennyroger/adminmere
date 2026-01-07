@@ -149,7 +149,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota de Desafios (Usuários)
     Route::get('/challenges', \App\Livewire\App\Challenges\ChallengeList::class)->name('challenges.index');
-    Route::get('/challenges/demo', \App\Livewire\App\Challenges\ChallengeDemo::class)->name('challenges.demo');
+
+    Route::get('/challenges/{challenge}', \App\Livewire\App\Challenges\ChallengeDetail::class)->name('challenges.show');
 
     // Rota para o componente Support/Index
     Route::get('/support', \App\Livewire\Support\SupportIndex::class)->name('support.index');
@@ -221,22 +222,9 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    Route::redirect('settings', 'settings/profile');
-
-    Volt::route('settings/profile', 'settings.profile')->name('profile.edit');
-    Volt::route('settings/password', 'settings.password')->name('user-password.edit');
-    Volt::route('settings/appearance', 'settings.appearance')->name('appearance.edit');
-
-    Volt::route('settings/two-factor', 'settings.two-factor')
-        ->middleware(
-            when(
-                Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
-        ->name('two-factor.show');
+    // Profile Settings Routes
+    // Profile Settings Routes
+    Route::get('profile/edit', App\Livewire\Profile\UserProfileEdit::class)->name('profile.edit');
 
     // Volt::route('/test-volt', function () {
     //     return 'Volt Routing Works';

@@ -18,7 +18,7 @@
 
                         <div class="relative flex-shrink-0">
                             <a href="{{ route('profile.view', $user) }}">
-                                <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&color=7F9CF5&background=EBF4FF' }}"
+                                <img src="{{ $user->image_url }}"
                                     class="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-800 object-cover hover:ring-2 hover:ring-brand-500 transition-all">
                             </a>
                         </div>

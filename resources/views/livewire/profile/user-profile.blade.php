@@ -6,12 +6,19 @@
             <div class="absolute -bottom-16 left-4 sm:left-8 flex items-end gap-6">
                 <!-- Avatar with Badge -->
                 <div class="relative">
-                    <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}"
+                    <img src="{{ $user->image_url }}"
                         class="w-32 h-32 rounded-2xl border-4 border-white dark:border-zinc-900 shadow-xl object-cover bg-white">
-                    <div
-                        class="absolute -bottom-2 -right-2 bg-gradient-to-r from-orange-400 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
-                        Assinante
-                    </div>
+                    @if($user->subscribed() || in_array($user->profile?->plan, ['pro', 'premium']))
+                        <div
+                            class="absolute -bottom-2 -right-2 bg-gradient-to-r from-orange-400 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
+                            Assinante
+                        </div>
+                    @else
+                        <div
+                            class="absolute -bottom-2 -right-2 bg-gradient-to-r from-zinc-400 to-zinc-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
+                            Gratuito
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -38,15 +45,22 @@
 
                 <div class="flex gap-4">
                     @if(auth()->id() !== $user->id)
-                        <button
-                            class="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-sm">
-                            Seguir
+                        <button wire:click="toggleFollow" wire:loading.attr="disabled"
+                            class="px-6 py-2 rounded-lg font-semibold transition-all shadow-sm flex items-center gap-2 {{ auth()->user()->isFollowing($user) ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700' : 'bg-[#FC4C02] text-white hover:bg-orange-700' }}">
+                            @if(auth()->user()->isFollowing($user))
+                                <span>Seguindo</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            @else
+                                <span>Seguir</span>
+                            @endif
                         </button>
                     @else
-                        <button
-                            class="px-6 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white rounded-lg font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
+                        <a href="{{ route('profile.edit') }}" wire:navigate
+                            class="px-6 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white rounded-lg font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm inline-block">
                             Editar Perfil
-                        </button>
+                        </a>
                     @endif
                 </div>
             </div>
@@ -221,9 +235,9 @@
                     <h3 class="font-bold text-zinc-900 dark:text-white mb-4">Comparação lado a lado</h3>
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex -space-x-2">
-                            <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}"
+                            <img src="{{ auth()->user()->image_url }}"
                                 class="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900">
-                            <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}"
+                            <img src="{{ $user->image_url }}"
                                 class="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900">
                         </div>
                         <span class="text-xs font-semibold text-brand-600 cursor-pointer">Ver detalhado</span>

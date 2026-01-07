@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->decimal('goal_km', 8, 2);
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -16,10 +16,10 @@ class UserProfile extends Component
     
     public $activeTab = 'overview';
 
-    public function mount($name = null)
+    public function mount(?User $user = null)
     {
-        if ($name) {
-            $this->user = \App\Models\User::where('name', $name)->firstOrFail();
+        if ($user && $user->exists) {
+            $this->user = $user;
         } else {
             $this->user = auth()->user();
         }
@@ -34,6 +34,25 @@ class UserProfile extends Component
             ->get();
     }
     
+    public function toggleFollow()
+    {
+        if (auth()->guest()) {
+            return redirect()->route('login');
+        }
+        
+        $currentUser = auth()->user();
+        
+        if ($currentUser->id === $this->user->id) {
+            return;
+        }
+
+        if ($currentUser->isFollowing($this->user)) {
+            $currentUser->unfollow($this->user);
+        } else {
+            $currentUser->follow($this->user);
+        }
+    }
+
     public function getStatsProperty()
     {
         // Calculate basic stats
