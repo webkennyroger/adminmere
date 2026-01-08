@@ -50,6 +50,13 @@
                     }
                 }
             });
+
+            Alpine.store('chatSidebar', {
+                isOpen: false,
+                toggle() {
+                    this.isOpen = !this.isOpen;
+                }
+            });
         });
     </script>
 
@@ -65,84 +72,66 @@
     <div class="flex flex-col min-h-screen">
 
         <!-- ===== Header Start ===== -->
-        <header
-            class="sticky top-0 z-50 flex w-full bg-white border-b border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900">
-            <div class="container mx-auto px-4 max-w-7xl h-16 flex items-center justify-between">
-                <!-- Logo -->
-                <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <img class="w-8" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="Mere App" />
-                    <span
-                        class="text-xl font-bold tracking-tight text-zinc-900 dark:text-white hidden sm:block">Mere<span
-                            class="text-brand-500">App</span></span>
-                </a>
+        <header class="sticky top-0 z-50 w-full p-10 bg-white border-b border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 h-16">
+            <div class="px-4 h-full flex items-center justify-between gap-4 relative">
+                
+                <!-- Left: Logo & Search -->
+                <div class="flex items-center gap-6 lg:gap-8 shrink-0">
+                    <a href="{{ route('home') }}" class="flex items-center gap-2">
+                        <img class="w-8 h-8 lg:w-10 lg:h-10" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="Logo" />
+                    </a>
 
-                <!-- Centered Navigation Icons -->
-                <nav class="hidden md:flex flex-1 justify-center max-w-2xl mx-auto">
-                    <ul class="flex items-center gap-6 lg:gap-10">
+                    <!-- Search Bar -->
+                    <div class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2.5 w-72">
+                        <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" 
+                            placeholder="Buscar..." 
+                            class="bg-transparent border-none outline-none text-sm w-full ml-2 text-zinc-600 dark:text-zinc-200 placeholder-zinc-400 focus:ring-0 p-0">
+                    </div>
+                </div>
+
+                <!-- Center: Navigation -->
+                <nav class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <ul class="flex items-center gap-3">
                         <!-- Home (Active) -->
                         <li>
-                            <a href="{{ route('home') }}" class="flex flex-col items-center gap-1 p-2 text-brand-600 border-b-2 border-brand-600">
-                                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                                </svg>
+                            <a href="{{ route('home') }}" class="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                             </a>
                         </li>
-
-                        <!-- My Network -->
+                        <!-- Network -->
                         <li>
-                            <a href="#" class="flex flex-col items-center gap-1 p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
-                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </a>
-                        </li>
-
-                        <!-- Jobs -->
-                        <li>
-                            <a href="#" class="flex flex-col items-center gap-1 p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
-                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
+                            <a href="#" class="flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             </a>
                         </li>
 
                         <!-- Notifications -->
                         <li>
-                            <a href="#" class="flex flex-col items-center gap-1 p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors relative">
-                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <span class="absolute top-1 right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-zinc-900">9+</span>
-                            </a>
+                            <livewire:layouts.header.notification-dropdown />
                         </li>
 
                         <!-- Messages -->
                         <li>
-                            <a href="#" class="flex flex-col items-center gap-1 p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors relative">
-                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <a href="#" @click.prevent="$store.chatSidebar.toggle()" class="flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors relative">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
-                                <span class="absolute top-1 right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-zinc-900">6</span>
-                            </a>
-                        </li>
-                        
-                        <!-- Profile (Generic Icon) -->
-                        <li>
-                            <a href="{{ route('profile') }}" class="flex flex-col items-center gap-1 p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
-                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
+                                <!-- Static Badge -->
+                                <span class="absolute top-2 right-2 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white dark:border-zinc-900">6</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
 
-                <!-- Right Actions -->
-                <div class="flex items-center gap-2 sm:gap-4">
-                    <!-- Notifications -->
-                    <livewire:layouts.header.notification-dropdown />
-
-                    <!-- User Dropdown -->
+                <!-- Right: Actions -->
+                <div class="flex items-center justify-end shrink-0 gap-3 sm:gap-4">
+                   
+                    <!-- Dark Mode Toggle -->
+                    <x-common.dark-mode-toggle />
+                    <!-- User Profile Dropdown -->
                     <x-layouts.header.user-dropdown />
                 </div>
             </div>
@@ -150,14 +139,16 @@
         <!-- ===== Header End ===== -->
 
         <!-- ===== Content Area Start ===== -->
-        <main class="flex-1 py-6 px-4">
-            <div class="container mx-auto max-w-7xl">
-                {{ $slot }}
-            </div>
+        <main>
+            {{ $slot }}
         </main>
         <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
+
+    <!-- Chat Sidebar -->
+    <livewire:chat.chat-sidebar />
+    <livewire:chat.chat-box />
 
     <!-- Toast Container -->
     <x-toast.container />

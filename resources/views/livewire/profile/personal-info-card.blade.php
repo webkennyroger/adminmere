@@ -19,9 +19,9 @@
                 </div>
 
                 <div>
-                    <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Apelido</p>
+                    <p class="mb-2 text-xs leading-normal text-zinc-500 dark:text-zinc-400">Nome de usuário</p>
                     <p class="text-sm font-medium text-zinc-800 dark:text-white/90">
-                        {{ $user->profile?->nickname ?? '-' }}
+                        {{ $user->profile?->nickname ? '@' . $user->profile?->nickname : '-' }}
                     </p>
                 </div>
 
@@ -122,10 +122,15 @@
 
                             <div class="col-span-2 lg:col-span-1">
                                 <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-400">
-                                    Apelido
+                                    Nome de usuário
                                 </label>
-                                <input type="text" wire:model="nickname"
-                                    class="dark:bg-dark-900 h-11 w-full rounded-lg border border-zinc-300 bg-transparent bg-none px-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <span class="text-zinc-500 dark:text-zinc-400">@</span>
+                                    </div>
+                                    <input type="text" wire:model="nickname" placeholder="seu.usuario"
+                                        class="dark:bg-dark-900 h-11 w-full rounded-lg border border-zinc-300 bg-transparent bg-none pl-8 pr-4 py-2.5 text-sm text-zinc-800 shadow-theme-xs placeholder:text-zinc-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                                </div>
                                 @error('nickname') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 

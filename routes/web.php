@@ -136,9 +136,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat', ChatApp::class)->name('chat.index');
     
     // Rota do Perfil do Usuário
-    Route::get('/profile', \App\Livewire\Profile\UserProfile::class)->name('profile');
-    // Public Profile Route (Strava Style)
-    Route::get('/athletes/{user}', \App\Livewire\Profile\UserProfile::class)->name('profile.view');
+    Route::get('/profile', function () {
+        $user = auth()->user();
+        if ($user->profile && $user->profile->nickname) {
+            return redirect()->to('/@' . $user->profile->nickname);
+        }
+        return redirect()->route('profile.edit');
+    })->name('profile');
+
+    // Public Profile Route (Social Handle Style)
+    Route::get('/@{nickname}', \App\Livewire\Profile\UserProfile::class)->name('profile.view');
+    // Legacy support (optional, can be removed if strict handle usage is desired)
+    // Route::get('/athletes/{user}', \App\Livewire\Profile\UserProfile::class)->name('profile.view.legacy');
     
     // Find Friends
     Route::get('/find-friends', \App\Livewire\Users\FindFriends::class)->name('users.find');

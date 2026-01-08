@@ -270,6 +270,13 @@
                     }
                 }
             });
+
+            Alpine.store('chatSidebar', {
+                isOpen: false,
+                toggle() {
+                    this.isOpen = !this.isOpen;
+                }
+            });
         });
     </script>
 
@@ -333,6 +340,10 @@
         <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
+
+    <!-- Chat Components -->
+    <livewire:chat.chat-sidebar />
+    <livewire:chat.chat-box />
 
     <!-- Toast Container -->
     <x-toast.container />

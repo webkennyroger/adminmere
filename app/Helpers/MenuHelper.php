@@ -98,11 +98,6 @@ class MenuHelper
     {
         return [
             [
-                'icon' => 'charts',
-                'name' => 'Chat',
-                'path' => '/chat',
-            ],
-            [
                 'icon' => 'support-ticket',
                 'name' => 'Suporte',
                 'subItems' => [

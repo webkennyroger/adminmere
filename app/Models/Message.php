@@ -13,6 +13,8 @@ class Message extends Model
         'attachment_path',
         'attachment_type',
         'read_at',
+        'deleted_by_sender',
+        'deleted_by_receiver',
     ];
 
     protected $casts = [

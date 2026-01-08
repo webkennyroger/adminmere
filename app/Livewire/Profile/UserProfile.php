@@ -16,12 +16,19 @@ class UserProfile extends Component
     
     public $activeTab = 'overview';
 
-    public function mount(?User $user = null)
+    public function mount($nickname = null)
     {
-        if ($user && $user->exists) {
-            $this->user = $user;
+        if ($nickname) {
+            // Find user by nickname in profiles table
+            $profile = \App\Models\Profile::where('nickname', $nickname)->firstOrFail();
+            $this->user = $profile->user;
         } else {
-            $this->user = auth()->user();
+            // Fallback for direct access if any, or auth user
+             $this->user = auth()->user();
+        }
+        
+        if (!$this->user) {
+            abort(404);
         }
     }
 
