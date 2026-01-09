@@ -4,8 +4,12 @@ namespace App\Livewire\Chat;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\ChatPreference;
+use App\Models\Report;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ChatGroup;
+use App\Models\GroupMessage;
 use Livewire\WithFileUploads;
 use App\Events\MessageSent;
 use Livewire\Attributes\On;
@@ -14,9 +18,112 @@ class ChatBox extends Component
 {
     use WithFileUploads;
 
+    public $isMuted = false;
+    public $isArchived = false;
+
+    public function loadPreferences()
+    {
+        if ($this->selectedGroup) {
+             $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
+             if ($member) {
+                 $this->isArchived = $member->pivot->is_archived;
+                 $this->isMuted = false; 
+             } else {
+                 $this->isArchived = false;
+                 $this->isMuted = false;
+             }
+             return;
+        }
+
+        if (!$this->selectedUser) return;
+
+        $pref = ChatPreference::where('user_id', Auth::id())
+            ->where('peer_id', $this->selectedUser->id)
+            ->first();
+
+        if ($pref) {
+            $this->isMuted = $pref->is_muted;
+            $this->isArchived = $pref->is_archived;
+        } else {
+            $this->isMuted = false;
+            $this->isArchived = false;
+        }
+    }
+
+    public function toggleMute()
+    {
+        if (!$this->selectedUser) return;
+
+        $pref = ChatPreference::firstOrCreate(
+            ['user_id' => Auth::id(), 'peer_id' => $this->selectedUser->id]
+        );
+
+        $pref->is_muted = !$pref->is_muted;
+        $pref->save();
+        
+        $this->isMuted = $pref->is_muted;
+    }
+
+    public function toggleArchive()
+    {
+        if ($this->selectedGroup) {
+             $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
+             if ($member) {
+                 $newState = !$member->pivot->is_archived;
+                 $this->selectedGroup->members()->updateExistingPivot(Auth::id(), [
+                    'is_archived' => $newState
+                 ]);
+                 $this->isArchived = $newState;
+             }
+        } elseif ($this->selectedUser) {
+            $pref = ChatPreference::firstOrCreate(
+                ['user_id' => Auth::id(), 'peer_id' => $this->selectedUser->id]
+            );
+
+            $pref->is_archived = !$pref->is_archived;
+            $pref->save();
+            
+            $this->isArchived = $pref->is_archived;
+        } else {
+            return;
+        }
+        
+        $this->dispatch('refresh-chat-sidebar'); 
+        
+        if ($this->isArchived) {
+             $this->closeChat();
+        }
+    }
+    
+    public function reportUser($reason = 'spam')
+    {
+         if (!$this->selectedUser) return;
+         
+         Report::create([
+             'reporter_id' => Auth::id(),
+             'reported_user_id' => $this->selectedUser->id,
+             'reason' => $reason,
+             'status' => 'pending'
+         ]);
+         
+         $this->dispatch('notify', message: 'Usuário denunciado com sucesso.');
+         $this->closeChat();
+    }
+    
+    public function startVideoCall()
+    {
+        $this->dispatch('notify', message: 'Iniciando chamada de vídeo (Funcionalidade em breve)');
+    }
+
+    public function startAudioCall()
+    {
+        $this->dispatch('notify', message: 'Iniciando chamada de áudio (Funcionalidade em breve)');
+    }
+
     public $isOpen = false;
     public $isMinimized = false;
     public $selectedUser;
+    public $selectedGroup;
     public $chatMessages = [];
     public $content = '';
     public $attachment;
@@ -45,13 +152,15 @@ class ChatBox extends Component
     {
         $authId = Auth::id();
         return [
-            "echo-private:chat.{$authId},MessageSent" => 'receiveMessage',
+            "echo-private:chat.{$authId},.message.sent" => 'receiveMessage',
             'open-chat-box' => 'openChat',
+            'open-group-chat' => 'openGroup',
         ];
     }
 
     public function openChat($userId)
     {
+        $this->selectedGroup = null;
         $this->selectedUser = User::find($userId);
         $this->isOpen = true;
         // If it's a new user or explicitly opening, unminimize unless previously minimized for same user? 
@@ -72,11 +181,38 @@ class ChatBox extends Component
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
             
+            $this->loadPreferences();
             $this->loadMessages();
         }
         
         $this->dispatch('scroll-chat-to-bottom');
     }
+
+    public function openGroup($groupId)
+    {
+        $this->selectedUser = null;
+        $this->isMinimized = false;
+
+        $this->selectedGroup = ChatGroup::with('members.profile')->findOrFail($groupId);
+
+        // Load Messages
+        $this->loadMessages();
+
+        // Dispatch
+        $this->isOpen = true;
+        
+        // Persist session
+        session([
+            'chat_isOpen' => true, 
+            'chat_selectedGroupId' => $groupId,
+            'chat_selectedUserId' => null,
+            'chat_isMinimized' => false
+        ]);
+        
+        $this->loadPreferences();
+        $this->dispatch('scroll-chat-to-bottom');
+    }
+
 
     public function minimizeChat()
     {
@@ -89,14 +225,24 @@ class ChatBox extends Component
         $this->isOpen = false;
         $this->isMinimized = false;
         $this->selectedUser = null;
+        $this->selectedGroup = null;
         $this->chatMessages = [];
         
         // Clear session state
-        session()->forget(['chat_isOpen', 'chat_selectedUserId', 'chat_isMinimized']);
+        session()->forget(['chat_isOpen', 'chat_selectedUserId', 'chat_selectedGroupId', 'chat_isMinimized']);
     }
 
     public function loadMessages()
     {
+        if ($this->selectedGroup) {
+            $this->chatMessages = GroupMessage::with(['sender.profile'])
+                ->where('chat_group_id', $this->selectedGroup->id)
+                ->orderBy('created_at', 'asc')
+                ->limit(100)
+                ->get();
+            return;
+        }
+
         if (!$this->selectedUser) return;
 
         $authId = Auth::id();
@@ -190,7 +336,7 @@ class ChatBox extends Component
             'attachment' => 'nullable|file|max:10240',
         ]);
 
-        if (!$this->selectedUser) return;
+        if (!$this->selectedUser && !$this->selectedGroup) return;
 
         $attachmentPath = null;
         $attachmentType = null;
@@ -201,22 +347,42 @@ class ChatBox extends Component
             $attachmentType = str_contains($mime, 'image') ? 'image' : (str_contains($mime, 'video') ? 'video' : 'file');
         }
 
-        $message = Message::create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $this->selectedUser->id,
-            'content' => $this->content ?? '',
-            'attachment_path' => $attachmentPath,
-            'attachment_type' => $attachmentType,
-        ]);
+        if ($this->selectedGroup) {
+            $message = GroupMessage::create([
+                'chat_group_id' => $this->selectedGroup->id,
+                'user_id' => Auth::id(),
+                'content' => $this->content ?? '',
+                'attachment' => $attachmentPath,
+                'attachment_type' => $attachmentType,
+            ]);
+            
+            // Reload to get relations like sender
+            $message->load('sender.profile');
+            
+            // TODO: Broadcast GroupMessageSent event
+            // broadcast(new GroupMessageSent($message))->toOthers();
 
-        // Broadcast
-        broadcast(new MessageSent($message))->toOthers();
+            $this->chatMessages->push($message);
+        } else {
+            $message = Message::create([
+                'sender_id' => Auth::id(),
+                'receiver_id' => $this->selectedUser->id,
+                'content' => $this->content ?? '',
+                'attachment_path' => $attachmentPath,
+                'attachment_type' => $attachmentType,
+            ]);
 
-        $this->chatMessages->push($message);
+            // Broadcast
+            broadcast(new MessageSent($message))->toOthers();
+
+            $this->chatMessages->push($message);
+        }
+
         $this->content = '';
         $this->attachment = null;
         
         $this->dispatch('scroll-chat-to-bottom');
+        $this->dispatch('refresh-chat-sidebar');
     }
 
     public function receiveMessage($event)
