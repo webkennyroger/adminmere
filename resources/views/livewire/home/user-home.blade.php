@@ -10,7 +10,7 @@
         <!-- Main Feed -->
         <main class="lg:col-span-6 space-y-6">
             @include('livewire.home.partials.stories')
-            <livewire:home.partials.activity-feed />
+            <livewire:home.partials.activity-feed :feed="$feed" />
         </main>
 
         <!-- Right Sidebar -->

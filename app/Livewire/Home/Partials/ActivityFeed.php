@@ -4,9 +4,17 @@ namespace App\Livewire\Home\Partials;
 
 use Livewire\Component;
 
+use Livewire\Attributes\Reactive;
+
 class ActivityFeed extends Component
 {
+    #[Reactive]
+    public $feed = 'personal';
+
     public $viewingUserProfile = null;
+
+    public $page = 1;
+    public $perPage = 10;
 
     public function viewUserProfile($name)
     {
@@ -19,6 +27,12 @@ class ActivityFeed extends Component
         $this->viewingUserProfile = null;
     }
 
+    public function loadMore()
+    {
+        $this->page++;
+    }
+
+
     public function render()
     {
         $user = auth()->user();
@@ -29,7 +43,7 @@ class ActivityFeed extends Component
         // Fetch Activities (Social Feed)
         // comments.replies.user to eager load 2 levels (Comment -> Replies -> User)
         // Also eager load 'likes' for comments and replies
-        $activities = \App\Models\Activity::with([
+        $query = \App\Models\Activity::with([
             'user', 
             'comments' => function($q) {
                 $q->whereNull('parent_id')->latest();
@@ -39,9 +53,23 @@ class ActivityFeed extends Component
             'comments.replies.user', 
             'comments.replies.likes',
             'likes'
-        ])
-            ->latest('start_time')
-            ->take(20)
+        ]);
+
+        if ($this->feed === 'personal') {
+            $query->where('user_id', $user->id);
+        } elseif ($this->feed === 'timeline' || $this->feed === 'network') { 
+            // 'network' kept for legacy or if url param persists, mapped to timeline logic (me + following)
+            // or strictly strictly network only? User said "dos meus seguidores e meus posts".
+            // So timeline = me + following.
+            
+            $followingIds = $user->following()->pluck('users.id');
+            $followingIds->push($user->id);
+            
+            $query->whereIn('user_id', $followingIds);
+        }
+
+        $activities = $query->latest('start_time')
+            ->take($this->perPage * $this->page)
             ->get();
 
         return view('livewire.home.partials.activity-feed', [

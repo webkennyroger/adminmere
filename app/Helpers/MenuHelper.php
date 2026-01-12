@@ -27,6 +27,18 @@ class MenuHelper
                 'name' => 'Desafios',
                 'path' => '/challenges',
             ];
+
+            $items[] = [
+                'icon' => 'charts',
+                'name' => 'Estatísticas',
+                'path' => '#',
+            ];
+
+            $items[] = [
+                'icon' => 'ui-elements',
+                'name' => 'Comunidade',
+                'path' => '#',
+            ];
             
             $items[] = [
                 'icon' => 'ecommerce', // Using existing icon key for now, or add 'credit-card'

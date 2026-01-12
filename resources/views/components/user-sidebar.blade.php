@@ -42,8 +42,8 @@
             </a>
 
             <!-- Estatísticas -->
-            <a href="#"
-                class="flex items-center gap-3 px-3 py-3 rounded-lg text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            <a href="{{ route('home', ['feed' => 'personal']) }}"
+                class="flex items-center gap-3 px-3 py-3 rounded-lg text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors {{ request()->get('feed') === 'personal' ? 'bg-zinc-100 dark:bg-zinc-800' : '' }}"
                 :class="!$store.userSidebar.isOpen && 'justify-center'">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

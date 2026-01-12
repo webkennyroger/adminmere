@@ -41,6 +41,17 @@ window.FullCalendar = Calendar;
 // Configurar flatpickr em português
 flatpickr.localize(Portuguese);
 
+// Alpine Stores Initialization
+import { initThemeStore } from './theme';
+import { initSidebarStore } from './components/sidebar';
+import { initChatStore } from './components/chat';
+
+document.addEventListener('alpine:init', () => {
+    initThemeStore();
+    initSidebarStore();
+    initChatStore();
+});
+
 // Inicializar componentes quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     // Gráficos
