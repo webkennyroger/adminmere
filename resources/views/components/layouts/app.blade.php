@@ -333,7 +333,8 @@
             <!-- ===== Header Start ===== -->
             <x-layouts.header.app-header />
             <!-- ===== Header End ===== -->
-            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 transition-all duration-300" x-data
+                :style="$store.chatSidebar?.isOpen ? 'margin-right: 400px;' : ''">
                 {{ $slot }}
             </div>
         </div>
@@ -349,7 +350,10 @@
     <x-toast.container />
 
     @if(session('message'))
-        <script>         document.addEventListener('DOMContentLoaded', () => {             window.showToast('success', "{{ session('message') }}");         });
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.showToast('success', "{{ session('message') }}");
+            });
         </script>
     @endif
 

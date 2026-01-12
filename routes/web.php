@@ -228,10 +228,6 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/coming', 'pages.coming-soon')->name('coming');
 
 
-
-
-
-    // Profile Settings Routes
     // Profile Settings Routes
     Route::get('profile/edit', App\Livewire\Profile\UserProfileEdit::class)->name('profile.edit');
 
