@@ -23,6 +23,7 @@ class Activity extends Model
         'description',
         'mood',
         'media',
+        'tagged_users',
     ];
 
     protected $casts = [

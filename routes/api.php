@@ -21,7 +21,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/status', [\App\Http\Controllers\Api\SubscriptionController::class, 'status']);
     Route::post('/subscribe', [\App\Http\Controllers\Api\SubscriptionController::class, 'subscribe']);
 
-    // Activities Sync
-    Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);
+    // Activities API
     Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
+    Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);
+    Route::get('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'show']);
+    Route::put('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'update']);
+    Route::delete('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'destroy']);
+    Route::post('/activities/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleLike']);
+    Route::post('/activities/sync', [\App\Http\Controllers\Api\ActivityController::class, 'sync']);
 });
