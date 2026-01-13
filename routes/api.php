@@ -29,4 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'destroy']);
     Route::post('/activities/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleLike']);
     Route::post('/activities/sync', [\App\Http\Controllers\Api\ActivityController::class, 'sync']);
+
+    // User/Social API
+    Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);
+    Route::post('/users/{id}/follow', [\App\Http\Controllers\Api\UserController::class, 'toggleFollow']);
 });
