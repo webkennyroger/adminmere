@@ -271,12 +271,28 @@
     }
 }
 
+@keyframes typing {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    50% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+
 .animate-slide-in-right {
     animation: slideInRight 0.3s ease-out;
 }
 
 .animate-slide-out-right {
     animation: slideOutRight 0.3s ease-in;
+}
+
+.animate-typing {
+    animation: typing 1s infinite ease-in-out;
 }
 
 @utility menu-dropdown-badge-active {
@@ -899,7 +915,6 @@ pre[class*="language-"] {
     }
 }
 
-
 .mask {
     -webkit-mask-position: 50%;
     mask-position: 50%;
@@ -921,13 +936,15 @@ pre[class*="language-"] {
 
 .mask.is-reuleaux-triangle {
     -webkit-mask-image: url("/assets/images/users/triangle-shape.svg");
-    mask-image: url("/assets/images/users/triangle-shape.svg")
+    mask-image: url("/assets/images/users/triangle-shape.svg");
 }
 /* Flatpickr Dark Mode Overrides from app.blade.php */
 .dark .flatpickr-calendar {
     background: #18181b !important;
     border-color: #27272a !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .dark .flatpickr-calendar.arrowTop:before,
@@ -962,7 +979,10 @@ pre[class*="language-"] {
     color: #e4e4e7 !important;
 }
 
-.dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+.dark
+    .flatpickr-current-month
+    .flatpickr-monthDropdown-months
+    .flatpickr-monthDropdown-month {
     background-color: #18181b !important;
 }
 
@@ -1045,7 +1065,6 @@ pre[class*="language-"] {
     background: #27272a !important;
 }
 
-
 /* FullCalendar Dark Mode Overrides from schedule-index.blade.php */
 .dark .fc {
     --fc-page-bg-color: #18181b;
@@ -1075,4 +1094,3 @@ pre[class*="language-"] {
 .dark .fc-theme-standard th {
     border-color: #3f3f46;
 }
-

@@ -104,5 +104,16 @@ class ActivitySeeder extends Seeder
         ]);
         
         $activity4->comments()->create(['user_id' => $friend2->id, 'body' => 'Foi pesado mas valeu a pena!']);
+
+        // 5. Create many random activities to test infinite scroll
+        Activity::factory()->count(20)->create([
+            'user_id' => $mainUser->id,
+            'start_time' => Carbon::now()->subDays(5),
+        ]);
+
+        Activity::factory()->count(20)->create([
+            'user_id' => $friend1->id,
+            'start_time' => Carbon::now()->subDays(6),
+        ]);
     }
 }

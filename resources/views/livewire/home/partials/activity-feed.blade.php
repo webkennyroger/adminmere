@@ -60,17 +60,19 @@
         </div>
     @endforelse
 
-    <!-- Loading Indicator -->
-    <div class="flex justify-center py-8">
-        <div class="flex items-center gap-2">
-            <svg class="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-            </svg>
-            <span class="text-sm text-zinc-500 dark:text-zinc-400">Carregando mais posts...</span>
+    <!-- Loading Indicator / Scroll Trigger -->
+    @if($hasMore)
+        <div x-data="{}" x-intersect="$wire.loadMore()" class="w-full py-12 flex justify-center">
+            <div wire:loading class="flex items-center justify-center">
+                <div
+                    class="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow-sm border border-zinc-100 dark:border-zinc-800 flex items-center justify-center gap-1.5 min-w-[100px]">
+                    <div class="w-2.5 h-2.5 bg-brand-600 rounded-full animate-typing" style="animation-delay: 0s"></div>
+                    <div class="w-2.5 h-2.5 bg-brand-600 rounded-full animate-typing" style="animation-delay: 0.2s"></div>
+                    <div class="w-2.5 h-2.5 bg-brand-600 rounded-full animate-typing" style="animation-delay: 0.4s"></div>
+                </div>
+            </div>
+            {{-- Invisible placeholder to maintain intersection area if needed --}}
+            <div wire:loading.remove class="h-10"></div>
         </div>
-    </div>
+    @endif
 </div>

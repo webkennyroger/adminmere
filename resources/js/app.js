@@ -4,6 +4,12 @@ import ApexCharts from 'apexcharts';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { Calendar } from '@fullcalendar/core';
+import intersect from '@alpinejs/intersect';
+
+// Register Alpine plugins via alpine:init if needed
+document.addEventListener('alpine:init', () => {
+    window.Alpine.plugin(intersect);
+});
 
 // Configuração de localização em Português
 const Portuguese = {
