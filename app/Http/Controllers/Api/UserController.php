@@ -67,4 +67,42 @@ class UserController extends Controller
             'is_following' => $isFollowing
         ]);
     }
+
+    /**
+     * Get user profile details and their activities.
+     */
+    public function profile(Request $request, $id)
+    {
+        $currentUser = $request->user();
+        $user = User::with(['profile'])->findOrFail($id);
+
+        $activities = $user->activities()
+            ->with(['likes', 'user.profile'])
+            ->latest('start_time')
+            ->limit(20)
+            ->get();
+
+        $activityController = new ActivityController();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'avatar' => $user->image_url,
+                    'city' => $user->profile->city ?? 'Brasil',
+                    'is_following' => $currentUser->following()->where('following_id', $user->id)->exists(),
+                ],
+                'stats' => [
+                    'activities_count' => $user->activities()->count(),
+                    'followers_count' => $user->followers()->count(),
+                    'following_count' => $user->following()->count(),
+                ],
+                'activities' => $activities->map(function($activity) use ($currentUser, $activityController) {
+                    return $activityController->formatActivity($activity, $currentUser);
+                }),
+            ]
+        ]);
+    }
 }

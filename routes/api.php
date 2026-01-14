@@ -9,6 +9,16 @@ Route::post('/auth/google', [\App\Http\Controllers\Api\AuthController::class, 'g
 Route::post('/forgot-password', [\App\Http\Controllers\Api\PasswordResetController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [\App\Http\Controllers\Api\PasswordResetController::class, 'reset']);
 
+// App Version Check
+Route::get('/app-version', function () {
+    return response()->json([
+        'version' => '1.0.0', // Versão atual no servidor
+        'build' => 1,
+        'url' => 'https://mere-app.com.br/download', // Onde baixar a nova versão
+        'message' => 'Uma nova versão do MERE está disponível!'
+    ]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     
@@ -33,4 +43,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // User/Social API
     Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);
     Route::post('/users/{id}/follow', [\App\Http\Controllers\Api\UserController::class, 'toggleFollow']);
+    Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'profile']);
 });

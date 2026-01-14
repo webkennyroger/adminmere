@@ -306,7 +306,7 @@ class ActivityController extends Controller
     /**
      * Format activity for API response.
      */
-    private function formatActivity($activity, $user)
+    public function formatActivity($activity, $user)
     {
         return [
             'id' => $activity->id,

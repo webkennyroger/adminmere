@@ -9,11 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Cashier\Billable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, Billable;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, Billable;
 
     /**
      * The attributes that are mass assignable.
