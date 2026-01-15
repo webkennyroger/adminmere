@@ -58,8 +58,8 @@ class ActivityFeed extends Component
         if ($this->feed === 'personal') {
             $query->where('user_id', $user->id);
         } elseif ($this->feed === 'timeline' || $this->feed === 'network') { 
-            $followingIds = $user->following()->pluck('users.id');
-            $followingIds->push($user->id);
+            $followingIds = $user->following()->pluck('following_id')->toArray();
+            $followingIds[] = $user->id;
             $query->whereIn('user_id', $followingIds);
         }
 

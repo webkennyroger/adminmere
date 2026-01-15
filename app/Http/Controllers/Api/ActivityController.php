@@ -31,8 +31,8 @@ class ActivityController extends Controller
         if ($feed === 'personal') {
             $query->where('user_id', $user->id);
         } elseif ($feed === 'timeline' || $feed === 'network') {
-            $followingIds = $user->following()->pluck('users.id');
-            $followingIds->push($user->id);
+            $followingIds = $user->following()->pluck('users.id')->toArray();
+            $followingIds[] = $user->id;
             $query->whereIn('user_id', $followingIds);
         }
 
@@ -92,6 +92,15 @@ class ActivityController extends Controller
             }
         }
 
+        $polylines = $request->routePoints ?? [];
+        if (is_array($polylines) && !empty($polylines) && !isset($polylines['summary_polyline'])) {
+            $summary = $this->encodePolyline($polylines);
+            $polylines = [
+                'points' => $polylines,
+                'summary_polyline' => $summary
+            ];
+        }
+
         // Create or Update based on 'app_id'
         $activity = Activity::updateOrCreate(
             [
@@ -105,7 +114,7 @@ class ActivityController extends Controller
                 'distance' => $request->distanceInMeters,
                 'duration' => $request->durationInSeconds,
                 'calories' => $request->calories ?? 0,
-                'polylines' => $request->routePoints ?? [],
+                'polylines' => $polylines,
                 'privacy' => $request->privacy ?? 'public',
                 'description' => $request->notes,
                 'mood' => $request->mood,
@@ -231,11 +240,35 @@ class ActivityController extends Controller
             $activity->likes()->create(['user_id' => $user->id]);
             $isLiked = true;
         }
-
         return response()->json([
             'success' => true,
             'is_liked' => $isLiked,
             'likes_count' => $activity->likes()->count()
+        ]);
+    }
+
+    /**
+     * Store comment on activity.
+     */
+    public function comment(Request $request, $id)
+    {
+        $request->validate([
+            'body' => 'required|string',
+            'parent_id' => 'nullable|exists:comments,id'
+        ]);
+
+        $activity = Activity::findOrFail($id);
+        $user = $request->user();
+
+        $comment = $activity->comments()->create([
+            'user_id' => $user->id,
+            'body' => $request->body,
+            'parent_id' => $request->parent_id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatComment($comment->load('user'))
         ]);
     }
 
@@ -266,6 +299,15 @@ class ActivityController extends Controller
 
         foreach ($request->activities as $activityData) {
             try {
+                $polylines = $activityData['routePoints'] ?? [];
+                if (is_array($polylines) && !empty($polylines) && !isset($polylines['summary_polyline'])) {
+                    $summary = $this->encodePolyline($polylines);
+                    $polylines = [
+                        'points' => $polylines,
+                        'summary_polyline' => $summary
+                    ];
+                }
+
                 $activity = Activity::updateOrCreate(
                     [
                         'app_id' => $activityData['id'],
@@ -278,7 +320,7 @@ class ActivityController extends Controller
                         'distance' => $activityData['distanceInMeters'],
                         'duration' => $activityData['durationInSeconds'],
                         'calories' => $activityData['calories'] ?? 0,
-                        'polylines' => $activityData['routePoints'] ?? [],
+                        'polylines' => $polylines,
                         'privacy' => $activityData['privacy'] ?? 'public',
                         'description' => $activityData['notes'] ?? null,
                         'mood' => $activityData['mood'] ?? null,
@@ -308,32 +350,120 @@ class ActivityController extends Controller
      */
     public function formatActivity($activity, $user)
     {
+        $routePoints = $activity->polylines;
+        // If we stored it as our new structure, return only the points to the app
+        if (is_array($routePoints) && isset($routePoints['points'])) {
+            $routePoints = $routePoints['points'];
+        }
+
         return [
-            'id' => $activity->id,
+            'id' => (string)$activity->id,
             'app_id' => $activity->app_id,
-            'user_id' => $activity->user_id,
+            'user_id' => (string)$activity->user_id,
             'userName' => $activity->user->name,
             'userAvatarUrl' => $activity->user->image_url,
             'activityTitle' => $activity->title,
             'sport' => $activity->sport_type,
             'createdAt' => $activity->start_time->toIso8601String(),
-            'location' => $activity->user->profile->city ?? 'Unknown',
-            'distanceInMeters' => $activity->distance,
-            'durationInSeconds' => $activity->duration,
-            'routePoints' => $activity->polylines ?? [],
-            'calories' => $activity->calories,
+            'location' => $activity->user->profile->city ?? 'Brasil',
+            'distanceInMeters' => (double)$activity->distance,
+            'durationInSeconds' => (int)$activity->duration,
+            'routePoints' => $routePoints ?? [],
+            'calories' => (double)$activity->calories,
             'likes' => $activity->likes->count(),
             'isLiked' => $activity->likes->contains('user_id', $user->id),
-            'commentsList' => [], // Comments handled separately
+            'commentsList' => $activity->comments->map(function($comment) {
+                return $this->formatComment($comment);
+            })->toArray(),
             'shares' => 0,
-            'likers' => $activity->likes->take(3)->pluck('user.image_url')->toArray(),
+            'likers' => $activity->likes->take(3)->map(function($like) {
+                return $like->user->image_url;
+            })->toArray(),
             'privacy' => $activity->privacy,
             'notes' => $activity->description,
-            'taggedPartnerIds' => collect($activity->tagged_users ?? [])->pluck('id')->toArray(),
+            'taggedPartnerIds' => collect($activity->tagged_users ?? [])->pluck('id')->map(fn($id) => (string)$id)->toArray(),
             'mood' => $activity->mood,
             'mediaPaths' => $activity->media ?? [],
             'mapType' => 'normal',
             'points' => (int)($activity->distance / 100),
         ];
+    }
+
+    /**
+     * Format comment for JSON string (app requirement)
+     */
+    private function formatComment($comment)
+    {
+        return json_encode([
+            'id' => (string)$comment->id,
+            'userId' => (string)$comment->user_id,
+            'userName' => $comment->user->name,
+            'userAvatarUrl' => $comment->user->image_url,
+            'text' => $comment->body,
+            'timestamp' => $comment->created_at->toIso8601String(),
+            'replies' => [], // Flat list for feed
+            'isArchived' => false,
+        ]);
+    }
+
+    /**
+     * Google Polyline Algorithm Implementation
+     */
+    private function encodePolyline($points)
+    {
+        $res = '';
+        $last_lat = 0;
+        $last_lng = 0;
+
+        foreach ($points as $point) {
+            $lat = round($point['lat'] * 1e5);
+            $lng = round($point['lng'] * 1e5);
+
+            $d_lat = (int)$lat - (int)$last_lat;
+            $d_lng = (int)$lng - (int)$last_lng;
+
+            $res .= $this->encodePart($d_lat);
+            $res .= $this->encodePart($d_lng);
+
+            $last_lat = $lat;
+            $last_lng = $lng;
+        }
+
+        return $res;
+    }
+
+    /**
+     * Upload media files.
+     */
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480',
+        ]);
+
+        $paths = [];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('activities/' . $request->user()->id, 'public');
+                $paths[] = asset('storage/' . $path);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $paths
+        ]);
+    }
+
+    private function encodePart($v)
+    {
+        $v = $v < 0 ? ~($v << 1) : $v << 1;
+        $res = '';
+        while ($v >= 0x20) {
+            $res .= chr((0x20 | ($v & 0x1f)) + 63);
+            $v >>= 5;
+        }
+        $res .= chr($v + 63);
+        return $res;
     }
 }

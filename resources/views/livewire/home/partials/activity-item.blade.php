@@ -1,4 +1,5 @@
-<div x-data="{ showMenu: false }" class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+<div x-data="{ showMenu: false }"
+    class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
     <!-- Post Header -->
     <div class="flex justify-between items-start p-4 pb-3">
         <div class="flex items-center gap-3 flex-1">
@@ -7,7 +8,8 @@
                     class="w-12 h-12 rounded-full object-cover border-2 border-white dark:border-zinc-800 hover:ring-2 hover:ring-brand-500 transition-all">
             </a>
             <div class="flex-1 min-w-0">
-                <a href="{{ route('profile.view', $activity->user) }}" class="font-bold text-zinc-900 dark:text-white hover:text-brand-600 transition-colors block leading-tight truncate">
+                <a href="{{ route('profile.view', $activity->user) }}"
+                    class="font-bold text-zinc-900 dark:text-white hover:text-brand-600 transition-colors block leading-tight truncate">
                     {{ $activity->user->name }}
                 </a>
                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -15,38 +17,43 @@
                 </p>
             </div>
         </div>
-        
+
         <!-- Three Dots Menu -->
         <div class="relative" @click.away="showMenu = false">
-            <button @click="showMenu = !showMenu" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+            <button @click="showMenu = !showMenu"
+                class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
                 <svg class="w-5 h-5 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    <path
+                        d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                 </svg>
             </button>
-            
+
             <!-- Dropdown Menu -->
-            <div x-show="showMenu" 
-                 x-transition:enter="transition ease-out duration-100"
-                 x-transition:enter-start="transform opacity-0 scale-95"
-                 x-transition:enter-end="transform opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-75"
-                 x-transition:leave-start="transform opacity-100 scale-100"
-                 x-transition:leave-end="transform opacity-0 scale-95"
-                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
-                 style="display: none;">
+            <div x-show="showMenu" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
+                style="display: none;">
                 <div class="py-1">
-                    <button class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                    <button
+                        class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                         Salvar post
                     </button>
                     @if(auth()->id() === $activity->user_id)
-                        <button class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                        <button
+                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Editar post
                         </button>
-                        <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                        <button
+                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Excluir post
                         </button>
                     @else
-                        <button class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                        <button
+                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Denunciar post
                         </button>
                     @endif
@@ -58,7 +65,8 @@
     <!-- Post Content -->
     @if($activity->description)
         <div class="px-4 pb-3">
-            <p class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">{{ Str::limit($activity->description, 200) }}</p>
+            <p class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">
+                {{ Str::limit($activity->description, 200) }}</p>
             @if(strlen($activity->description) > 200)
                 <button class="text-brand-600 hover:text-brand-700 text-sm font-medium mt-1">Ver mais</button>
             @endif
@@ -67,9 +75,12 @@
 
     <!-- Media Section -->
     @php
-        // Mock media for demonstration - replace with actual media logic
-        $hasMedia = !empty($activity->media) || !empty($activity->polylines);
-        $mediaItems = $activity->media ?? [];
+        // Filter out local Android/iOS paths that won't load on web
+        $mediaItems = collect($activity->media ?? [])->filter(function ($path) {
+            return str_starts_with($path, 'http') || str_starts_with($path, '/storage') || str_starts_with($path, 'storage/');
+        })->values()->all();
+
+        $hasMedia = !empty($mediaItems) || !empty($activity->polylines);
         $mediaCount = count($mediaItems);
     @endphp
 
@@ -77,16 +88,15 @@
         <!-- Map Display -->
         @if(!empty($activity->polylines))
             @php
-                $poly = is_array($activity->polylines) 
-                        ? ($activity->polylines['summary_polyline'] ?? $activity->polylines['polyline'] ?? null) 
-                        : $activity->polylines;
+                $poly = is_array($activity->polylines)
+                    ? ($activity->polylines['summary_polyline'] ?? $activity->polylines['polyline'] ?? null)
+                    : $activity->polylines;
             @endphp
-            
+
             @if($poly)
                 <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative">
-                    <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}" 
-                         class="w-full h-full object-cover" 
-                         alt="Mapa da atividade">
+                    <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
+                        class="w-full h-full object-cover" alt="Mapa da atividade">
                 </div>
             @endif
         @endif
@@ -149,35 +159,45 @@
     @endif
 
     <!-- Activity Stats (if sports activity) -->
-    @if($activity->distance || $activity->duration)
-        <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
-            <div class="flex items-center justify-around text-center">
-                @if($activity->distance)
-                    <div>
-                        <p class="text-lg font-bold text-zinc-900 dark:text-white">{{ number_format($activity->distance / 1000, 2) }}</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">km</p>
-                    </div>
-                @endif
-                @if($activity->duration)
-                    <div>
-                        <p class="text-lg font-bold text-zinc-900 dark:text-white">{{ gmdate("H:i:s", $activity->duration) }}</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">tempo</p>
-                    </div>
-                @endif
-                @if($activity->distance && $activity->duration)
-                    @php
-                        $pace = $activity->distance > 0 ? ($activity->duration / 60) / ($activity->distance / 1000) : 0;
-                        $paceMin = floor($pace);
-                        $paceSec = round(($pace - $paceMin) * 60);
-                    @endphp
-                    <div>
-                        <p class="text-lg font-bold text-zinc-900 dark:text-white">{{ $paceMin }}:{{ str_pad($paceSec, 2, '0', STR_PAD_LEFT) }}</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">/km</p>
-                    </div>
-                @endif
+    <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
+        <div class="flex items-center justify-around text-center">
+            <div>
+                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                    {{ number_format(($activity->distance ?? 0) / 1000, 2, ',', '.') }}
+                </p>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Distância</p>
+            </div>
+
+            @php
+                $pace = 0;
+                if (($activity->distance ?? 0) > 0 && ($activity->duration ?? 0) > 0) {
+                    $pace = ($activity->duration / 60) / ($activity->distance / 1000);
+                }
+                $paceMin = floor($pace);
+                $paceSec = round(($pace - $paceMin) * 60);
+            @endphp
+            <div>
+                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                    {{ $paceMin }}:{{ str_pad($paceSec, 2, '0', STR_PAD_LEFT) }}
+                </p>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Ritmo</p>
+            </div>
+
+            <div>
+                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                    {{ $activity->duration ? gmdate($activity->duration >= 3600 ? "H:i:s" : "i:s", $activity->duration) : '00:00' }}
+                </p>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Tempo</p>
+            </div>
+
+            <div>
+                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                    {{ number_format($activity->calories ?? 0, 0, ',', '.') }}
+                </p>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Calorias</p>
             </div>
         </div>
-    @endif
+    </div>
 
     <!-- Actions Bar -->
     <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
@@ -187,109 +207,128 @@
                 <button wire:click="toggleLike" class="flex items-center gap-2 group">
                     @if($activity->likes->contains('user_id', auth()->id()))
                         <svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            <path
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                         </svg>
                     @else
-                        <svg class="w-6 h-6 text-zinc-500 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        <svg class="w-6 h-6 text-zinc-500 group-hover:text-red-500 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                     @endif
-                    <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->likes->count() }}</span>
+                    <span
+                        class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->likes->count() }}</span>
                 </button>
 
                 <!-- Comment Button -->
                 <button @click="$wire.showComments = !$wire.showComments" class="flex items-center gap-2 group">
-                    <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->comments->count() }}</span>
+                    <span
+                        class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->comments->count() }}</span>
                 </button>
             </div>
 
             <!-- Share Button -->
             <button class="flex items-center gap-2 group">
-                <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                 </svg>
             </button>
         </div>
     </div>
 
     <!-- Comments Section -->
-    <div x-data="{ showComments: @entangle('showComments') }"
-         x-show="showComments" 
-         x-transition
-         class="border-t border-zinc-100 dark:border-zinc-800 px-4 py-3">
-        
+    <div x-data="{ showComments: @entangle('showComments') }" x-show="showComments" x-transition
+        class="border-t border-zinc-100 dark:border-zinc-800 px-4 py-3">
+
         <!-- Comments List -->
         <div class="space-y-3 mb-4 max-h-96 overflow-y-auto">
             @foreach($activity->comments as $comment)
-            @if(is_null($comment->parent_id))
-            <div x-data="{ showReplies: false }" class="group/comment" wire:key="comment-{{ $comment->id }}">
-                <div class="flex gap-2">
-                    <a href="{{ route('profile.view', $comment->user->id) }}">
-                        <img src="{{ $comment->user->image_url }}"
-                            class="w-8 h-8 rounded-full border border-zinc-100 dark:border-zinc-800 shrink-0">
-                    </a>
-                    <div class="flex-1 min-w-0">
-                        <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-2 inline-block">
-                            <a href="{{ route('profile.view', $comment->user->id) }}" class="font-semibold text-sm text-zinc-900 dark:text-white hover:underline">
-                                {{ $comment->user->name }}
+                @if(is_null($comment->parent_id))
+                    <div x-data="{ showReplies: false }" class="group/comment" wire:key="comment-{{ $comment->id }}">
+                        <div class="flex gap-2">
+                            <a href="{{ route('profile.view', $comment->user->id) }}">
+                                <img src="{{ $comment->user->image_url }}"
+                                    class="w-8 h-8 rounded-full border border-zinc-100 dark:border-zinc-800 shrink-0">
                             </a>
-                            <p class="text-sm text-zinc-700 dark:text-zinc-300">{!! $this->formatComment($comment->body) !!}</p>
-                        </div>
-                        <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
-                            <span>{{ $comment->created_at->diffForHumans() }}</span>
-                            <button wire:click="toggleCommentLike({{ $comment->id }})" class="font-semibold hover:underline {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : '' }}">
-                                Curtir ({{ $comment->likes->count() }})
-                            </button>
-                            <button @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@{{ $comment->user->name }} ');" class="font-semibold hover:underline">
-                                Responder
-                            </button>
-                            @if(auth()->id() === $comment->user_id || auth()->id() === $activity->user_id)
-                                <button wire:click="confirmDelete({{ $comment->id }})" class="opacity-0 group-hover/comment:opacity-100 transition-opacity text-red-600 hover:underline">
-                                    Excluir
-                                </button>
-                            @endif
-                        </div>
-
-                        <!-- Replies -->
-                        @if($comment->replies->count() > 0)
-                            <button @click="showReplies = !showReplies" class="text-xs text-zinc-500 font-semibold mt-2 ml-3 hover:underline">
-                                <span x-text="showReplies ? 'Ocultar respostas' : 'Ver {{ $comment->replies->count() }} resposta(s)'"></span>
-                            </button>
-                            
-                            <div x-show="showReplies" style="display: none;" class="mt-2 ml-8 space-y-2">
-                                @foreach($comment->replies as $reply)
-                                <div class="flex gap-2 group/reply" wire:key="reply-{{ $reply->id }}">
-                                    <img src="{{ $reply->user->image_url }}" class="w-6 h-6 rounded-full">
-                                    <div class="flex-1">
-                                        <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-1.5 inline-block">
-                                            <a href="{{ route('profile.view', $reply->user->id) }}" class="font-semibold text-xs text-zinc-900 dark:text-white hover:underline">
-                                                {{ $reply->user->name }}
-                                            </a>
-                                            <p class="text-xs text-zinc-700 dark:text-zinc-300">{!! $this->formatComment($reply->body) !!}</p>
-                                        </div>
-                                        <div class="flex items-center gap-3 mt-1 ml-2 text-[10px] text-zinc-500">
-                                            <span>{{ $reply->created_at->diffForHumans() }}</span>
-                                            <button wire:click="toggleCommentLike({{ $reply->id }})" class="font-semibold hover:underline {{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : '' }}">
-                                                Curtir ({{ $reply->likes->count() }})
-                                            </button>
-                                            @if(auth()->id() === $reply->user_id || auth()->id() === $activity->user_id)
-                                                <button wire:click="confirmDelete({{ $reply->id }})" class="opacity-0 group-hover/reply:opacity-100 transition-opacity text-red-600 hover:underline">
-                                                    Excluir
-                                                </button>
-                                            @endif
-                                        </div>
-                                    </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-2 inline-block">
+                                    <a href="{{ route('profile.view', $comment->user->id) }}"
+                                        class="font-semibold text-sm text-zinc-900 dark:text-white hover:underline">
+                                        {{ $comment->user->name }}
+                                    </a>
+                                    <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {!! $this->formatComment($comment->body) !!}</p>
                                 </div>
-                                @endforeach
+                                <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
+                                    <span>{{ $comment->created_at->diffForHumans() }}</span>
+                                    <button wire:click="toggleCommentLike({{ $comment->id }})"
+                                        class="font-semibold hover:underline {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : '' }}">
+                                        Curtir ({{ $comment->likes->count() }})
+                                    </button>
+                                    <button
+                                        @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@{{ $comment->user->name }} ');"
+                                        class="font-semibold hover:underline">
+                                        Responder
+                                    </button>
+                                    @if(auth()->id() === $comment->user_id || auth()->id() === $activity->user_id)
+                                        <button wire:click="confirmDelete({{ $comment->id }})"
+                                            class="opacity-0 group-hover/comment:opacity-100 transition-opacity text-red-600 hover:underline">
+                                            Excluir
+                                        </button>
+                                    @endif
+                                </div>
+
+                                <!-- Replies -->
+                                @if($comment->replies->count() > 0)
+                                    <button @click="showReplies = !showReplies"
+                                        class="text-xs text-zinc-500 font-semibold mt-2 ml-3 hover:underline">
+                                        <span
+                                            x-text="showReplies ? 'Ocultar respostas' : 'Ver {{ $comment->replies->count() }} resposta(s)'"></span>
+                                    </button>
+
+                                    <div x-show="showReplies" style="display: none;" class="mt-2 ml-8 space-y-2">
+                                        @foreach($comment->replies as $reply)
+                                            <div class="flex gap-2 group/reply" wire:key="reply-{{ $reply->id }}">
+                                                <img src="{{ $reply->user->image_url }}" class="w-6 h-6 rounded-full">
+                                                <div class="flex-1">
+                                                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-1.5 inline-block">
+                                                        <a href="{{ route('profile.view', $reply->user->id) }}"
+                                                            class="font-semibold text-xs text-zinc-900 dark:text-white hover:underline">
+                                                            {{ $reply->user->name }}
+                                                        </a>
+                                                        <p class="text-xs text-zinc-700 dark:text-zinc-300">
+                                                            {!! $this->formatComment($reply->body) !!}</p>
+                                                    </div>
+                                                    <div class="flex items-center gap-3 mt-1 ml-2 text-[10px] text-zinc-500">
+                                                        <span>{{ $reply->created_at->diffForHumans() }}</span>
+                                                        <button wire:click="toggleCommentLike({{ $reply->id }})"
+                                                            class="font-semibold hover:underline {{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : '' }}">
+                                                            Curtir ({{ $reply->likes->count() }})
+                                                        </button>
+                                                        @if(auth()->id() === $reply->user_id || auth()->id() === $activity->user_id)
+                                                            <button wire:click="confirmDelete({{ $reply->id }})"
+                                                                class="opacity-0 group-hover/reply:opacity-100 transition-opacity text-red-600 hover:underline">
+                                                                Excluir
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </div>
-                </div>
-            </div>
-            @endif
+                @endif
             @endforeach
         </div>
 
@@ -297,48 +336,43 @@
         <div class="flex gap-2 items-center relative">
             <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover">
             <div class="flex-1 relative">
-                <input type="text" 
-                    x-ref="commentInput"
-                    wire:model.live="newComment"
-                    wire:keydown.enter="postComment"
+                <input type="text" x-ref="commentInput" wire:model.live="newComment" wire:keydown.enter="postComment"
                     placeholder="Escreva um comentário..."
                     class="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
-                
+
                 <!-- Mentions Dropdown -->
                 @if($showMentions && count($filteredUsers) > 0)
-                <div class="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden z-20">
-                    <ul>
-                        @foreach($filteredUsers as $user)
-                            <li wire:click="selectUser({{ json_encode($user) }})" 
-                                class="flex items-center gap-3 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer">
-                                <img src="{{ $user['image_url'] }}" class="w-8 h-8 rounded-full">
-                                <p class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $user['name'] }}</p>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
+                    <div
+                        class="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden z-20">
+                        <ul>
+                            @foreach($filteredUsers as $user)
+                                <li wire:click="selectUser({{ json_encode($user) }})"
+                                    class="flex items-center gap-3 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer">
+                                    <img src="{{ $user['image_url'] }}" class="w-8 h-8 rounded-full">
+                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $user['name'] }}</p>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
             </div>
         </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <x-ui.modal :isOpen="!! $confirmingCommentDeletion" :showCloseButton="false">
+    <x-ui.modal :isOpen="!!$confirmingCommentDeletion" :showCloseButton="false">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
-                <x-ui.alert 
-                    variant="error" 
-                    title="Apagar comentário" 
-                    message="Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita."
-                />
+                <x-ui.alert variant="error" title="Apagar comentário"
+                    message="Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita." />
             </div>
         </div>
         <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
-            <button type="button" wire:click="deleteComment" 
+            <button type="button" wire:click="deleteComment"
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
                 Apagar
             </button>
-            <button type="button" wire:click="cancelDelete" 
+            <button type="button" wire:click="cancelDelete"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
                 Cancelar
             </button>

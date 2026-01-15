@@ -16,7 +16,7 @@ class UserController extends Controller
         $user = $request->user();
         
         // Get IDs of users already followed
-        $followingIds = $user->following()->pluck('users.id');
+        $followingIds = $user->following()->pluck('following_id')->toArray();
         
         // Suggest users not followed and not the current user
         $suggested = User::whereNotIn('id', $followingIds)
@@ -54,7 +54,7 @@ class UserController extends Controller
             ], 400);
         }
 
-        if ($user->following()->where('user_id', $userToFollow->id)->exists()) {
+        if ($user->following()->where('following_id', $userToFollow->id)->exists()) {
             $user->following()->detach($userToFollow->id);
             $isFollowing = false;
         } else {

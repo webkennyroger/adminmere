@@ -38,7 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'update']);
     Route::delete('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'destroy']);
     Route::post('/activities/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleLike']);
+    Route::post('/activities/{id}/comment', [\App\Http\Controllers\Api\ActivityController::class, 'comment']);
     Route::post('/activities/sync', [\App\Http\Controllers\Api\ActivityController::class, 'sync']);
+    Route::post('/activities/upload', [\App\Http\Controllers\Api\ActivityController::class, 'upload']);
 
     // User/Social API
     Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);
