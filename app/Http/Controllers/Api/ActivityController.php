@@ -60,7 +60,7 @@ class ActivityController extends Controller
     {
         // Validation matching app data
         $validator = Validator::make($request->all(), [
-            'id' => 'required|string', // Mobile App ID (UUID)
+            'id' => 'nullable|string', // Mobile App ID (UUID)
             'activityTitle' => 'required|string',
             'sport' => 'required|string',
             'createdAt' => 'required|date',
@@ -104,7 +104,7 @@ class ActivityController extends Controller
         // Create or Update based on 'app_id'
         $activity = Activity::updateOrCreate(
             [
-                'app_id' => $request->id,
+                'app_id' => $request->id ?? null,
                 'user_id' => $user->id,
             ],
             [

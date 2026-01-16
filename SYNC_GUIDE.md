@@ -250,6 +250,15 @@ php artisan tinker
 - Verificar se `app_id` está sendo gerado corretamente
 - O backend usa `updateOrCreate` para evitar duplicatas
 
+### **Erro: "Mapa não aparece" (Tela cinza/branca)**
+
+- **API Key**: Verificar se a chave do Google Maps está no `AndroidManifest.xml` (Android) e `AppDelegate.swift` (iOS).
+- **Google Cloud**: Confirmar se "Maps SDK for Android" e "Maps SDK for iOS" estão ativados no console.
+- **Application ID**: Verificar se o `applicationId` no `build.gradle` corresponde ao pacote registrado no Google Cloud (atualmente `com.example.mere`).
+- **Dados de Rota**: Verificar se `routePoints` (Flutter) / `polylines` (Backend) não está vazio.
+- **Mapeamento JSON**: Confirmar se o App envia o campo com o nome que o Backend espera (ex: se o Laravel espera `polylines`, o App não pode enviar apenas `routePoints`).
+- **Logs**: Filtrar o Logcat por "Google Maps" para identificar erros de autenticação (Authorization failure).
+
 ---
 
 ## 📞 **Suporte**

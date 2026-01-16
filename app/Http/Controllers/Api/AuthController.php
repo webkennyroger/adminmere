@@ -72,6 +72,13 @@ class AuthController extends Controller
             
             $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->access_token);
             
+            if (!$googleUser) {
+                return response()->json([
+                    'message' => 'Falha ao validar token do Google. Token inválido ou expirado.',
+                    'error' => 'invalid_token'
+                ], 401);
+            }
+            
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
@@ -98,7 +105,15 @@ class AuthController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Invalid Google Token', 'message' => $e->getMessage()], 401);
+            \Log::error('Google Login Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'message' => 'Falha ao fazer login com Google. Verifique o token ou tente novamente.',
+                'error' => 'google_auth_failed'
+            ], 401);
         }
     }
 
