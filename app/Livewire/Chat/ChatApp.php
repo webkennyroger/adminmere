@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Livewire\Chat;
-
 use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\User;

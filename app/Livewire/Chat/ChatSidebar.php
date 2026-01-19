@@ -25,6 +25,11 @@ class ChatSidebar extends Component
     public $newGroupName = '';
     public $selectedUsersForGroup = [];
 
+    // New Chat Modal State
+    public $showNewChatModal = false;
+    public $searchUser = '';
+    public $filteredUsers = [];
+
     protected $rules = [
         'newGroupName' => 'required|min:3',
         'selectedUsersForGroup' => 'required|array|min:1',
@@ -43,6 +48,7 @@ class ChatSidebar extends Component
     {
         $this->loadUsers();
         $this->loadGroups();
+        $this->filteredUsers = collect();
     }
 
     public function updateList($event = null)
@@ -80,6 +86,33 @@ class ChatSidebar extends Component
     {
         $this->reset(['newGroupName', 'selectedUsersForGroup']);
         $this->showCreateGroupModal = true;
+    }
+
+    public function openNewChatModal()
+    {
+        $this->reset(['searchUser']);
+        $this->updateFilteredUsers();
+        $this->showNewChatModal = true;
+    }
+
+    public function updatedSearchUser()
+    {
+        $this->updateFilteredUsers();
+    }
+
+    public function updateFilteredUsers()
+    {
+        $authId = Auth::id();
+        $this->filteredUsers = User::where('id', '!=', $authId)
+            ->where('name', 'like', '%' . $this->searchUser . '%')
+            ->limit(10)
+            ->get();
+    }
+
+    public function startChat($userId)
+    {
+        $this->showNewChatModal = false;
+        $this->dispatch('open-chat-box', userId: $userId);
     }
 
     public function createGroup()
@@ -157,25 +190,29 @@ class ChatSidebar extends Component
 
     public function loadUsers()
     {
-         $authId = Auth::id();
-        
-        // Load users: Admins, Managers AND anyone who has chat history with Auth user
+        $authId = Auth::id();
+        $authUser = User::find($authId);
+
+        // IDs dos usuários que sigo
+        $followingIds = $authUser->following()->pluck('users.id')->toArray();
+
+        // Carregar usuários: admins, managers, histórico de chat OU que sigo
         $this->users = User::where('id', '!=', $authId)
             ->when($this->search, function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
-            ->where(function($query) use ($authId) {
-                // User has role admin/manager
+            ->where(function($query) use ($authId, $followingIds) {
                 $query->whereHas('profile', function ($q) {
                     $q->whereIn('role', ['admin', 'manager']);
                 })
-                // OR user has messages with me (sent or received)
                 ->orWhereHas('messagesSent', function ($q) use ($authId) {
                     $q->where('receiver_id', $authId);
                 })
                 ->orWhereHas('messagesReceived', function ($q) use ($authId) {
                     $q->where('sender_id', $authId);
-                });
+                })
+                // Inclui todos que sigo
+                ->orWhereIn('id', $followingIds);
             })
             ->get()
             ->map(function ($user) use ($authId) {
@@ -187,19 +224,14 @@ class ChatSidebar extends Component
                     })
                     ->latest()
                     ->first();
-                
                 $user->unread_count = Message::where('sender_id', $user->id)
                     ->where('receiver_id', $authId)
                     ->whereNull('read_at')
                     ->count();
-
-                // Check archive status
                 $pref = ChatPreference::where('user_id', $authId)->where('peer_id', $user->id)->first();
                 $user->is_archived = $pref ? $pref->is_archived : false;
-
                 return $user;
             })
-            // Filter based on showArchived mode
             ->filter(function($user) {
                 return $this->showArchived ? $user->is_archived : !$user->is_archived;
             })

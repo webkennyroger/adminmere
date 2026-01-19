@@ -191,15 +191,26 @@
 
         <!-- Create Group Button (Hide in Archive Mode) -->
         @if(!$showArchived)
+        <div class="mt-4 flex gap-2 w-full">
+            <button wire:click="openNewChatModal" 
+                class="shrink-0 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors w-full py-2 gap-2"
+                :class="$store.chatSidebar.isOpen ? '' : 'w-10 h-10'"
+                title="Nova Conversa">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M12 8v8"></path>
+                </svg>
+                <span x-show="$store.chatSidebar.isOpen" class="text-sm font-medium">Nova Conversa</span>
+            </button>
             <button wire:click="openCreateGroupModal" 
-                class="mt-4 shrink-0 flex items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors"
-                :class="$store.chatSidebar.isOpen ? 'w-full py-2 gap-2' : 'w-10 h-10'"
+                class="shrink-0 flex items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors w-full py-2 gap-2"
+                :class="$store.chatSidebar.isOpen ? '' : 'w-10 h-10'"
                 title="Criar Grupo">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 <span x-show="$store.chatSidebar.isOpen" class="text-sm font-medium">Novo Grupo</span>
             </button>
+        </div>
         @endif
     </div>
 
@@ -224,6 +235,33 @@
     </div>
 
     <!-- Modals (Outside the layout flow but inside the component) -->
+        @if($showNewChatModal)
+            <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+                    <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+                        <h3 class="font-bold text-lg dark:text-white">Nova Conversa</h3>
+                        <button wire:click="$set('showNewChatModal', false)" class="text-zinc-400 hover:text-zinc-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Selecionar Membro</label>
+                        <input wire:model="searchUser" type="text" placeholder="Digite o nome do usuário..." class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:ring-brand-500" />
+                        <div class="mt-2 max-h-40 overflow-y-auto space-y-1">
+                            @foreach($filteredUsers as $user)
+                                <button wire:click="startChat({{ $user->id }})" class="w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                                    <img src="{{ $user->profile?->image ? Storage::url($user->profile->image) : $user->image_url }}" class="w-8 h-8 rounded-full object-cover">
+                                    <span class="text-sm dark:text-gray-200">{{ $user->name }}</span>
+                                </button>
+                            @endforeach
+                            @if(count($filteredUsers) == 0)
+                                <div class="text-xs text-zinc-400 p-2">Nenhum usuário encontrado.</div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     @if($showCreateGroupModal)
         <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
             <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
