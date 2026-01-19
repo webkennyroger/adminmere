@@ -46,4 +46,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);
     Route::post('/users/{id}/follow', [\App\Http\Controllers\Api\UserController::class, 'toggleFollow']);
     Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'profile']);
+
+    // Chat/Messages API
+    Route::get('/messages/{userId}', [\App\Http\Controllers\Api\MessageController::class, 'getMessages']);
+    Route::post('/messages', [\App\Http\Controllers\Api\MessageController::class, 'sendMessage']);
+    Route::post('/messages/{userId}/read', [\App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
+    Route::get('/conversations', [\App\Http\Controllers\Api\MessageController::class, 'getConversations']);
 });

@@ -92,13 +92,21 @@ class ActivityController extends Controller
             }
         }
 
+        // Process polylines/route points
         $polylines = $request->routePoints ?? [];
-        if (is_array($polylines) && !empty($polylines) && !isset($polylines['summary_polyline'])) {
-            $summary = $this->encodePolyline($polylines);
-            $polylines = [
-                'points' => $polylines,
-                'summary_polyline' => $summary
-            ];
+        if (is_array($polylines) && !empty($polylines)) {
+            // Check if already encoded with summary
+            if (!isset($polylines['summary_polyline'])) {
+                // Store both raw points and encoded summary
+                $summary = $this->encodePolyline($polylines);
+                $polylines = [
+                    'points' => $polylines,
+                    'summary_polyline' => $summary
+                ];
+            }
+        } elseif (empty($polylines)) {
+            // Ensure polylines is null if empty, not an empty array
+            $polylines = null;
         }
 
         // Create or Update based on 'app_id'
@@ -351,9 +359,15 @@ class ActivityController extends Controller
     public function formatActivity($activity, $user)
     {
         $routePoints = $activity->polylines;
+        
         // If we stored it as our new structure, return only the points to the app
         if (is_array($routePoints) && isset($routePoints['points'])) {
             $routePoints = $routePoints['points'];
+        }
+
+        // Ensure routePoints is always an array, never null
+        if (!is_array($routePoints)) {
+            $routePoints = [];
         }
 
         return [
@@ -368,7 +382,7 @@ class ActivityController extends Controller
             'location' => $activity->user->profile->city ?? 'Brasil',
             'distanceInMeters' => (double)$activity->distance,
             'durationInSeconds' => (int)$activity->duration,
-            'routePoints' => $routePoints ?? [],
+            'routePoints' => $routePoints,
             'calories' => (double)$activity->calories,
             'likes' => $activity->likes->count(),
             'isLiked' => $activity->likes->contains('user_id', $user->id),
