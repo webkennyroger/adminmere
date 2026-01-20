@@ -1,0 +1,60 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class SocialSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run()
+    {
+        // Ensure we have users
+        if (\App\Models\User::count() < 10) {
+            \App\Models\User::factory(10)->create();
+        }
+
+        $me = \App\Models\User::first();
+        $me->email = 'admin@admin.com'; // Ensure known user
+        $me->save();
+        
+        $this->command->info("Main User: {$me->name} (ID: {$me->id})");
+
+        // Make sure I follow someone
+        $others = \App\Models\User::where('id', '!=', $me->id)->take(5)->get();
+        foreach ($others as $other) {
+            if (!$me->following()->where('following_id', $other->id)->exists()) {
+                $me->following()->attach($other->id);
+                $this->command->info("Followed: {$other->name}");
+            }
+            
+            // Ensure they have activities
+            if ($other->activities()->count() == 0) {
+                \App\Models\Activity::create([
+                    'user_id' => $other->id,
+                    'app_id' => \Illuminate\Support\Str::uuid(),
+                    'title' => 'Morning Run',
+                    'sport_type' => 'Run',
+                    'start_time' => now()->subHours(rand(1, 24)),
+                    'distance' => 5000,
+                    'duration' => 1800,
+                    'calories' => 300,
+                    'privacy' => 'public',
+                    'polylines' => []
+                ]);
+            }
+        }
+
+        // Make sure someone follows me
+        $fans = \App\Models\User::where('id', '!=', $me->id)->skip(5)->take(3)->get();
+        foreach ($fans as $fan) {
+            if (!$fan->following()->where('following_id', $me->id)->exists()) {
+                $fan->following()->attach($me->id);
+                $this->command->info("New Fan: {$fan->name}");
+            }
+        }
+    }
+}

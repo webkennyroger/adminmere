@@ -40,6 +40,30 @@ class UserController extends Controller
     }
 
     /**
+     * Get the list of users the current user is following.
+     */
+    public function following(Request $request)
+    {
+        $user = $request->user();
+        
+        $following = $user->following()
+            ->with(['profile'])
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'data' => $following->map(function($u) {
+                return [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'avatar' => $u->image_url,
+                    'city' => $u->profile->city ?? 'Brasil',
+                ];
+            })
+        ]);
+    }
+
+    /**
      * Follow/Unfollow a user.
      */
     public function toggleFollow(Request $request, $id)

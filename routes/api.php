@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // User/Social API
     Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);
     Route::post('/users/{id}/follow', [\App\Http\Controllers\Api\UserController::class, 'toggleFollow']);
+    Route::get('/users/following', [\App\Http\Controllers\Api\UserController::class, 'following']);
     Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'profile']);
 
     // Chat/Messages API
@@ -52,4 +53,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages', [\App\Http\Controllers\Api\MessageController::class, 'sendMessage']);
     Route::post('/messages/{userId}/read', [\App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
     Route::get('/conversations', [\App\Http\Controllers\Api\MessageController::class, 'getConversations']);
+    
+    // Stats & Dashboard API
+    Route::get('/stats/dashboard', [\App\Http\Controllers\Api\StatsController::class, 'dashboard']);
+    Route::get('/stats/challenges/active', [\App\Http\Controllers\Api\StatsController::class, 'activeChallenges']);
+    Route::get('/stats/challenges/available', [\App\Http\Controllers\Api\StatsController::class, 'availableChallenges']);
+    Route::get('/stats/tier', [\App\Http\Controllers\Api\StatsController::class, 'userTier']);
 });
