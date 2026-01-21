@@ -37,20 +37,41 @@ class MessageController extends Controller
     public function sendMessage(Request $request)
     {
         $authUser = Auth::user();
-        $data = $request->only(['recipient_id', 'content']);
-        $validator = Validator::make($data, [
+        
+        $validator = Validator::make($request->all(), [
             'recipient_id' => 'required|exists:users,id|different:' . $authUser->id,
-            'content' => 'required|string|max:2000',
+            'content' => 'nullable|string|max:2000',
+            'type' => 'nullable|string|in:text,image,video,audio,document',
+            'file' => 'nullable|file|max:10240', // 10MB max
         ]);
+
         if ($validator->fails()) {
             return response()->json(['success' => false, 'error' => $validator->errors()], 422);
         }
+
+        $type = $request->input('type', 'text');
+        $filePath = null;
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $path = 'messages/' . $type . 's';
+            $file->move(public_path($path), $fileName);
+            $filePath = $path . '/' . $fileName;
+            
+            if ($type === 'text') {
+                $type = 'document'; // Fallback if file provided but type is text
+            }
+        }
+
         $message = Message::create([
             'sender_id' => $authUser->id,
-            'receiver_id' => $data['recipient_id'],
-            'content' => $data['content'],
+            'receiver_id' => $request->recipient_id,
+            'content' => $request->input('content') ?? ($filePath ? ucfirst($type) : ''),
+            'type' => $type,
+            'file_path' => $filePath,
         ]);
-        // TODO: disparar evento/notification se necessário
+
         return response()->json(['success' => true, 'data' => $message], 201);
     }
 

@@ -38,13 +38,32 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
+        // Development bypass / quick credentials
+        if (config('app.env') === 'local') {
+            // Se tentar logar com 'admin@dev.com', loga como o admin
+            if ($request->email === 'admin@dev.com') {
+                $user = User::whereHas('profile', fn($q) => $q->where('role', 'admin'))->first();
+            } else {
+                $user = User::where('email', $request->email)->first();
+            }
+
+            if ($user) {
+                $token = $user->createToken('auth_token')->plainTextToken;
+                return response()->json([
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'user' => $user,
+                ]);
+            }
+        }
+
         if (!Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
-                'email' => ['Invalid credentials'],
+                'email' => ['Credenciais inválidas'],
             ]);
         }
 

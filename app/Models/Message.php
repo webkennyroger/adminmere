@@ -10,11 +10,9 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'content',
-        'attachment_path',
-        'attachment_type',
+        'type',
+        'file_path',
         'read_at',
-        'deleted_by_sender',
-        'deleted_by_receiver',
     ];
 
     protected $casts = [
