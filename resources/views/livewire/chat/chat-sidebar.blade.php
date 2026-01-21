@@ -40,15 +40,23 @@
                 :class="$store.chatSidebar.isOpen ? 'p-2 gap-3 justify-start' : 'p-2 justify-center'"
                 title="{{ $user->name }}">
                 
-                <!-- Avatar -->
+                <!-- Avatar & Status -->
                 <div class="relative shrink-0">
                     <img src="{{ $user->profile?->image ? Storage::url($user->profile->image) : $user->image_url }}"
                         alt="{{ $user->name }}"
                         class="rounded-full object-cover ring-2 ring-transparent group-hover:ring-brand-500 transition-all"
                         :class="$store.chatSidebar.isOpen ? 'w-10 h-10' : 'w-10 h-10'">
                     
-                    <!-- Status Dot -->
+                    <!-- Online Status Dot -->
                     <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
+
+                    <!-- Unread Badge for Collapsed Mode -->
+                    @if($user->unread_count > 0)
+                        <div x-show="!$store.chatSidebar.isOpen" 
+                            class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full border border-white dark:border-zinc-900 shadow-sm z-10 transition-all">
+                            {{ $user->unread_count }}
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Text Info (Only when open) -->
@@ -88,11 +96,6 @@
                             </button>
                         </div>
                     </div>
-                </div>
-                 <!-- Unread Badge for Collapsed Mode (Absolute) -->
-                <div x-show="!$store.chatSidebar.isOpen && {{ $user->unread_count }} > 0" 
-                    class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full border border-white dark:border-zinc-900">
-                    {{ $user->unread_count }}
                 </div>
             </div>
         @empty

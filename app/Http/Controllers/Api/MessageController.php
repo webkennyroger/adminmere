@@ -69,22 +69,53 @@ class MessageController extends Controller
     public function getConversations(Request $request)
     {
         $authUser = Auth::user();
-        $conversations = Message::selectRaw('IF(sender_id = receiver_id, NULL, IF(sender_id = ' . $authUser->id . ', receiver_id, sender_id)) as user_id, MAX(created_at) as last_message_at')
-            ->where(function($q) use ($authUser) {
-                $q->where('sender_id', $authUser->id)
-                  ->orWhere('receiver_id', $authUser->id);
+
+        // Get unique user IDs the current user has chatted with
+        $userIds = Message::where('sender_id', $authUser->id)
+            ->orWhere('receiver_id', $authUser->id)
+            ->get()
+            ->map(function ($message) use ($authUser) {
+                return $message->sender_id == $authUser->id ? $message->receiver_id : $message->sender_id;
             })
-            ->groupBy('user_id')
-            ->orderByDesc('last_message_at')
-            ->get();
-        $userIds = $conversations->pluck('user_id')->filter()->all();
-        $users = !empty($userIds) ? User::whereIn('id', $userIds)->get()->keyBy('id') : collect();
-        $result = $conversations->map(function($conv) use ($users) {
-            return [
-                'user' => $users[$conv->user_id] ?? null,
-                'last_message_at' => $conv->last_message_at,
+            ->unique()
+            ->values();
+
+        $result = [];
+
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            if (!$user) continue;
+
+            $lastMessage = Message::where(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $authUser->id)->where('receiver_id', $userId);
+            })->orWhere(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $userId)->where('receiver_id', $authUser->id);
+            })->latest()->first();
+
+            $unreadCount = Message::where('sender_id', $userId)
+                ->where('receiver_id', $authUser->id)
+                ->whereNull('read_at')
+                ->count();
+
+            $result[] = [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'avatar' => $user->image_url,
+                ],
+                'last_message' => [
+                    'content' => $lastMessage ? $lastMessage->content : '',
+                    'created_at' => $lastMessage ? $lastMessage->created_at->toIso8601String() : null,
+                ],
+                'unread_count' => $unreadCount,
             ];
+        }
+
+        // Sort by last message time descending
+        usort($result, function ($a, $b) {
+            return ($b['last_message']['created_at'] ?? '') <=> ($a['last_message']['created_at'] ?? '');
         });
+
         return response()->json(['success' => true, 'data' => $result]);
     }
 }

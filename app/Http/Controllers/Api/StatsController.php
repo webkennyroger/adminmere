@@ -85,17 +85,17 @@ class StatsController extends Controller
     {
         $days = [];
         $today = Carbon::today();
+        $startOfWeek = $today->copy()->startOfWeek(Carbon::SUNDAY);
         
-        // Get 5 days around today
-        for ($i = -2; $i <= 2; $i++) {
-            $date = $today->copy()->addDays($i);
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
             $dayActivities = $user->activities()
                 ->whereDate('start_time', $date)
                 ->get();
             
             $days[] = [
                 'date' => $date->format('Y-m-d'),
-                'day_name' => strtoupper($date->locale('pt_BR')->dayName),
+                'day_name' => strtoupper($date->locale('pt_BR')->translatedFormat('D')),
                 'day_number' => $date->day,
                 'has_activity' => $dayActivities->count() > 0,
                 'is_today' => $date->isToday(),
