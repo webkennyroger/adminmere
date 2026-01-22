@@ -10,13 +10,13 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'content',
-        'type',
-        'file_path',
+        'attachments',
         'read_at',
     ];
 
     protected $casts = [
         'read_at' => 'datetime',
+        'attachments' => 'array',
     ];
 
     public function sender()

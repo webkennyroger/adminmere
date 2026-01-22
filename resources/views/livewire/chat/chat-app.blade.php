@@ -1,7 +1,7 @@
 <div class="h-[calc(100vh-186px)] overflow-hidden sm:h-[calc(100vh-174px)]">
     <div class="flex flex-col h-full gap-6 xl:flex-row xl:gap-5">
         <!-- Chat List -->
-        <div x-data="{ isMobile: false }" @click.outside="isMobile = false" class="flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white xl:flex xl:w-1/4 dark:border-zinc-800 dark:bg-white/[0.03]">
+        <div x-data="{ isMobile: false }" @click.outside="isMobile = false" class="flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white xl:flex xl:w-1/4 dark:border-zinc-800 dark:bg-white/3">
             <!-- header, search etc (same as your markup) -->
             <div class="sticky px-4 pt-4 pb-4 sm:px-5 sm:pt-5 xl:pb-0">
                 <div class="flex items-start justify-between">
@@ -126,7 +126,7 @@
         <!-- end chat list -->
 
         <!-- Chat Box -->
-        <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-white/[0.03] xl:w-3/4">
+        <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-white/3 xl:w-3/4">
             @if($selectedUser)
                 <!-- ====== Chat Box Start -->
                 <div class="sticky flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800 xl:px-6">
@@ -175,53 +175,126 @@
                     </div>
                 </div>
                 <!-- Chat Messages -->
-                <div id="chat-messages" class="custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6">
+                <div id="chat-messages" class="custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6"
+                    x-data="{ 
+                        playAudio(id) {
+                            let audio = document.getElementById('audio-' + id);
+                            let others = document.querySelectorAll('audio');
+                            others.forEach(a => { if(a !== audio) a.pause(); });
+                            if(audio.paused) audio.play(); else audio.pause();
+                        },
+                        setPlaybackSpeed(id, speed) {
+                            let audio = document.getElementById('audio-' + id);
+                            if(audio) audio.playbackRate = speed;
+                        }
+                    }">
                     @forelse($chatMessages as $message)
                         @php
                             $isMe = $message->sender_id === auth()->id();
                         @endphp
                         
-                        <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }} mb-4">
-                            <div class="flex items-end gap-3 max-w-[70%]">
+                        <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }} mb-4" wire:key="msg-{{ $message->id }}">
+                            <div class="flex items-end gap-3 max-w-[85%] lg:max-w-[70%]">
                                 @if(!$isMe)
-                                    <div class="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex-shrink-0 flex items-center justify-center text-xs text-zinc-600 dark:text-white">
-                                        {{ $selectedUser->initials() }}
+                                    <div class="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-700 shrink-0 flex items-center justify-center text-xs text-zinc-600 dark:text-white overflow-hidden shadow-inner">
+                                        @if($selectedUser->profile?->image)
+                                            <img src="{{ Storage::url($selectedUser->profile->image) }}" class="h-full w-full object-cover">
+                                        @else
+                                            {{ $selectedUser->initials() }}
+                                        @endif
                                     </div>
                                 @endif
 
                                 <div class="flex flex-col {{ $isMe ? 'items-end' : 'items-start' }}">
                                     <!-- Message Bubble -->
-                                    <div class="relative px-4 py-3 rounded-2xl 
+                                    <div class="group relative px-4 py-3 rounded-2xl shadow-sm transition-all
                                         {{ $isMe 
-                                            ? 'bg-blue-600 text-white rounded-br-none' 
-                                            : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-bl-none border border-zinc-200 dark:border-zinc-700 shadow-sm dark:shadow-none' 
+                                            ? 'bg-brand-500 text-white rounded-br-sm' 
+                                            : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-bl-sm border border-zinc-100 dark:border-zinc-700' 
                                         }}">
                                         
-                                        <!-- Attachment -->
-                                        @if($message->attachment_path)
-                                            <div class="mb-2 rounded-lg overflow-hidden border border-white/10">
-                                                @if($message->attachment_type === 'image')
-                                                    <img src="{{ asset('storage/' . $message->attachment_path) }}" class="max-w-[250px] max-h-[250px] object-cover">
-                                                @elseif($message->attachment_type === 'video')
-                                                    <video controls class="max-w-[250px] max-h-[250px]">
-                                                        <source src="{{ asset('storage/' . $message->attachment_path) }}">
-                                                    </video>
-                                                @else
-                                                    <a href="{{ asset('storage/' . $message->attachment_path) }}" target="_blank" class="flex items-center gap-2 p-2 bg-black/20 hover:bg-black/30 transition">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                                        <span class="text-xs underline">Ver Arquivo</span>
-                                                    </a>
-                                                @endif
+                                        <!-- Attachments -->
+                                        @if(!empty($message->attachments))
+                                            <div class="mb-2 space-y-2">
+                                                @foreach($message->attachments as $index => $attachment)
+                                                    <div class="rounded-xl overflow-hidden border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
+                                                        @if(Str::startsWith($attachment['mime_type'], 'image/'))
+                                                            <a href="{{ asset('storage/' . $attachment['path']) }}" target="_blank" class="block aspect-video lg:aspect-auto">
+                                                                <img src="{{ asset('storage/' . $attachment['path']) }}" class="max-w-full max-h-[400px] object-contain mx-auto hover:opacity-95 transition">
+                                                            </a>
+                                                        @elseif(Str::startsWith($attachment['mime_type'], 'video/'))
+                                                            <video controls class="max-w-full max-h-[400px] rounded-lg">
+                                                                <source src="{{ asset('storage/' . $attachment['path']) }}" type="{{ $attachment['mime_type'] }}">
+                                                            </video>
+                                                        @elseif(Str::startsWith($attachment['mime_type'], 'audio/'))
+                                                            <!-- WhatsApp Style Audio Player -->
+                                                            <div x-data="{ speed: 1, playing: false }" class="flex items-center gap-3 p-3 min-w-[200px] lg:min-w-[280px]">
+                                                                <button @click="playing = !playing; $parent.playAudio('{{ $message->id }}-{{ $index }}')" 
+                                                                    class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full {{ $isMe ? 'bg-white/20 text-white' : 'bg-brand-500 text-white' }}">
+                                                                    <svg x-show="!playing" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                                                    <svg x-show="playing" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                                                </button>
+                                                                
+                                                                <div class="flex-1">
+                                                                    <audio id="audio-{{ $message->id }}-{{ $index }}" 
+                                                                        @playing="playing = true" @pause="playing = false" @ended="playing = false"
+                                                                        class="hidden">
+                                                                        <source src="{{ asset('storage/' . $attachment['path']) }}" type="{{ $attachment['mime_type'] }}">
+                                                                    </audio>
+                                                                    <div class="h-1.5 w-full bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                                                                        <div class="h-full bg-current opacity-50" style="width: 0%" 
+                                                                            x-init="let a = document.getElementById('audio-{{ $message->id }}-{{ $index }}'); a.ontimeupdate = () => { $el.style.width = (a.currentTime / a.duration * 100) + '%' }"></div>
+                                                                    </div>
+                                                                    <div class="flex justify-between items-center mt-1">
+                                                                        <span class="text-[10px] opacity-70" x-init="let a = document.getElementById('audio-{{ $message->id }}-{{ $index }}'); a.onloadedmetadata = () => { $el.innerText = Math.floor(a.duration / 60) + ':' + (Math.floor(a.duration % 60)).toString().padStart(2, '0') }">0:00</span>
+                                                                        
+                                                                        <!-- Speed Control -->
+                                                                        <button @click="speed = (speed === 1 ? 1.5 : (speed === 1.5 ? 2 : 1)); $parent.setPlaybackSpeed('{{ $message->id }}-{{ $index }}', speed)" 
+                                                                            class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {{ $isMe ? 'bg-white/20' : 'bg-zinc-200 dark:bg-zinc-700' }} hover:opacity-80">
+                                                                            <span x-text="speed + 'x'"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <a href="{{ asset('storage/' . $attachment['path']) }}" download class="p-2 opacity-50 hover:opacity-100 transition">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                                                </a>
+                                                            </div>
+                                                        @else
+                                                            <div class="flex items-center gap-3 p-3 {{ $isMe ? 'bg-white/10' : 'bg-zinc-100 dark:bg-zinc-700/50' }}">
+                                                                <div class="p-2 bg-brand-500 rounded-lg text-white">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                                </div>
+                                                                <div class="flex-1 min-w-0">
+                                                                    <p class="text-xs font-medium truncate {{ $isMe ? 'text-white' : 'text-zinc-700 dark:text-zinc-200' }}">{{ $attachment['name'] }}</p>
+                                                                    <p class="text-[10px] opacity-60">{{ $this->formatFileSize($attachment['size']) }}</p>
+                                                                </div>
+                                                                <a href="{{ asset('storage/' . $attachment['path']) }}" download class="p-1.5 hover:bg-black/10 rounded-full transition">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         @endif
 
-                                        <p class="leading-relaxed text-sm whitespace-pre-wrap">{{ $message->content }}</p>
+                                        @if($message->content)
+                                            <p class="leading-relaxed text-sm whitespace-pre-wrap">{{ $message->content }}</p>
+                                        @endif
                                     </div>
                                     
                                     <!-- Time -->
-                                    <span class="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1 {{ $isMe ? 'mr-1' : 'ml-1' }}">
-                                        {{ $message->created_at->diffForHumans() }}
-                                    </span>
+                                    <div class="flex items-center gap-1 mt-1 {{ $isMe ? 'flex-row-reverse mr-1' : 'ml-1' }}">
+                                        <span class="text-[10px] text-zinc-400 dark:text-zinc-500">
+                                            {{ $message->created_at->diffForHumans(null, true) }}
+                                        </span>
+                                        @if($isMe)
+                                            <svg class="h-3 w-3 {{ $message->read_at ? 'text-brand-500' : 'text-zinc-300' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                                <path d="M2 12l5 5L20 4M7 12l5 5L22 4" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -235,67 +308,113 @@
                 </div>
 
                 <!-- Chat Input -->
-                <div class="sticky bottom-0 border-t border-zinc-200 p-3 dark:border-zinc-800">
-                    <form wire:submit="sendMessage" class="flex items-center gap-3">
-                        <!-- Emoji Button -->
-                        <div class="relative w-full">
-                            <button class="absolute left-1 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white/90 sm:left-3">
-                                <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12ZM10.0001 9.23256C10.0001 8.5422 9.44042 7.98256 8.75007 7.98256C8.05971 7.98256 7.50007 8.5422 7.50007 9.23256V9.23266C7.50007 9.92301 8.05971 10.4827 8.75007 10.4827C9.44042 10.4827 10.0001 9.92301 10.0001 9.23266V9.23256ZM15.2499 7.98256C15.9403 7.98256 16.4999 8.5422 16.4999 9.23256V9.23266C16.4999 9.92301 15.9403 10.4827 15.2499 10.4827C14.5596 10.4827 13.9999 9.92301 13.9999 9.23266V9.23256C13.9999 8.5422 14.5596 7.98256 15.2499 7.98256ZM9.23014 13.7116C8.97215 13.3876 8.5003 13.334 8.17625 13.592C7.8522 13.85 7.79865 14.3219 8.05665 14.6459C8.97846 15.8037 10.4026 16.5481 12 16.5481C13.5975 16.5481 15.0216 15.8037 15.9434 14.6459C16.2014 14.3219 16.1479 13.85 15.8238 13.592C15.4998 13.334 15.0279 13.3876 14.7699 13.7116C14.1205 14.5274 13.1213 15.0481 12 15.0481C10.8788 15.0481 9.87961 14.5274 9.23014 13.7116Z" fill=""></path>
-                                </svg>
-                            </button>
-                            <!-- Input Field -->
-                            <input wire:model="content" type="text" placeholder="Digite uma mensagem..." class="h-9 w-full border-none bg-transparent pl-12 pr-5 text-sm text-zinc-800 outline-hidden placeholder:text-zinc-400 focus:border-0 focus:ring-0 dark:text-white/90">
-                        </div>
-
-                        <div class="flex items-center">
-
-                            <!-- File Upload Button -->
+                <div class="sticky bottom-0 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+                    <form wire:submit.prevent="sendMessage" class="flex items-end gap-3" 
+                        x-data="{ 
+                            isRecording: false, 
+                            mediaRecorder: null, 
+                            audioChunks: [],
+                            content: @entangle('content'),
+                            isUploading: false,
+                            autoResize() {
+                                $el.style.height = 'auto';
+                                $el.style.height = $el.scrollHeight + 'px';
+                            }
+                        }"
+                        x-on:livewire-upload-start="isUploading = true"
+                        x-on:livewire-upload-finish="isUploading = false"
+                        x-on:livewire-upload-error="isUploading = false">
+                        
+                        <div class="flex-1 relative flex items-center bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 focus-within:border-brand-500 transition-colors p-2 px-3">
+                            <!-- File Button -->
                             <div class="relative">
-                                <input type="file" wire:model="attachment" id="file-upload" class="hidden">
-                                <label for="file-upload" class="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white transition rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-center">
-                                    @if($attachment)
-                                        <span class="text-blue-500">
-                                            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.9522 14.4422C12.9522 14.452 12.9524 14.4618 12.9527 14.4714V16.1442C12.9527 16.6699 12.5265 17.0961 12.0008 17.0961C11.475 17.0961 11.0488 16.6699 11.0488 16.1442V6.15388C11.0488 5.73966 10.7131 5.40388 10.2988 5.40388C9.88463 5.40388 9.54885 5.73966 9.54885 6.15388V16.1442C9.54885 17.4984 10.6466 18.5961 12.0008 18.5961C13.355 18.5961 14.4527 17.4983 14.4527 16.1442V6.15388C14.4527 6.14308 14.4525 6.13235 14.452 6.12166C14.4347 3.84237 12.5817 2 10.2983 2C8.00416 2 6.14441 3.85976 6.14441 6.15388V14.4422C6.14441 14.4492 6.1445 14.4561 6.14469 14.463V16.1442C6.14469 19.3783 8.76643 22 12.0005 22C15.2346 22 17.8563 19.3783 17.8563 16.1442V9.55775C17.8563 9.14354 17.5205 8.80775 17.1063 8.80775C16.6921 8.80775 16.3563 9.14354 16.3563 9.55775V16.1442C16.3563 18.5498 14.4062 20.5 12.0005 20.5C9.59485 20.5 7.64469 18.5498 7.64469 16.1442V9.55775C7.64469 9.55083 7.6446 9.54393 7.64441 9.53706L7.64441 6.15388C7.64441 4.68818 8.83259 3.5 10.2983 3.5C11.764 3.5 12.9522 4.68818 12.9522 6.15388L12.9522 14.4422Z" fill=""></path>
-                                            </svg>
-                                        </span>
-                                    @else
-                                        <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.9522 14.4422C12.9522 14.452 12.9524 14.4618 12.9527 14.4714V16.1442C12.9527 16.6699 12.5265 17.0961 12.0008 17.0961C11.475 17.0961 11.0488 16.6699 11.0488 16.1442V6.15388C11.0488 5.73966 10.7131 5.40388 10.2988 5.40388C9.88463 5.40388 9.54885 5.73966 9.54885 6.15388V16.1442C9.54885 17.4984 10.6466 18.5961 12.0008 18.5961C13.355 18.5961 14.4527 17.4983 14.4527 16.1442V6.15388C14.4527 6.14308 14.4525 6.13235 14.452 6.12166C14.4347 3.84237 12.5817 2 10.2983 2C8.00416 2 6.14441 3.85976 6.14441 6.15388V14.4422C6.14441 14.4492 6.1445 14.4561 6.14469 14.463V16.1442C6.14469 19.3783 8.76643 22 12.0005 22C15.2346 22 17.8563 19.3783 17.8563 16.1442V9.55775C17.8563 9.14354 17.5205 8.80775 17.1063 8.80775C16.6921 8.80775 16.3563 9.14354 16.3563 9.55775V16.1442C16.3563 18.5498 14.4062 20.5 12.0005 20.5C9.59485 20.5 7.64469 18.5498 7.64469 16.1442V9.55775C7.64469 9.55083 7.6446 9.54393 7.64441 9.53706L7.64441 6.15388C7.64441 4.68818 8.83259 3.5 10.2983 3.5C11.764 3.5 12.9522 4.68818 12.9522 6.15388L12.9522 14.4422Z" fill=""></path>
-                                        </svg>
+                                <input type="file" wire:model.live="attachments" id="file-upload" class="hidden" multiple>
+                                <label for="file-upload" class="p-2 text-zinc-400 hover:text-brand-500 transition cursor-pointer flex items-center justify-center relative">
+                                    @if(count($attachments) > 0)
+                                        <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white shadow-sm">{{ count($attachments) }}</span>
                                     @endif
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                                 </label>
                             </div>
-                    
 
-                            <!-- Mic Button -->
-                            <button type="submit" wire:loading.attr="disabled" 
-                                class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white/90">
-                                <svg class="stroke-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="7" y="2.75" width="10" height="12.5" rx="5" stroke="" stroke-width="1.5"></rect>
-                                    <path d="M20 10.25C20 14.6683 16.4183 18.25 12 18.25C7.58172 18.25 4 14.6683 4 10.25" stroke="" stroke-width="1.5" stroke-linecap="round"></path>
-                                    <path d="M10 21.25H14" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    <path d="M12 18.25L12 21.25" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    <path d="M12 7.5L12 10.5" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    <path d="M14.5 8.25L14.5 9.75" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    <path d="M9.5 8.25L9.5 9.75" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                            </button>
+                            <!-- Input Field -->
+                            <textarea x-model="content"
+                                @input="autoResize()"
+                                @keydown.enter.prevent="$wire.sendMessage()"
+                                placeholder="Digite uma mensagem..." 
+                                class="flex-1 min-h-[40px] max-h-[120px] bg-transparent border-none text-sm text-zinc-800 dark:text-white/90 placeholder:text-zinc-400 focus:ring-0 py-2 resize-none overflow-y-auto custom-scrollbar"></textarea>
+                            
+                            <!-- Recording Indicator -->
+                            <div x-show="isRecording" class="absolute inset-0 bg-white dark:bg-zinc-800 rounded-2xl flex items-center px-4 gap-3 z-10 animate-fade-in" x-cloak>
+                                <span class="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                                <span class="text-xs font-medium text-red-500">Gravando áudio...</span>
+                                <div class="flex-1"></div>
+                                <button type="button" @click="mediaRecorder.stop(); isRecording = false;" class="text-xs font-semibold text-zinc-500 hover:text-red-500 px-2 py-1">Cancelar</button>
+                            </div>
 
-                            <button class="ml-3 flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500 text-white hover:bg-brand-600 xl:ml-5">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.98481 2.44399C3.11333 1.57147 1.15325 3.46979 1.96543 5.36824L3.82086 9.70527C3.90146 9.89367 3.90146 10.1069 3.82086 10.2953L1.96543 14.6323C1.15326 16.5307 3.11332 18.4291 4.98481 17.5565L16.8184 12.0395C18.5508 11.2319 18.5508 8.76865 16.8184 7.961L4.98481 2.44399ZM3.34453 4.77824C3.0738 4.14543 3.72716 3.51266 4.35099 3.80349L16.1846 9.32051C16.762 9.58973 16.762 10.4108 16.1846 10.68L4.35098 16.197C3.72716 16.4879 3.0738 15.8551 3.34453 15.2223L5.19996 10.8853C5.21944 10.8397 5.23735 10.7937 5.2537 10.7473L9.11784 10.7473C9.53206 10.7473 9.86784 10.4115 9.86784 9.99726C9.86784 9.58304 9.53206 9.24726 9.11784 9.24726L5.25157 9.24726C5.2358 9.20287 5.2186 9.15885 5.19996 9.11528L3.34453 4.77824Z" fill="white"></path>
+                            <!-- Uploading Indicator -->
+                            <div x-show="isUploading" class="absolute right-3 top-1/2 -translate-y-1/2" x-cloak>
+                                <svg class="animate-spin h-4 w-4 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-2">
+                            <!-- Voice Button -->
+                            <div x-show="!content && !($wire.attachments && $wire.attachments.length)">
+                                <button type="button"
+                                    @mousedown="
+                                        isRecording = true;
+                                        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                                            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                                            mediaRecorder.start();
+                                            audioChunks = [];
+                                            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                                            mediaRecorder.onstop = () => {
+                                                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                                                audioChunks = [];
+                                                if(isRecording) {
+                                                    @this.upload('audioAttachment', audioBlob, (uploadedFilename) => {
+                                                        $wire.sendAudioMessage();
+                                                    });
+                                                }
+                                                stream.getTracks().forEach(track => track.stop());
+                                            };
+                                        }).catch(err => {
+                                            isRecording = false;
+                                            alert('Permissão de microfone negada ou erro: ' + err.message);
+                                        });
+                                    "
+                                    @mouseup="if(isRecording) mediaRecorder.stop(); isRecording = false;"
+                                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-brand-500 transition-all hover:scale-105 active:scale-95 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Send Button -->
+                            <button type="submit" 
+                                x-show="content || ($wire.attachments && $wire.attachments.length)"
+                                class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500 text-white hover:bg-brand-600 transition-all hover:scale-105 active:scale-95 shadow-md shadow-brand-500/20">
+                                <svg class="ml-0.5" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </button>
                         </div>
                     </form>
-                    @if($attachment)
-                    <div class="mt-2 text-xs text-blue-400 flex items-center gap-1 pl-12">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                        Arquivo selecionado (Enviar para confirmar)
-                    </div>
-                @endif
+                    
+                    @if(count($attachments) > 0)
+                        <div class="mt-2 flex flex-wrap gap-2 animate-slide-up">
+                            @foreach($attachments as $index => $file)
+                                <div class="group relative flex items-center gap-2 px-3 py-1.5 bg-zinc-50 dark:bg-zinc-800/80 rounded-lg border border-zinc-200 dark:border-zinc-700 pr-8">
+                                    <svg class="w-4 h-4 text-brand-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-300 truncate max-w-[120px]">{{ $file->getClientOriginalName() }}</span>
+                                    <button type="button" wire:click="removeAttachment({{ $index }})" class="absolute right-1 text-zinc-400 hover:text-red-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
                 <!-- ====== Chat Box End -->
         </div>

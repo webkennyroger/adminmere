@@ -306,19 +306,63 @@
                                             </div>
                                         </div>
 
-                                        @if($message->attachment_path)
-                                            <div class="mb-2">
-                                                @if($message->attachment_type === 'image')
-                                                    <img src="{{ asset('storage/' . $message->attachment_path) }}"
-                                                        class="rounded-lg max-h-32 object-cover">
-                                                @else
-                                                    <a href="{{ asset('storage/' . $message->attachment_path) }}" target="_blank"
-                                                        class="flex items-center gap-2 underline text-xs">
-                                                        Ver Anexo
-                                                    </a>
-                                                @endif
+                                        @if(!empty($message->attachments))
+                                            <div class="mt-2 flex flex-col gap-2">
+                                                @foreach($message->attachments as $index => $attachment)
+                                                    <div class="rounded-xl overflow-hidden border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
+                                                        @if(Str::startsWith($attachment['mime_type'], 'image/'))
+                                                            <a href="{{ asset('storage/' . $attachment['path']) }}" target="_blank">
+                                                                <img src="{{ asset('storage/' . $attachment['path']) }}" class="rounded-lg max-h-40 object-cover w-full hover:opacity-95 transition">
+                                                            </a>
+                                                        @elseif(Str::startsWith($attachment['mime_type'], 'video/'))
+                                                            <video controls class="rounded-lg max-h-40 w-full">
+                                                                <source src="{{ asset('storage/' . $attachment['path']) }}" type="{{ $attachment['mime_type'] }}">
+                                                            </video>
+                                                        @elseif(Str::startsWith($attachment['mime_type'], 'audio/'))
+                                                            <!-- WhatsApp Style Audio Player -->
+                                                            <div x-data="{ speed: 1, playing: false }" class="flex items-center gap-2 p-2 min-w-[180px]">
+                                                                <button @click="playing = !playing; $parent.playAudio('{{ $message->id }}-{{ $index }}')" 
+                                                                    class="shrink-0 w-8 h-8 flex items-center justify-center rounded-full {{ $isMe ? 'bg-white/20 text-white' : 'bg-brand-500 text-white' }}">
+                                                                    <svg x-show="!playing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                                                    <svg x-show="playing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                                                </button>
+                                                                
+                                                                <div class="flex-1 min-w-0">
+                                                                    <audio id="audio-{{ $message->id }}-{{ $index }}" 
+                                                                        @playing="playing = true" @pause="playing = false" @ended="playing = false"
+                                                                        class="hidden">
+                                                                        <source src="{{ asset('storage/' . $attachment['path']) }}" type="{{ $attachment['mime_type'] }}">
+                                                                    </audio>
+                                                                    <div class="h-1 w-full bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                                                                        <div class="h-full bg-current opacity-50" style="width: 0%" 
+                                                                            x-init="let a = document.getElementById('audio-{{ $message->id }}-{{ $index }}'); a.ontimeupdate = () => { $el.style.width = (a.currentTime / a.duration * 100) + '%' }"></div>
+                                                                    </div>
+                                                                    <div class="flex justify-between items-center mt-1">
+                                                                        <span class="text-[9px] opacity-70" x-init="let a = document.getElementById('audio-{{ $message->id }}-{{ $index }}'); a.onloadedmetadata = () => { $el.innerText = Math.floor(a.duration / 60) + ':' + (Math.floor(a.duration % 60)).toString().padStart(2, '0') }">0:00</span>
+                                                                        <button @click="speed = (speed === 1 ? 1.5 : (speed === 1.5 ? 2 : 1)); $parent.setPlaybackSpeed('{{ $message->id }}-{{ $index }}', speed)" 
+                                                                            class="text-[9px] font-bold px-1 py-0.5 rounded-full {{ $isMe ? 'bg-white/20' : 'bg-zinc-200 dark:bg-zinc-700' }}">
+                                                                            <span x-text="speed + 'x'"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <a href="{{ asset('storage/' . $attachment['path']) }}" download class="p-1 opacity-50 hover:opacity-100 transition">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                                                </a>
+                                                            </div>
+                                                        @else
+                                                            <a href="{{ asset('storage/' . $attachment['path']) }}" target="_blank" class="flex items-center gap-2 p-2 rounded-lg bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition">
+                                                                <svg class="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                                <div class="text-[11px] min-w-0">
+                                                                    <p class="font-semibold truncate">{{ $attachment['name'] }}</p>
+                                                                    <p class="text-[9px] text-zinc-500">{{ $this->formatFileSize($attachment['size'], 1) }}</p>
+                                                                </div>
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         @endif
+
                                         {{ $message->content }}
                                     </div>
                                     <span class="text-[10px] text-zinc-400 mt-1">
@@ -368,43 +412,89 @@
                     </div>
 
                     <!-- Input -->
-                    <div class="p-3 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
+                    <div class="p-3 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800"
+                        x-data="{ 
+                            content: @entangle('content'),
+                            isRecording: false, 
+                            mediaRecorder: null, 
+                            audioChunks: [],
+                            isUploading: false
+                        }"
+                        x-on:livewire-upload-start="isUploading = true"
+                        x-on:livewire-upload-finish="isUploading = false"
+                        x-on:livewire-upload-error="isUploading = false">
+                        
                         <form wire:submit.prevent="sendMessage" class="flex items-center gap-2">
                             <!-- File Button -->
                             <div class="relative">
-                                <input type="file" wire:model="attachment"
-                                    id="chat-file-upload-{{ $selectedUser ? $selectedUser->id : $selectedGroup->id }}"
-                                    class="hidden">
-                                <label for="chat-file-upload-{{ $selectedUser ? $selectedUser->id : $selectedGroup->id }}"
-                                    class="cursor-pointer text-zinc-400 hover:text-brand-500 p-1">
-                                    @if($attachment)
-                                        <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                                            </path>
-                                        </svg>
-                                    @else
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
-                                            </path>
-                                        </svg>
+                                <input type="file" wire:model.live="attachments"
+                                    id="chat-file-upload-{{ $selectedUser ? $selectedUser->id : ($selectedGroup ? $selectedGroup->id : '') }}"
+                                    class="hidden" multiple>
+                                <label for="chat-file-upload-{{ $selectedUser ? $selectedUser->id : ($selectedGroup ? $selectedGroup->id : '') }}"
+                                    class="cursor-pointer text-zinc-400 hover:text-brand-500 p-1 relative">
+                                    @if(count($attachments) > 0)
+                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-brand-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                                            {{ count($attachments) }}
+                                        </div>
                                     @endif
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
                                 </label>
                             </div>
 
-                            <input wire:model="content" 
-                                x-on:input="broadcastTyping; amITyping = true; clearTimeout(typingTimeout); typingTimeout = setTimeout(() => amITyping = false, 3000)" 
-                                type="text"
-                                placeholder="Digite uma mensagem..."
-                                class="flex-1 bg-zinc-100 dark:bg-zinc-800 border-none rounded-full py-2 px-4 text-sm focus:ring-1 focus:ring-brand-500 dark:text-white">
+                            <div class="relative flex-1">
+                                <input x-model="content" 
+                                    x-on:input="broadcastTyping; amITyping = true; clearTimeout(typingTimeout); typingTimeout = setTimeout(() => amITyping = false, 3000)" 
+                                    type="text"
+                                    placeholder="Digite uma mensagem..."
+                                    class="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-full py-2 px-4 text-sm focus:ring-1 focus:ring-brand-500 dark:text-white">
+                                
+                                <div x-show="isUploading" class="absolute right-3 top-1/2 -translate-y-1/2" x-cloak>
+                                    <svg class="animate-spin h-3 w-3 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </div>
+                            </div>
 
-                            <button type="submit"
-                                class="bg-brand-500 hover:bg-brand-600 text-white p-2 rounded-full shadow-md transition-colors">
-                                <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                </svg>
-                            </button>
+                            <div class="flex items-center gap-1">
+                                <!-- Voice Button -->
+                                <button type="button"
+                                    x-show="!content && !($wire.attachments && $wire.attachments.length) && !isRecording"
+                                    @mousedown="
+                                        isRecording = true;
+                                        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                                            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                                            mediaRecorder.start();
+                                            audioChunks = [];
+                                            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                                            mediaRecorder.onstop = () => {
+                                                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                                                audioChunks = [];
+                                                if(isRecording) {
+                                                    @this.upload('audioAttachment', audioBlob, (uploadedFilename) => {
+                                                        $wire.sendAudioMessage();
+                                                    });
+                                                }
+                                                stream.getTracks().forEach(track => track.stop());
+                                            };
+                                        }).catch(err => { isRecording = false; });
+                                    "
+                                    @mouseup="if(isRecording) mediaRecorder.stop(); isRecording = false;"
+                                    class="bg-brand-500 hover:bg-brand-600 text-white p-2 rounded-full shadow-md transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                                </button>
+
+                                <!-- Recording Pulse -->
+                                <button type="button" x-show="isRecording" @click="isRecording = false; mediaRecorder.stop();" class="bg-red-500 text-white p-2 rounded-full shadow-md animate-pulse" x-cloak>
+                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm0 4a1 1 0 112 0 1 1 0 01-2 0z" clip-rule="evenodd"></path></svg>
+                                </button>
+
+                                <!-- Send Button -->
+                                <button type="submit"
+                                    x-show="content || ($wire.attachments && $wire.attachments.length)"
+                                    class="bg-brand-500 hover:bg-brand-600 text-white p-2 rounded-full shadow-md transition-colors">
+                                    <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 @endif

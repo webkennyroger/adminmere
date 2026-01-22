@@ -19,7 +19,8 @@ class ChatApp extends Component
     public $selectedUser;
     public $chatMessages = [];
     public $content = '';
-    public $attachment; // For file upload
+    public $attachments = []; // Multiple files
+    public $audioAttachment;
     public $isMobile = false;
 
     public function mount()
@@ -77,6 +78,7 @@ class ChatApp extends Component
 
         $this->loadMessages();
         $this->dispatch('close-sidebar');
+        $this->dispatch('scroll-to-bottom');
     }
 
     public function loadMessages()
@@ -100,27 +102,25 @@ class ChatApp extends Component
     public function sendMessage()
     {
         $this->validate([
-            'content' => $this->attachment ? 'nullable|string' : 'required|string',
-            'attachment' => 'nullable|file|max:10240', // Max 10MB
+            'content' => count($this->attachments) > 0 ? 'nullable|string' : 'required|string',
+            'attachments.*' => 'nullable|file|max:10240', // Max 10MB
         ]);
 
         if (!$this->selectedUser) {
             return;
         }
 
-        $attachmentPath = null;
-        $attachmentType = null;
+        $attachmentsData = [];
 
-        if ($this->attachment) {
-            $attachmentPath = $this->attachment->store('chat-attachments', 'public');
-            $mime = $this->attachment->getMimeType();
-            
-            if (str_contains($mime, 'image')) {
-                $attachmentType = 'image';
-            } elseif (str_contains($mime, 'video')) {
-                $attachmentType = 'video';
-            } else {
-                $attachmentType = 'file';
+        if (!empty($this->attachments)) {
+            foreach ($this->attachments as $attachment) {
+                $path = $attachment->store('chat-attachments', 'public');
+                $attachmentsData[] = [
+                    'path' => $path,
+                    'mime_type' => $attachment->getMimeType(),
+                    'name' => $attachment->getClientOriginalName(),
+                    'size' => $attachment->getSize(),
+                ];
             }
         }
 
@@ -128,8 +128,7 @@ class ChatApp extends Component
             'sender_id' => Auth::id(),
             'receiver_id' => $this->selectedUser->id,
             'content' => $this->content ?? '',
-            'attachment_path' => $attachmentPath,
-            'attachment_type' => $attachmentType,
+            'attachments' => !empty($attachmentsData) ? $attachmentsData : null,
         ]);
 
         // Send notification to receiver
@@ -143,17 +142,60 @@ class ChatApp extends Component
         
         // Reset inputs
         $this->content = '';
-        $this->attachment = null;
+        $this->attachments = [];
         
         // Scroll to bottom dispatch
         $this->dispatch('scroll-to-bottom');
+    }
+
+    public function sendAudioMessage()
+    {
+        $this->validate([
+            'audioAttachment' => 'required|file|mimes:mp3,wav,ogg,webm|max:10240',
+        ]);
+
+        if (!$this->selectedUser) return;
+
+        $path = $this->audioAttachment->store('chat-attachments', 'public');
+        
+        $attachmentsData[] = [
+            'path' => $path,
+            'mime_type' => $this->audioAttachment->getMimeType(),
+            'name' => 'voice-message.webm',
+            'size' => $this->audioAttachment->getSize(),
+        ];
+        
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $this->selectedUser->id,
+            'content' => '',
+            'attachments' => $attachmentsData,
+        ]);
+
+        broadcast(new MessageSent($message))->toOthers();
+        $this->chatMessages->push($message);
+
+        $this->audioAttachment = null;
+        $this->dispatch('scroll-to-bottom');
+        
+        // Refresh sidebar for last message
+        $this->mount(); 
+    }
+
+
+    public function removeAttachment($index)
+    {
+        if (isset($this->attachments[$index])) {
+            unset($this->attachments[$index]);
+            $this->attachments = array_values($this->attachments);
+        }
     }
 
     public function getListeners()
     {
         $authId = Auth::id();
         return [
-            "echo-private:chat.{$authId},MessageSent" => 'receiveMessage',
+            "echo-private:chat.{$authId},.message.sent" => 'receiveMessage',
         ];
     }
 
@@ -193,6 +235,16 @@ class ChatApp extends Component
             }
             return $user;
         })->sortByDesc(fn($user) => $user->last_message?->created_at ?? $user->created_at)->values();
+    }
+
+    public function formatFileSize($bytes, $precision = 1)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     public function render()

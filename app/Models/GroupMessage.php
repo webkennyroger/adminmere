@@ -8,7 +8,11 @@ use App\Models\User;
 
 class GroupMessage extends Model
 {
-    protected $fillable = ['chat_group_id', 'user_id', 'content', 'attachment', 'attachment_type'];
+    protected $fillable = ['chat_group_id', 'user_id', 'content', 'attachments'];
+
+    protected $casts = [
+        'attachments' => 'array',
+    ];
 
     public function group()
     {

@@ -126,11 +126,56 @@ class ChatBox extends Component
     public $selectedGroup;
     public $chatMessages = [];
     public $content = '';
-    public $attachment;
+    public $attachments = [];
+    public $audioAttachment;
 
     protected $listeners = [
         'open-chat-box' => 'openChat',
     ];
+
+    public function sendAudioMessage()
+    {
+        $this->validate([
+            'audioAttachment' => 'required|file|mimes:mp3,wav,ogg,webm|max:10240',
+        ]);
+
+        if (!$this->selectedUser && !$this->selectedGroup) return;
+
+        $path = $this->audioAttachment->store('chat-attachments', 'public');
+        
+        $attachmentsData[] = [
+            'path' => $path,
+            'mime_type' => $this->audioAttachment->getMimeType(),
+            'name' => 'voice-message.webm',
+            'size' => $this->audioAttachment->getSize(),
+        ];
+        
+        if ($this->selectedGroup) {
+            $message = GroupMessage::create([
+                'chat_group_id' => $this->selectedGroup->id,
+                'user_id' => Auth::id(),
+                'content' => '',
+                'attachments' => $attachmentsData,
+            ]);
+            $message->load('sender.profile');
+            // broadcast(new GroupMessageSent($message))->toOthers();
+            $this->chatMessages->push($message);
+        } else {
+            $message = Message::create([
+                'sender_id' => Auth::id(),
+                'receiver_id' => $this->selectedUser->id,
+                'content' => '',
+                'attachments' => $attachmentsData,
+            ]);
+            broadcast(new MessageSent($message))->toOthers();
+            $this->chatMessages->push($message);
+        }
+
+        $this->audioAttachment = null;
+        $this->dispatch('scroll-chat-to-bottom');
+        $this->dispatch('refresh-chat-sidebar');
+    }
+
 
     public function mount()
     {
@@ -332,19 +377,24 @@ class ChatBox extends Component
     public function sendMessage()
     {
         $this->validate([
-            'content' => $this->attachment ? 'nullable|string' : 'required|string',
-            'attachment' => 'nullable|file|max:10240',
+            'content' => count($this->attachments) > 0 ? 'nullable|string' : 'required|string',
+            'attachments.*' => 'nullable|file|max:10240', // Validate each file in the array
         ]);
 
         if (!$this->selectedUser && !$this->selectedGroup) return;
 
-        $attachmentPath = null;
-        $attachmentType = null;
+        $attachmentsData = [];
 
-        if ($this->attachment) {
-            $attachmentPath = $this->attachment->store('chat-attachments', 'public');
-            $mime = $this->attachment->getMimeType();
-            $attachmentType = str_contains($mime, 'image') ? 'image' : (str_contains($mime, 'video') ? 'video' : 'file');
+        if (!empty($this->attachments)) {
+            foreach ($this->attachments as $attachment) {
+                $path = $attachment->store('chat-attachments', 'public');
+                $attachmentsData[] = [
+                    'path' => $path,
+                    'mime_type' => $attachment->getMimeType(),
+                    'name' => $attachment->getClientOriginalName(),
+                    'size' => $attachment->getSize(),
+                ];
+            }
         }
 
         if ($this->selectedGroup) {
@@ -352,8 +402,7 @@ class ChatBox extends Component
                 'chat_group_id' => $this->selectedGroup->id,
                 'user_id' => Auth::id(),
                 'content' => $this->content ?? '',
-                'attachment' => $attachmentPath,
-                'attachment_type' => $attachmentType,
+                'attachments' => !empty($attachmentsData) ? $attachmentsData : null,
             ]);
             
             // Reload to get relations like sender
@@ -368,8 +417,7 @@ class ChatBox extends Component
                 'sender_id' => Auth::id(),
                 'receiver_id' => $this->selectedUser->id,
                 'content' => $this->content ?? '',
-                'attachment_path' => $attachmentPath,
-                'attachment_type' => $attachmentType,
+                'attachments' => !empty($attachmentsData) ? $attachmentsData : null,
             ]);
 
             // Broadcast
@@ -379,7 +427,7 @@ class ChatBox extends Component
         }
 
         $this->content = '';
-        $this->attachment = null;
+        $this->attachments = [];
         
         $this->dispatch('scroll-chat-to-bottom');
         $this->dispatch('refresh-chat-sidebar');
@@ -394,6 +442,16 @@ class ChatBox extends Component
             $message->update(['read_at' => now()]);
             $this->dispatch('scroll-chat-to-bottom');
         }
+    }
+
+    public function formatFileSize($bytes, $precision = 1)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     public function render()
