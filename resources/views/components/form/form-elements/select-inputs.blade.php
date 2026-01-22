@@ -32,5 +32,5 @@
     </div>
 
     {{-- multiple select --}}
-    <x-form.select.multiple-select/>
+    <x-form.multiple-select />
 </x-common.component-card>
