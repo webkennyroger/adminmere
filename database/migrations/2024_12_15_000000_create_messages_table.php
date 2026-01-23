@@ -16,7 +16,12 @@ return new class extends Migration
             $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
             $table->text('content');
+            $table->string('type')->default('text');
+            $table->string('file_path')->nullable(); // For temporary or single file logic compatibility
+            $table->json('attachments')->nullable(); // Consolidated attachment logic (JSON)
             $table->timestamp('read_at')->nullable();
+            $table->boolean('deleted_by_sender')->default(false);
+            $table->boolean('deleted_by_receiver')->default(false);
             $table->timestamps();
         });
     }
