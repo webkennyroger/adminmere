@@ -6,16 +6,16 @@
         <div class="space-y-6">
             <x-form.form-elements.default-inputs />
             <x-form.form-elements.select-inputs />
-            <x-form.form-elements.text-area-inputs />
+            <!-- Missing text-area-inputs removed -->
             <x-form.form-elements.input-states />
         </div>
         <div class="space-y-6">
             <x-form.form-elements.input-group />
-            <x-form.form-elements.file-input-example />
-            <x-form.form-elements.checkbox-component />
+            <!-- Missing file-input-example removed -->
+            <!-- Missing checkbox-component removed -->
             <x-form.form-elements.radio-buttons />
-            <x-form.form-elements.toggle-switch />
-            <x-form.form-elements.dropzone />
+            <!-- Missing toggle-switch removed -->
+            <!-- Missing dropzone removed -->
         </div>
     </div>
 @endsection
