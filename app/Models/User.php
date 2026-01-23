@@ -80,6 +80,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's cover image URL.
+     */
+    public function getCoverUrlAttribute()
+    {
+        if ($this->profile?->cover_image) {
+            return asset('storage/' . $this->profile->cover_image);
+        }
+
+        return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80';
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string

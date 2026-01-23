@@ -19,6 +19,7 @@ class Profile extends Model
         'address',
         'zip_code',
         'image',
+        'cover_image',
         'bio',
         'gender',
         'birth_date',

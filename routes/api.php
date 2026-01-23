@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $data = $user->toArray();
         // Append additional fields expected by mobile app
         $data['image_url'] = $user->image_url;
+        $data['cover_url'] = $user->cover_url;
         $data['surname'] = $user->profile->last_name ?? '';
         $data['bio'] = $user->profile->bio ?? '';
         $data['city'] = $user->profile->city ?? '';

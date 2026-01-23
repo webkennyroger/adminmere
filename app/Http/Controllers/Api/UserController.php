@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     /**
-     * Get suggested users for the current user to follow.
-     */
     public function suggested(Request $request)
     {
         $user = $request->user();
@@ -231,6 +229,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'image' => 'nullable|image|max:10240', // 10MB max
+            'cover_image' => 'nullable|image|max:10240', // 10MB max
         ]);
 
         $user->name = $request->name;
@@ -263,6 +262,17 @@ class UserController extends Controller
             $profile->image = $path;
         }
 
+        // Handle Cover Image Upload
+        if ($request->hasFile('cover_image')) {
+            // Delete old image if exists
+            if ($profile->cover_image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->cover_image);
+            }
+            
+            $path = $request->file('cover_image')->store('covers', 'public');
+            $profile->cover_image = $path;
+        }
+
         $profile->save();
 
         return response()->json([
@@ -272,6 +282,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar_url' => $user->image_url,
+                'cover_url' => $user->cover_url, // Return cover URL
                 'profile' => $profile
             ],
             'message' => 'Profile updated successfully'
