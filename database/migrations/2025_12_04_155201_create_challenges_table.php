@@ -11,6 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('slug')->unique();
+            $table->string('color')->default('zinc');
+            $table->timestamps();
+        });
+
         Schema::create('challenges', function (Blueprint $table) {
             $table->id();
             $table->string('image')->nullable();
@@ -24,6 +32,15 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('challenge_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('challenge_id')->constrained()->onDelete('cascade');
+            $table->decimal('progress', 8, 2)->default(0);
+            $table->string('status')->default('joined'); // joined, completed, failed
+            $table->timestamps();
+        });
     }
 
     /**
@@ -31,6 +48,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('challenge_user');
         Schema::dropIfExists('challenges');
+        Schema::dropIfExists('categories');
     }
 };
