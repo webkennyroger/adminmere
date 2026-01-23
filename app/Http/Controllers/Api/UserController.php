@@ -219,6 +219,59 @@ class UserController extends Controller
     }
 
     /**
+     * Update user profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'image' => 'nullable|image|max:10240', // 10MB max
+        ]);
+
+        $user->name = $request->name;
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+        $user->save();
+
+        // Update or create profile
+        $profile = $user->profile ?? new \App\Models\Profile(['user_id' => $user->id]);
+        
+        if ($request->has('surname')) $profile->last_name = $request->surname;
+        if ($request->has('phone')) $profile->phone = $request->phone;
+        if ($request->has('location')) $profile->city = $request->location;
+        if ($request->has('nickname')) $profile->nickname = $request->nickname;
+        
+        // Handle Image Upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($profile->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->image);
+            }
+            
+            $path = $request->file('image')->store('profiles', 'public');
+            $profile->image = $path;
+        }
+
+        $profile->save();
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_url' => $user->image_url,
+                'profile' => $profile
+            ],
+            'message' => 'Profile updated successfully'
+        ]);
+    }
+
+    /**
      * Formata segundos em formato legível (HhMm).
      */
     private function formatSeconds($seconds)

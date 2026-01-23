@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/{id}/follow', [\App\Http\Controllers\Api\UserController::class, 'toggleFollow']);
     Route::get('/users/following', [\App\Http\Controllers\Api\UserController::class, 'following']);
     Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'profile']);
+    Route::post('/user/profile', [\App\Http\Controllers\Api\UserController::class, 'updateProfile']);
 
     // Chat/Messages API
     Route::get('/messages/{userId}', [\App\Http\Controllers\Api\MessageController::class, 'getMessages']);
