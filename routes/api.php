@@ -23,7 +23,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        $user = $request->user();
+        $user->load('profile');
+        $data = $user->toArray();
+        // Append additional fields expected by mobile app
+        $data['image_url'] = $user->image_url;
+        $data['surname'] = $user->profile->last_name ?? '';
+        $data['bio'] = $user->profile->bio ?? '';
+        $data['city'] = $user->profile->city ?? '';
+        $data['phone'] = $user->profile->phone ?? '';
+        $data['gender'] = $user->profile->gender ?? '';
+        $data['birthDate'] = $user->profile->birth_date ?? '';
+        $data['height'] = $user->profile->height ?? '';
+        $data['weight'] = $user->profile->weight ?? '';
+        return $data;
     });
 
     // Mobile App Subscription Routes

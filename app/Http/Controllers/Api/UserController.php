@@ -122,6 +122,8 @@ class UserController extends Controller
                     'name' => $user->name,
                     'avatar' => $user->image_url,
                     'city' => $user->profile->city ?? 'Brasil',
+                    'surname' => $user->profile->last_name ?? '',
+                    'bio' => $user->profile->bio ?? '',
                     'is_following' => $currentUser->following()->where('following_id', $user->id)->exists(),
                     'is_pro' => true, // Você pode adicionar campo real no modelo
                 ],
@@ -244,6 +246,11 @@ class UserController extends Controller
         if ($request->has('phone')) $profile->phone = $request->phone;
         if ($request->has('location')) $profile->city = $request->location;
         if ($request->has('nickname')) $profile->nickname = $request->nickname;
+        if ($request->has('bio')) $profile->bio = $request->bio;
+        if ($request->has('gender')) $profile->gender = $request->gender;
+        if ($request->has('birth_date')) $profile->birth_date = $request->birth_date;
+        if ($request->has('height')) $profile->height = $request->height;
+        if ($request->has('weight')) $profile->weight = $request->weight;
         
         // Handle Image Upload
         if ($request->hasFile('image')) {
