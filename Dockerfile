@@ -47,8 +47,8 @@ RUN chown -R www-data:www-data /var/www \
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8080
+EXPOSE 8080
 
 # Start command
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
