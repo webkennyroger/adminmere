@@ -14,17 +14,23 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->boolean('is_admin')->default(false);
+            $table->string('role')->default('user'); // Replaced is_admin
             $table->string('plan')->default('free');
             $table->string('status')->default('active');
             $table->string('phone')->nullable();
             $table->string('last_name')->nullable();
             $table->string('nickname')->nullable();
+            $table->text('bio')->nullable(); // Consolidated
+            $table->string('gender')->nullable(); // Consolidated
+            $table->string('birth_date')->nullable(); // Consolidated
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('address')->nullable();
             $table->string('zip_code')->nullable();
+            $table->string('height')->nullable(); // Consolidated
+            $table->string('weight')->nullable(); // Consolidated
             $table->string('image')->nullable();
+            $table->string('cover_image')->nullable(); // Consolidated
             $table->string('mere')->nullable();
             $table->string('instagram')->nullable();
             $table->string('x')->nullable();
