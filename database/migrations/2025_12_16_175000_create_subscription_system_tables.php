@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -53,7 +52,9 @@ return new class extends Migration
                 $table->string('stripe_id')->unique();
                 $table->string('stripe_product');
                 $table->string('stripe_price');
+                $table->string('meter_id')->nullable(); // Consolidated from separate migration
                 $table->integer('quantity')->nullable();
+                $table->string('meter_event_name')->nullable(); // Consolidated from separate migration
                 $table->timestamps();
 
                 $table->index(['subscription_id', 'stripe_price']);
