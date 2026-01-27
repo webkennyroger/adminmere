@@ -65,8 +65,9 @@
 
 <body x-data="{ 'loaded': true}" class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen">
 
-    {{-- preloader --}}
+    {{-- preloader
     <x-common.preloader />
+    --}}
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="flex flex-col min-h-screen">

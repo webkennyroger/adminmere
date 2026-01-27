@@ -10,8 +10,8 @@ use App\Livewire\Categories\CategoryIndex;
 use App\Livewire\Users\UserIndex;
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+    return auth()->check() ? redirect('/home') : redirect('/login');
+});
 
 Route::get('/dashboard', function () {
     // Regular users go to home, admins/managers see dashboard
@@ -235,3 +235,6 @@ Route::middleware(['auth'])->group(function () {
     //     return 'Volt Routing Works';
     // });
 });
+
+// Maintenance Route (Temporary for Initial Seeding)
+Route::get('/maintenance/seed', [App\Http\Controllers\MaintenanceController::class, 'seed']);
