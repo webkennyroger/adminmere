@@ -29,6 +29,7 @@ class UserController extends Controller
                 return [
                     'id' => $u->id,
                     'name' => $u->name,
+                    'nickname' => $u->profile->nickname ?? $u->id,
                     'avatar' => $u->image_url,
                     'status' => 'Em destaque', // Label from UI
                     'city' => $u->profile->city ?? 'Brasil',
@@ -54,6 +55,7 @@ class UserController extends Controller
                 return [
                     'id' => $u->id,
                     'name' => $u->name,
+                    'nickname' => $u->profile->nickname ?? $u->id,
                     'avatar' => $u->image_url,
                     'city' => $u->profile->city ?? 'Brasil',
                 ];
@@ -118,6 +120,7 @@ class UserController extends Controller
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'nickname' => $user->profile->nickname ?? $user->id,
                     'avatar' => $user->image_url,
                     'city' => $user->profile->city ?? 'Brasil',
                     'surname' => $user->profile->last_name ?? '',

@@ -174,4 +174,34 @@ class User extends Authenticatable
     {
         $this->following()->detach($user);
     }
+
+    /**
+     * Get the route key for the model.
+     * This makes Laravel use nickname instead of ID in routes.
+     */
+    public function getRouteKeyName()
+    {
+        // Check if we're on a profile route
+        if (request()->route() && request()->route()->getName() === 'profile.view') {
+            return 'profile.nickname';
+        }
+        return 'id';
+    }
+
+    /**
+     * Get the user's profile URL with @nickname
+     */
+    public function getProfileUrlAttribute()
+    {
+        $nickname = $this->profile?->nickname ?? $this->id;
+        return url('/@' . $nickname);
+    }
+
+    /**
+     * Get the user's nickname or fallback to ID
+     */
+    public function getNicknameAttribute()
+    {
+        return $this->profile?->nickname ?? $this->id;
+    }
 }

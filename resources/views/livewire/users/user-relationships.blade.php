@@ -5,7 +5,7 @@
         <div
             class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-                <a href="{{ route('profile.view', $user) }}">
+                <a href="{{ profile_url($user) }}">
                     <img src="{{ $user->image_url }}"
                         class="w-16 h-16 rounded-full border-4 border-white dark:border-zinc-800 shadow">
                 </a>

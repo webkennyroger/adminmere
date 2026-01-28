@@ -6,11 +6,6 @@ import 'flatpickr/dist/flatpickr.min.css';
 import { Calendar } from '@fullcalendar/core';
 import intersect from '@alpinejs/intersect';
 
-// Register Alpine plugins via alpine:init if needed
-document.addEventListener('alpine:init', () => {
-    window.Alpine.plugin(intersect);
-});
-
 // Configuração de localização em Português
 const Portuguese = {
     weekdays: {
@@ -52,10 +47,31 @@ import { initThemeStore } from './theme';
 import { initSidebarStore } from './components/sidebar';
 import { initChatStore } from './components/chat';
 
-document.addEventListener('alpine:init', () => {
+// Wait for Livewire to inject Alpine, then initialize our stores
+document.addEventListener('livewire:init', () => {
+    // Register Alpine plugin
+    if (window.Alpine) {
+        window.Alpine.plugin(intersect);
+    }
+    
+    // Initialize stores
     initThemeStore();
     initSidebarStore();
     initChatStore();
+});
+
+// Fallback for when alpine:init fires instead
+document.addEventListener('alpine:init', () => {
+    if (window.Alpine) {
+        window.Alpine.plugin(intersect);
+        
+        // Only init if stores don't exist yet
+        if (!window.Alpine.store('theme')) {
+            initThemeStore();
+            initSidebarStore();
+            initChatStore();
+        }
+    }
 });
 
 // Inicializar componentes quando DOM estiver pronto

@@ -16,7 +16,6 @@
         const theme = savedTheme || systemTheme;
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
-            document.body.classList.add('dark', 'bg-zinc-900');
         }
     </script>
 

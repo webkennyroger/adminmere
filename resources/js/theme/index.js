@@ -14,13 +14,12 @@ export function initThemeStore() {
         },
         updateTheme() {
             const html = document.documentElement;
-            const body = document.body;
             if (this.theme === 'dark') {
                 html.classList.add('dark');
-                body.classList.add('dark', 'bg-zinc-900');
+                if (document.body) document.body.classList.add('dark', 'bg-zinc-900');
             } else {
                 html.classList.remove('dark');
-                body.classList.remove('dark', 'bg-zinc-900');
+                if (document.body) document.body.classList.remove('dark', 'bg-zinc-900');
             }
         }
     });

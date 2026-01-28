@@ -41,12 +41,12 @@
                 <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 flex flex-col items-center text-center transition-transform hover:-translate-y-1 duration-200"
                     wire:key="user-{{ $user->id }}">
 
-                    <a href="{{ route('profile.view', $user) }}">
+                    <a href="{{ profile_url($user) }}">
                         <img src="{{ $user->image_url }}"
                             class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 shadow-md object-cover mb-4 hover:ring-2 hover:ring-brand-500 transition-all">
                     </a>
 
-                    <a href="{{ route('profile.view', $user) }}">
+                    <a href="{{ profile_url($user) }}">
                         <h3 class="text-lg font-bold text-zinc-900 dark:text-white hover:text-brand-600 transition-colors">
                             {{ $user->name }}
                         </h3>

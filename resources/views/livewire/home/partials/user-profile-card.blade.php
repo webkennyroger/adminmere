@@ -8,7 +8,7 @@
     <div class="px-5 pb-5 text-center relative">
         <!-- Avatar -->
         <div class="relative -mt-10 mb-3 inline-block">
-            <a href="{{ route('profile.view', $user) }}">
+            <a href="{{ profile_url($user) }}">
                 <img src="{{ $user->image_url }}" alt="{{ $user->name }}"
                     class="w-20 h-20 rounded-full border-4 border-white dark:border-zinc-900 shadow-md object-cover hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer">
             </a>
@@ -24,7 +24,7 @@
             @endif
         </div>
 
-        <a href="{{ route('profile.view', $user) }}" class="hover:text-brand-600 transition-colors">
+        <a href="{{ profile_url($user) }}" class="hover:text-brand-600 transition-colors">
             <h3 class="text-lg font-bold text-zinc-900 dark:text-white">{{ $user->name }}</h3>
         </a>
         <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-4">{{ $user->email }}</p>

@@ -17,14 +17,14 @@
                         </button>
 
                         <div class="relative flex-shrink-0">
-                            <a href="{{ route('profile.view', $user) }}">
+                            <a href="{{ profile_url($user) }}">
                                 <img src="{{ $user->image_url }}"
                                     class="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-800 object-cover hover:ring-2 hover:ring-brand-500 transition-all">
                             </a>
                         </div>
                         
                         <div class="flex-1 pr-6"> <!-- Added padding right for dismiss button space -->
-                            <a href="{{ route('profile.view', $user) }}">
+                            <a href="{{ profile_url($user) }}">
                                 <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-none hover:text-brand-600 transition-colors">{{ $user->name }}</p>
                             </a>
                             

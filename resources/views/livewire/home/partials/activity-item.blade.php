@@ -3,12 +3,12 @@
     <!-- Post Header -->
     <div class="flex justify-between items-start p-4 pb-3">
         <div class="flex items-center gap-3 flex-1">
-            <a href="{{ route('profile.view', $activity->user) }}" class="block shrink-0">
+            <a href="{{ profile_url($activity->user) }}" class="block shrink-0">
                 <img src="{{ $activity->user->image_url }}"
                     class="w-12 h-12 rounded-full object-cover border-2 border-white dark:border-zinc-800 hover:ring-2 hover:ring-brand-500 transition-all">
             </a>
             <div class="flex-1 min-w-0">
-                <a href="{{ route('profile.view', $activity->user) }}"
+                <a href="{{ profile_url($activity->user) }}"
                     class="font-bold text-zinc-900 dark:text-white hover:text-brand-600 transition-colors block leading-tight truncate">
                     {{ $activity->user->name }}
                 </a>
@@ -66,7 +66,8 @@
     @if($activity->description)
         <div class="px-4 pb-3">
             <p class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">
-                {{ Str::limit($activity->description, 200) }}</p>
+                {{ Str::limit($activity->description, 200) }}
+            </p>
             @if(strlen($activity->description) > 200)
                 <button class="text-brand-600 hover:text-brand-700 text-sm font-medium mt-1">Ver mais</button>
             @endif
@@ -106,8 +107,10 @@
             @else
                 <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                     <div class="text-center">
-                        <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0v10m0-10L5.553 2.894A1 1 0 005 2h14a1 1 0 011 1v14a1 1 0 01-1.553.894L15 13m0 0v10m0-10l4.447 2.724A1 1 0 0021 20.382V9.618a1 1 0 00-1.553-.894L15 11" />
+                        <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0v10m0-10L5.553 2.894A1 1 0 005 2h14a1 1 0 011 1v14a1 1 0 01-1.553.894L15 13m0 0v10m0-10l4.447 2.724A1 1 0 0021 20.382V9.618a1 1 0 00-1.553-.894L15 11" />
                         </svg>
                         <p class="text-sm text-zinc-400">Mapa indisponível</p>
                     </div>
@@ -268,18 +271,19 @@
                 @if(is_null($comment->parent_id))
                     <div x-data="{ showReplies: false }" class="group/comment" wire:key="comment-{{ $comment->id }}">
                         <div class="flex gap-2">
-                            <a href="{{ route('profile.view', $comment->user->id) }}">
+                            <a href="{{ profile_url($comment->user) }}">
                                 <img src="{{ $comment->user->image_url }}"
                                     class="w-8 h-8 rounded-full border border-zinc-100 dark:border-zinc-800 shrink-0">
                             </a>
                             <div class="flex-1 min-w-0">
                                 <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-2 inline-block">
-                                    <a href="{{ route('profile.view', $comment->user->id) }}"
+                                    <a href="{{ profile_url($comment->user) }}"
                                         class="font-semibold text-sm text-zinc-900 dark:text-white hover:underline">
                                         {{ $comment->user->name }}
                                     </a>
                                     <p class="text-sm text-zinc-700 dark:text-zinc-300">
-                                        {!! $this->formatComment($comment->body) !!}</p>
+                                        {!! $this->formatComment($comment->body) !!}
+                                    </p>
                                 </div>
                                 <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
                                     <span>{{ $comment->created_at->diffForHumans() }}</span>
@@ -314,12 +318,13 @@
                                                 <img src="{{ $reply->user->image_url }}" class="w-6 h-6 rounded-full">
                                                 <div class="flex-1">
                                                     <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-1.5 inline-block">
-                                                        <a href="{{ route('profile.view', $reply->user->id) }}"
+                                                        <a href="{{ profile_url($reply->user) }}"
                                                             class="font-semibold text-xs text-zinc-900 dark:text-white hover:underline">
                                                             {{ $reply->user->name }}
                                                         </a>
                                                         <p class="text-xs text-zinc-700 dark:text-zinc-300">
-                                                            {!! $this->formatComment($reply->body) !!}</p>
+                                                            {!! $this->formatComment($reply->body) !!}
+                                                        </p>
                                                     </div>
                                                     <div class="flex items-center gap-3 mt-1 ml-2 text-[10px] text-zinc-500">
                                                         <span>{{ $reply->created_at->diffForHumans() }}</span>
