@@ -80,7 +80,7 @@
             <div>
                 <h3 class="font-bold text-zinc-900 dark:text-white">Clubes</h3>
                 <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
-                    Por que fazer isso sozinho? Aproveite mais da experiência Strava entrando ou criando um Clube.
+                    Por que fazer isso sozinho? Aproveite mais da experiência MERE entrando ou criando um Clube.
                 </p>
                 <button class="text-[#FC4C02] text-xs font-bold mt-2 hover:brightness-125 transition">Ver Todos os
                     Clubes</button>

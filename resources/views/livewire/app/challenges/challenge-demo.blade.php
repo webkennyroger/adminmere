@@ -1,7 +1,7 @@
 <div class="bg-white dark:bg-zinc-950 min-h-screen font-sans">
     <!-- Hero Banner -->
     <div class="relative w-full h-48 md:h-64 bg-[#FC4C02] overflow-hidden">
-        <!-- Abstract Background Shapes imitating Strava -->
+        <!-- Abstract Background Shapes imitating MERE -->
         <div class="absolute inset-0">
             <div class="absolute -top-24 -left-24 w-96 h-96 bg-orange-600 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
             <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
