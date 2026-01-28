@@ -45,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/status', [\App\Http\Controllers\Api\SubscriptionController::class, 'status']);
     Route::post('/subscribe', [\App\Http\Controllers\Api\SubscriptionController::class, 'subscribe']);
 
+    // Stories API
+    Route::get('/stories', [\App\Http\Controllers\Api\StoryController::class, 'index']);
+    Route::post('/stories', [\App\Http\Controllers\Api\StoryController::class, 'store']);
+
     // Activities API
     Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
     Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);

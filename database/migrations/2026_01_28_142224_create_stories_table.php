@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('chat_preferences', function (Blueprint $table) {
-            $table->foreignId('peer_id')->after('user_id')->constrained('users')->onDelete('cascade');
+        Schema::create('stories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('image_url');
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,9 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('chat_preferences', function (Blueprint $table) {
-            $table->dropForeign(['peer_id']);
-            $table->dropColumn('peer_id');
-        });
+        Schema::dropIfExists('stories');
     }
 };

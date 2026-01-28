@@ -59,6 +59,16 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
+
+    public function latestStory()
+    {
+        return $this->hasOne(Story::class)->latestOfMany()->where('expires_at', '>', now());
+    }
+
     /**
      * Get the user's profile image path.
      */

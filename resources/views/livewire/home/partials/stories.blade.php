@@ -18,25 +18,15 @@
             </div>
         </div>
 
-        <!-- Mock Stories -->
-        @php
-            $stories = [
-                ['name' => 'Victor Exrixon', 'img' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80', 'user' => 'https://i.pravatar.cc/150?u=1'],
-                ['name' => 'Surfiya Zakir', 'img' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80', 'user' => 'https://i.pravatar.cc/150?u=2'],
-                ['name' => 'Goria Coast', 'img' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80', 'user' => 'https://i.pravatar.cc/150?u=3'],
-                ['name' => 'Hurin Seary', 'img' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80', 'user' => 'https://i.pravatar.cc/150?u=4'],
-            ];
-        @endphp
-
         @foreach($stories as $story)
             <div class="flex-shrink-0 w-32 h-48 relative rounded-xl overflow-hidden cursor-pointer group">
                 <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 z-10"></div>
-                <img src="{{ $story['img'] }}"
+                <img src="{{ $story['story_image'] }}"
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
 
                 <div class="absolute top-3 left-0 right-0 flex justify-center z-20">
                     <div class="w-10 h-10 rounded-full border-2 border-brand-500 p-0.5 bg-white">
-                        <img src="{{ $story['user'] }}" class="w-full h-full rounded-full object-cover">
+                        <img src="{{ $story['avatar'] }}" class="w-full h-full rounded-full object-cover">
                     </div>
                 </div>
 

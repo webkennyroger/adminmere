@@ -9,7 +9,9 @@
 
         <!-- Main Feed -->
         <main class="lg:col-span-6 space-y-6">
-            @include('livewire.home.partials.stories')
+            @if($feed === 'timeline')
+                <livewire:home.partials.stories />
+            @endif
             <livewire:home.partials.activity-feed :feed="$feed" />
         </main>
 
