@@ -32,12 +32,6 @@ class CategorySeeder extends Seeder
             );
         }
 
-        // Generate 3 more categories to reach total of 10
-        $currentCount = count($categories);
-        $needed = 10 - $currentCount;
-        
-        if ($needed > 0) {
-            Category::factory($needed)->create();
-        }
+
     }
 }
