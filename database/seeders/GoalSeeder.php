@@ -46,9 +46,11 @@ class GoalSeeder extends Seeder
         }
 
         // Generate 7 more to reach 10
+        // Generate 7 more to reach 10 - REMOVED FOR PRODUCTION
         $needed = 10 - count($goals);
-        if ($needed > 0) {
-            Goal::factory($needed)->create();
-        }
+        // Factories disabled in production without dev deps
+        // if ($needed > 0) {
+        //     Goal::factory($needed)->create();
+        // }
     }
 }

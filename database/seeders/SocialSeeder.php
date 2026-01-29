@@ -13,14 +13,16 @@ class SocialSeeder extends Seeder
     public function run()
     {
         // Ensure we have users
+        // Ensure we have users
         if (\App\Models\User::count() < 10) {
-            \App\Models\User::factory(10)->create();
+            // \App\Models\User::factory(10)->create();
+            $this->command->info("Skipping user factory generation in production.");
         }
 
         $me = \App\Models\User::first();
         $me->email = 'admin@admin.com'; // Ensure known user
         $me->save();
-        
+
         $this->command->info("Main User: {$me->name} (ID: {$me->id})");
 
         // Make sure I follow someone
@@ -30,7 +32,7 @@ class SocialSeeder extends Seeder
                 $me->following()->attach($other->id);
                 $this->command->info("Followed: {$other->name}");
             }
-            
+
             // Ensure they have activities
             if ($other->activities()->count() == 0) {
                 \App\Models\Activity::create([

@@ -14,17 +14,16 @@ class StoriesSeeder extends Seeder
     {
         // Get all users
         $users = \App\Models\User::all();
-        
+
         if ($users->isEmpty()) {
             return;
         }
 
         foreach ($users as $user) {
             // 50% chance of having a story
+            // 50% chance of having a story
             if (rand(0, 1)) {
-                \App\Models\Story::factory()->create([
-                    'user_id' => $user->id,
-                ]);
+                // \App\Models\Story::factory()->create(['user_id' => $user->id]);
             }
         }
     }

@@ -21,17 +21,27 @@ class SupportSeeder extends Seeder
         }
 
         // Create exactly 10 tickets distributed among random users
-        Support::factory(10)->create([
-            'user_id' => fn () => User::inRandomOrder()->first()->id,
-        ])->each(function ($support) {
-            // Randomly add replies to some tickets
-            if (rand(0, 1)) {
-                 // 1-3 replies
-                \App\Models\SupportReply::factory(rand(1, 3))->create([
-                    'support_id' => $support->id,
-                    'user_id' => $support->user_id, 
-                ]);
-            }
-        });
+        // Create manual tickets instead of factory
+        $user = User::first();
+        if ($user) {
+            Support::create([
+                'user_id' => $user->id,
+                'subject' => 'Problema com login',
+                'message' => 'Não consigo acessar minha conta premium.',
+                'status' => 'open',
+                'priority' => 'high'
+            ]);
+
+            Support::create([
+                'user_id' => $user->id,
+                'subject' => 'Dúvida sobre planos',
+                'message' => 'Quais as formas de pagamento aceitas?',
+                'status' => 'pending',
+                'priority' => 'medium'
+            ]);
+        }
+
+        // Factory disabled
+        // Support::factory(10)->create([...]);
     }
 }

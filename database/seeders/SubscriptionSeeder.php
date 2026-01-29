@@ -17,7 +17,7 @@ class SubscriptionSeeder extends Seeder
 
         // Create 10 specific users who are subscribers
         for ($i = 1; $i <= 10; $i++) {
-             $user = User::firstOrCreate(
+            $user = User::firstOrCreate(
                 ['email' => "subscriber{$i}@example.com"],
                 [
                     'name' => "Assinante {$i}",
@@ -26,19 +26,21 @@ class SubscriptionSeeder extends Seeder
                 ]
             );
 
+            // ...existing code...
             if (!$user->profile) {
                 Profile::create([
                     'user_id' => $user->id,
                     'role' => 'user',
-                    'plan' => fake()->randomElement(['monthly', 'annual']),
+                    'plan' => ['monthly', 'annual'][rand(0, 1)],
                     'phone' => "(11) 9" . rand(1000, 9999) . "-" . rand(1000, 9999),
                 ]);
             } else {
                 // Force update to ensuring they are subscribers if they already existed
                 $user->profile->update([
-                    'plan' => fake()->randomElement(['monthly', 'annual']),
+                    'plan' => ['monthly', 'annual'][rand(0, 1)],
                 ]);
             }
+            // ...existing code...
         }
     }
 }
