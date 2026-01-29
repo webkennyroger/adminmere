@@ -50,9 +50,9 @@
 
 <body x-data="{ 'loaded': true}">
 
-    {{-- preloader
+    {{-- preloader --}}
     <x-common.preloader />
-    preloader end --}}
+    {{-- preloader end --}}
 
 
     <!-- ===== Page Wrapper Start ===== -->
