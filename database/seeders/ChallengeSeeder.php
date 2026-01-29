@@ -77,16 +77,12 @@ class ChallengeSeeder extends Seeder
             if ($admin) $admin->notify(new ChallengeCreated($challenge));
         }
 
-        // 2. Random Data (4 items) to reach 10
+        // 2. Random Data (4 items) to reach 10 - DISABLED FOR PRODUCTION
         $needed = 10 - count($challengeData);
-        if ($needed > 0) {
-            Challenge::factory($needed)->create([
-                'category_id' => fn () => $categories->random()->id,
-            ])->each(function ($challenge) use ($admin) {
-                if ($admin) $admin->notify(new ChallengeCreated($challenge));
-            });
-        }
-        
+        // if ($needed > 0) {
+        //     Challenge::factory($needed)->create([...]);
+        // }
+
         $this->command->info('✅ 10 Challenges created and notifications synced!');
     }
 }
