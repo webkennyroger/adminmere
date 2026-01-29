@@ -18,7 +18,7 @@ class ActivitySeeder extends Seeder
         if ($users->count() < 3) {
             $users = User::factory(5)->create();
         }
-        
+
         $mainUser = $users->first();
         $friend1 = $users->get(1);
         $friend2 = $users->get(2);
@@ -36,7 +36,7 @@ class ActivitySeeder extends Seeder
             'description' => 'Corrida leve para começar o dia.',
             'privacy' => 'public',
         ]);
-        
+
         // Add likes/comments
         $activity1->likes()->create(['user_id' => $friend1->id]);
         $activity1->comments()->create(['user_id' => $friend1->id, 'body' => 'Boa, continue assim!']);
@@ -77,7 +77,7 @@ class ActivitySeeder extends Seeder
             'description' => 'Tiros de 1km.',
             'privacy' => 'public',
             'media' => [
-                'https://videos.pexels.com/video-files/2795383/2795383-sd_640_360_25fps.mp4', 
+                'https://videos.pexels.com/video-files/2795383/2795383-sd_640_360_25fps.mp4',
                 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&auto=format&fit=crop&q=60', // Runner
             ],
         ]);
@@ -98,22 +98,15 @@ class ActivitySeeder extends Seeder
                 ['id' => $friend1->id, 'name' => $friend1->name, 'avatar' => $friend1->avatar],
                 ['id' => $friend2->id, 'name' => $friend2->name, 'avatar' => $friend2->avatar],
             ],
-             'media' => [
+            'media' => [
                 'https://images.unsplash.com/photo-1552674605-4694559e5bc7?w=800&auto=format&fit=crop&q=60', // Group running
             ],
         ]);
-        
+
         $activity4->comments()->create(['user_id' => $friend2->id, 'body' => 'Foi pesado mas valeu a pena!']);
 
-        // 5. Create many random activities to test infinite scroll
-        Activity::factory()->count(20)->create([
-            'user_id' => $mainUser->id,
-            'start_time' => Carbon::now()->subDays(5),
-        ]);
-
-        Activity::factory()->count(20)->create([
-            'user_id' => $friend1->id,
-            'start_time' => Carbon::now()->subDays(6),
-        ]);
+        // 5. Create many random activities - DISABLED FOR PRODUCTION
+        // Activity::factory()->count(20)->create([...]);
+        // Activity::factory()->count(20)->create([...]);
     }
 }
