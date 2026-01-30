@@ -1,4 +1,3 @@
-```html
 <div>
     <!-- Mobile Backdrop -->
     <div x-show="$store.chatSidebar.isOpen" 
@@ -331,4 +330,3 @@
         @endif
     </div>
 </div>
-```
