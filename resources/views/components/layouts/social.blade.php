@@ -155,18 +155,7 @@
             x-show="$store.chatSidebar && !$store.chatSidebar.isOpen"></span>
     </button>
 
-    <script>
-        document.addEventListener('alpine:init', () => {
-            if (!Alpine.store('chatSidebar')) {
-                Alpine.store('chatSidebar', {
-                    isOpen: false,
-                    toggle() { this.isOpen = !this.isOpen; },
-                    close() { this.isOpen = false; },
-                    open() { this.isOpen = true; }
-                });
-            }
-        });
-    </script>
+
 </body>
 
 </html>
