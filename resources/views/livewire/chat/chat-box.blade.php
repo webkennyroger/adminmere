@@ -351,26 +351,19 @@
                         @endforelse
 
                         <!-- Typing Bubble Indicator (Animated) -->
-                        <div x-show="isTyping || amITyping" style="display: none;"
+                        <div x-show="isTyping" style="display: none;"
                             class="flex justify-start items-end gap-2 mt-2 transition-all duration-300">
                             <!-- Helper for Auth Avatar URL (using PHP to inject into JS/Alpine) -->
                             <div class="relative">
-                                <!-- My Avatar -->
-                                <template x-if="amITyping">
-                                    <img src="{{ auth()->user()->profile?->image ? Storage::url(auth()->user()->profile->image) : (auth()->user()->image_url ?? 'https://ui-avatars.com/api/?name='.auth()->user()->name) }}" 
-                                        class="w-8 h-8 rounded-full object-cover">
-                                </template>
                                 <!-- Other's Avatar (Generic or Selected User) -->
-                                <template x-if="!amITyping && isTyping">
-                                    <template x-if="typingAvatar">
-                                        <img :src="typingAvatar" class="w-8 h-8 rounded-full object-cover">
-                                    </template>
-                                    <!-- Fallback if no avatar in payload -->
-                                    <template x-if="!typingAvatar">
-                                        <div class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs text-zinc-500 font-bold border border-zinc-300 dark:border-zinc-700">
-                                            ...
-                                        </div>
-                                    </template>
+                                <template x-if="typingAvatar">
+                                    <img :src="typingAvatar" class="w-8 h-8 rounded-full object-cover">
+                                </template>
+                                <!-- Fallback if no avatar in payload -->
+                                <template x-if="!typingAvatar">
+                                    <div class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs text-zinc-500 font-bold border border-zinc-300 dark:border-zinc-700">
+                                        ...
+                                    </div>
                                 </template>
                             </div>
 
