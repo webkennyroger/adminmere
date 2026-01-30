@@ -142,6 +142,14 @@
     @endif
 
     @livewireScripts
+
+    <!-- Floating Chat Button (Matching Reference) -->
+    <a href="{{ route('chat.index') }}"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95 z-50 group">
+        <svg class="w-7 h-7 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+    </a>
 </body>
 
 </html>
