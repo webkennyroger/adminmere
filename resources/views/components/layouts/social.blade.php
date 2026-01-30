@@ -126,9 +126,9 @@
     </div>
     <!-- ===== Page Wrapper End ===== -->
 
-    <!-- Chat Sidebar (Disabled: Using dedicated /chat page) -->
-    {{-- <livewire:chat.chat-sidebar /> --}}
-    {{-- <livewire:chat.chat-box /> --}}
+    <!-- Chat Sidebar & Overlay -->
+    <livewire:chat.chat-sidebar />
+    <livewire:chat.chat-box />
 
     <!-- Toast Container -->
     <x-toast.container />
@@ -143,13 +143,16 @@
 
     @livewireScripts
 
-    <!-- Floating Chat Button (Matching Reference) -->
-    <a href="{{ route('chat.index') }}"
+    <!-- Floating Chat Button (Opens Sidebar) -->
+    <button @click="$store.chatSidebar.toggle()"
         class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95 z-50 group">
         <svg class="w-7 h-7 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
         </svg>
-    </a>
+        <!-- Unread Badge Demo -->
+        <span class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full border-2 border-blue-600"
+            x-show="$store.chatSidebar && !$store.chatSidebar.isOpen"></span>
+    </button>
 </body>
 
 </html>
