@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             SupportSeeder::class,
             ScheduleSeeder::class,
             ActivitySeeder::class,
+            FollowersSeeder::class,
         ]);
 
         $this->command->info('Database seeded successfully!');
