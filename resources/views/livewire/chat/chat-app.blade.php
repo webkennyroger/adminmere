@@ -129,47 +129,70 @@
         <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-white/3 xl:w-3/4">
             @if($selectedUser)
                 <!-- ====== Chat Box Start -->
-                <div class="sticky flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800 xl:px-6">
-                    <div class="flex items-center gap-3">
-                        <div class="relative h-10 w-10">
-                            <div class="h-full w-full rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-600 dark:text-white font-bold">
-                                {{ $selectedUser->initials() }}
+                <!-- ====== Chat Box Header (Redesigned) -->
+                <div class="flex items-center justify-between border-b border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4 shrink-0">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        
+                        <!-- Mobile Back Button -->
+                        <button @click="selectedUser = null; isMobile = false" class="mr-1 xl:hidden text-zinc-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+
+                        <!-- Avatar -->
+                        <div class="relative shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-600 dark:text-white font-bold overflow-hidden">
+                                @if($selectedUser->profile?->image)
+                                     <img src="{{ Storage::url($selectedUser->profile->image) }}" class="w-full h-full object-cover">
+                                @else
+                                     {{ $selectedUser->initials() }}
+                                @endif
                             </div>
-                            <span class="absolute right-0 bottom-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-zinc-900 bg-green-500"></span>
                         </div>
-                        <div>
-                            <h2 class="text-zinc-900 dark:text-white font-medium text-sm">{{ $selectedUser->name }}</h2>
-                            <span class="text-green-500 text-xs">Online</span>
+                        
+                        <!-- Name & Status -->
+                        <div class="flex flex-col min-w-0">
+                            <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-base truncate leading-tight">
+                                {{ $selectedUser->name }}
+                            </h3>
+                            <div class="flex items-center h-4 gap-1.5">
+                                 <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                 <span class="text-xs font-medium text-green-600 dark:text-green-400">Online</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <button class="text-zinc-700 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white/90">
-                            <svg class="stroke-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.54488 11.7254L8.80112 10.056C8.94007 9.98476 9.071 9.89524 9.16639 9.77162C9.57731 9.23912 9.66722 8.51628 9.38366 7.89244L7.76239 4.32564C7.23243 3.15974 5.7011 2.88206 4.79552 3.78764L3.72733 4.85577C3.36125 5.22182 3.18191 5.73847 3.27376 6.24794C3.9012 9.72846 5.56003 13.0595 8.25026 15.7497C10.9405 18.44 14.2716 20.0988 17.7521 20.7262C18.2615 20.8181 18.7782 20.6388 19.1442 20.2727L20.2124 19.2045C21.118 18.2989 20.8403 16.7676 19.6744 16.2377L16.1076 14.6164C15.4838 14.3328 14.7609 14.4227 14.2284 14.8336C14.1048 14.929 14.0153 15.06 13.944 15.1989L12.2747 18.4552" stroke="" stroke-width="1.5"></path>
-                            </svg>
+                    <!-- Actions (Right) -->
+                    <div class="flex items-center gap-2">
+                        <!-- Audio Call (Mock) -->
+                        <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 dark:bg-zinc-800 dark:text-green-400 dark:hover:bg-zinc-700 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.44-5.15-3.75-6.59-6.59l1.97-1.57c.27-.27.35-.66.24-1.01-.36-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
                         </button>
 
-                        <button class="text-zinc-700 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white/90">
-                            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.25 5.25C3.00736 5.25 2 6.25736 2 7.5V16.5C2 17.7426 3.00736 18.75 4.25 18.75H15.25C16.4926 18.75 17.5 17.7426 17.5 16.5V15.3957L20.1118 16.9465C20.9451 17.4412 22 16.8407 22 15.8716V8.12838C22 7.15933 20.9451 6.55882 20.1118 7.05356L17.5 8.60433V7.5C17.5 6.25736 16.4926 5.25 15.25 5.25H4.25ZM17.5 10.3488V13.6512L20.5 15.4325V8.56756L17.5 10.3488ZM3.5 7.5C3.5 7.08579 3.83579 6.75 4.25 6.75H15.25C15.6642 6.75 16 7.08579 16 7.5V16.5C16 16.9142 15.6642 17.25 15.25 17.25H4.25C3.83579 17.25 3.5 16.9142 3.5 16.5V7.5Z" fill=""></path>
-                            </svg>
+                        <!-- Video Call (Mock) -->
+                        <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 dark:bg-zinc-800 dark:text-green-400 dark:hover:bg-zinc-700 transition">
+                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
                         </button>
 
-                        <div x-data="{ openDropDown: false }" class="relative -mb-1.5">
-                            <button @click="openDropDown = !openDropDown" :class="openDropDown ? 'text-zinc-800 dark:text-white/90' :
-                                    'text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white/90'" class="text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white/90">
-                                <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z" fill=""></path>
-                                </svg>
+                        <!-- Options Dropdown -->
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" class="w-9 h-9 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 dark:bg-zinc-800 dark:text-green-400 dark:hover:bg-zinc-700 transition">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                             </button>
-                            <div x-show="openDropDown" @click.outside="openDropDown = false" class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-2xl border border-zinc-200 bg-white p-2 shadow-theme-lg dark:border-zinc-800 dark:bg-zinc-dark" style="display: none;">
-                                <button class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">
+                            
+                            <!-- Dropdown Menu -->
+                            <div x-show="open" @click.outside="open = false" 
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                                class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-800 rounded-xl shadow-xl border border-zinc-100 dark:border-zinc-700 z-50 overflow-hidden py-1">
+                                
+                                <button class="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/50">
                                     Ver mais
-                                </font></font></button>
-                                <button class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">
-                                    Excluir
-                                </font></font></button>
+                                </button>
+                                
+                                <button class="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    Excluir conversa
+                                </button>
                             </div>
                         </div>
                     </div>
