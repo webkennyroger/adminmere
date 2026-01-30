@@ -1,119 +1,91 @@
 <div>
     @if($isOpen && ($selectedUser || $selectedGroup))
-            <div class="fixed bottom-0 right-4 md:right-80 z-50 w-full max-w-sm bg-white dark:bg-zinc-900 shadow-2xl rounded-t-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 {{ $isMinimized ? 'h-14' : 'h-[500px]' }}"
+            <div class="fixed bottom-24 right-4 md:right-6 z-[60] w-[calc(100%-2rem)] md:w-[360px] h-[600px] max-h-[70vh] bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 overflow-hidden"
                 x-data="{
-                                                                                isTyping: false,
-                                                                                amITyping: false,
-                                                                                isRecording: false,
-                                                                                typingTimeout: null,
-                                                                                typingAvatar: null,
-                                                                                channel: null,
-                                                                                init() {
-                                                                                    // Scroll helper
-                                                                                    $wire.on('scroll-chat-to-bottom', () => { 
-                                                                                        var container = $refs.chatContainer;
-                                                                                        if(container) setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
-                                                                                    });
-
-                                                                                    if (typeof Echo !== 'undefined') {
-                                                                                        let channelName = null;
-                                                                                        
-                                                                                        // Determine Channel Name
-                                                                                        @if($selectedGroup)
-                                                                                            channelName = 'chat.group.{{ $selectedGroup->id }}';
-                                                                                        @elseif($selectedUser)
-                                                                                            let ids = [{{ auth()->id() }}, {{ $selectedUser->id }}].sort((a, b) => a - b);
-                                                                                            channelName = 'chat.' + ids[0] + '_' + ids[1];
-                                                                                        @endif
-
-                                                                                        if(channelName) {
-                                                                                            this.channel = channelName;
-                                                                                            Echo.private(channelName)
-                                                                                                .listenForWhisper('typing', (e) => {
-                                                                                                    if(e.userId != '{{ auth()->id() }}') {
-                                                                                                        this.isTyping = true;
-                                                                                                        this.typingAvatar = e.avatar; // Capture avatar from payload
-                                                                                                        clearTimeout(this.typingTimeout);
-                                                                                                        this.typingTimeout = setTimeout(() => { this.isTyping = false; }, 3000);
-                                                                                                    }
-                                                                                                })
-                                                                                                .listenForWhisper('recording', (e) => {
-                                                                                                    if(e.userId != '{{ auth()->id() }}') {
-                                                                                                        this.isRecording = true;
-                                                                                                        this.isTyping = false;
-                                                                                                        setTimeout(() => { this.isRecording = false; }, 5000); 
-                                                                                                    }
-                                                                                                });
-                                                                                        }
-                                                                                    }
-                                                                                },
-                                                                                broadcastTyping() {
-                                                                                    if (typeof Echo !== 'undefined' && this.channel) {
-                                                                                        Echo.private(this.channel)
-                                                                                            .whisper('typing', { 
-                                                                                                userId: '{{ auth()->id() }}',
-                                                                                                avatar: '{{ auth()->user()->profile?->image ? Storage::url(auth()->user()->profile->image) : (auth()->user()->image_url ?? "https://ui-avatars.com/api/?name=".auth()->user()->name) }}'
-                                                                                            });
-                                                                                    }
-                                                                                }
-                                                                            }" x-init="init()">
+                    isTyping: false,
+                    amITyping: false,
+                    isRecording: false,
+                    typingTimeout: null,
+                    typingAvatar: null,
+                    channel: null,
+                    init() {
+                        $wire.on('scroll-chat-to-bottom', () => { 
+                            var container = $refs.chatContainer;
+                            if(container) setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
+                        });
+                        
+                        // Listeners setup (Echo)...
+                        if (typeof Echo !== 'undefined') {
+                            let channelName = null;
+                            @if($selectedGroup)
+                                channelName = 'chat.group.{{ $selectedGroup->id }}';
+                            @elseif($selectedUser)
+                                let ids = [{{ auth()->id() }}, {{ $selectedUser->id }}].sort((a, b) => a - b);
+                                channelName = 'chat.' + ids[0] + '_' + ids[1];
+                            @endif
+                            if(channelName) {
+                                this.channel = channelName;
+                                Echo.private(channelName)
+                                    .listenForWhisper('typing', (e) => {
+                                        if(e.userId != '{{ auth()->id() }}') {
+                                            this.isTyping = true;
+                                            this.typingAvatar = e.avatar;
+                                            clearTimeout(this.typingTimeout);
+                                            this.typingTimeout = setTimeout(() => { this.isTyping = false; }, 3000);
+                                        }
+                                    })
+                                    .listenForWhisper('recording', (e) => {
+                                        if(e.userId != '{{ auth()->id() }}') {
+                                            this.isRecording = true;
+                                            this.isTyping = false;
+                                            setTimeout(() => { this.isRecording = false; }, 5000); 
+                                        }
+                                    });
+                            }
+                        }
+                    },
+                    broadcastTyping() {
+                        if (typeof Echo !== 'undefined' && this.channel) {
+                            Echo.private(this.channel).whisper('typing', { 
+                                userId: '{{ auth()->id() }}',
+                                avatar: '{{ auth()->user()->profile?->image ? Storage::url(auth()->user()->profile->image) : (auth()->user()->image_url ?? "https://ui-avatars.com/api/?name=".auth()->user()->name) }}'
+                            });
+                        }
+                    }
+                }" x-init="init()">
 
                 <!-- Header -->
-                <div class="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900 rounded-t-2xl cursor-pointer"
-                    wire:click="minimizeChat">
-                    <div class="flex items-center gap-3">
+                <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900 shrink-0">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <!-- Back Button -->
+                        <button @click="$wire.closeChat(); $store.chatSidebar.open()" class="mr-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+
                         @if($selectedGroup)
-                            <!-- Group Header Design -->
-                            <div class="flex items-center -space-x-2 overflow-hidden mr-2">
-                                @if(isset($selectedGroup->members))
-                                    @foreach(collect($selectedGroup->members)->take(4) as $member)
-                                        <img src="{{ $member->profile?->image ? Storage::url($member->profile->image) : $member->image_url }}"
-                                            class="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-zinc-900 object-cover bg-zinc-100"
-                                            title="{{ $member->name }}">
-                                    @endforeach
-                                @else
-                                    <img src="{{ $selectedGroup->image_url }}" class="w-8 h-8 rounded-full object-cover">
-                                @endif
+                            <!-- Group Header info -->
+                            <div class="flex items-center -space-x-2 overflow-hidden shrink-0">
+                                <img src="{{ $selectedGroup->image_url ?? 'https://ui-avatars.com/api/?name=Group' }}" class="w-8 h-8 rounded-full object-cover ring-2 ring-white dark:ring-zinc-900">
                             </div>
-                            <div class="flex flex-col">
-                                <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 text-sm leading-tight">
+                            <div class="flex flex-col min-w-0">
+                                <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate">
                                     {{ $selectedGroup->name }}
                                 </h3>
-                                <div class="h-4 flex items-center">
-                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate max-w-[150px]">
-                                        {{ isset($selectedGroup->members) ? 'Grupo' : 'Grupo' }}
-                                    </span>
-                                </div>
+                                <span class="text-[10px] text-zinc-500 truncate">Grupo</span>
                             </div>
                         @elseif($selectedUser)
-                            <div class="relative">
+                            <div class="relative shrink-0">
                                 <img src="{{ $selectedUser->profile?->image ? Storage::url($selectedUser->profile->image) : $selectedUser->image_url }}"
-                                    class="w-8 h-8 rounded-full object-cover">
-                                <span
-                                    class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
+                                    class="w-9 h-9 rounded-full object-cover">
+                                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
                             </div>
-                            <div class="flex flex-col">
-                                <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 text-sm leading-tight">
+                            <div class="flex flex-col min-w-0">
+                                <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate">
                                     {{ $selectedUser->name }}
                                 </h3>
-
-                                <!-- Status text logic -->
-                                <div class="h-4 flex items-center">
-                                    <span x-show="isTyping"
-                                        class="text-[10px] text-brand-500 flex items-center gap-1 transition-all"
-                                        style="display: none;">
-                                        digitando<span class="animate-bounce">.</span><span
-                                            class="animate-bounce delay-100">.</span><span class="animate-bounce delay-200">.</span>
-                                    </span>
-                                    <span x-show="isRecording"
-                                        class="text-[10px] text-red-500 flex items-center gap-1 transition-all"
-                                        style="display: none;">
-                                        gravando áudio...
-                                    </span>
-                                    <span x-show="!isTyping && !isRecording && !{{ $isMinimized ? 'true' : 'false' }}"
-                                        class="text-[10px] text-green-500 flex items-center gap-1 transition-all">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Disponível
-                                    </span>
+                                <div class="flex items-center h-4">
+                                     <span x-show="isTyping" class="text-[10px] text-brand-500" style="display: none;">digitando...</span>
+                                     <span x-show="!isTyping" class="text-[10px] text-zinc-500">Disponível</span>
                                 </div>
                             </div>
                         @endif
