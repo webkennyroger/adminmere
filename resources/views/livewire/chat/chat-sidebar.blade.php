@@ -14,19 +14,18 @@
     <!-- Widget Container -->
     <div 
         x-show="$store.chatSidebar.isOpen"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 translate-y-10 scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-        x-transition:leave-end="opacity-0 translate-y-10 scale-95"
-        @click.outside="if(window.innerWidth >= 768) $store.chatSidebar.close()"
-        class="fixed bottom-24 right-4 md:right-6 z-[60] w-[calc(100%-2rem)] md:w-[360px] h-[600px] max-h-[70vh] bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl flex flex-col border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+        x-transition:enter="transform transition ease-in-out duration-300"
+        x-transition:enter-start="translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transform transition ease-in-out duration-300"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="translate-x-full"
+        class="fixed top-0 right-0 z-[55] h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col"
         style="display: none;">
 
         <!-- Header -->
         <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">
-            <h2 class="text-lg font-bold text-zinc-900 dark:text-white">Messaging</h2>
+            <h2 class="text-lg font-bold text-zinc-900 dark:text-white">Mensagens</h2>
             <div class="flex items-center gap-1">
                 <!-- New Chat / Edit -->
                 <button wire:click="openNewChatModal" class="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
@@ -51,7 +50,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input wire:model.live="search" type="text" placeholder="Search..." 
+                <input wire:model.live="search" type="text" placeholder="Pesquisar..." 
                     class="bg-transparent border-none w-full pl-9 py-2 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400 focus:ring-0">
             </div>
         </div>
@@ -62,7 +61,7 @@
         <div class="flex-1 w-full overflow-y-auto flex flex-col space-y-2 px-2 pb-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700">
             
             @forelse($users as $user)
-                <div wire:key="sidebar-user-{{ $user->id }}" wire:click="openChat({{ $user->id }}); $store.chatSidebar.close()"
+                <div wire:key="sidebar-user-{{ $user->id }}" wire:click="openChat({{ $user->id }})"
                     class="relative group cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-xl transition-all flex items-center shrink-0 p-2 gap-3 justify-start"
                     title="{{ $user->name }}">
                     
@@ -140,7 +139,7 @@
                          foreach($group['members'] as $m) $avatars[] = $m['image'] ?? 'https://ui-avatars.com/api/?name=User';
                      }
                 @endphp
-                <div wire:key="group-{{ $group['id'] }}" wire:click="openGroup({{ $group['id'] }}); $store.chatSidebar.close()" 
+                <div wire:key="group-{{ $group['id'] }}" wire:click="openGroup({{ $group['id'] }})" 
                     class="relative group cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-xl transition-all flex items-center shrink-0 p-2 gap-3 justify-start"
                     title="{{ $group['name'] }}">
                     
