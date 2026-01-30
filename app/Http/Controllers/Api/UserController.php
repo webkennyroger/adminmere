@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     /**
+     * Get suggested users to follow.
+     */
     public function suggested(Request $request)
     {
         $user = $request->user();
