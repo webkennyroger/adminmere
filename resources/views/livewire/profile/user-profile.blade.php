@@ -46,12 +46,13 @@
                 <div class="flex gap-4">
                     @if(auth()->id() !== $user->id)
                         <button wire:click="toggleFollow" wire:loading.attr="disabled"
-                            class="px-6 py-2 rounded-lg font-semibold transition-all shadow-sm flex items-center gap-2 {{ auth()->user()->isFollowing($user) ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700' : 'bg-[#FC4C02] text-white hover:bg-orange-700' }}">
+                            class="group px-6 py-2 rounded-lg font-semibold transition-all shadow-sm flex items-center justify-center gap-2 min-w-[120px] {{ auth()->user()->isFollowing($user) ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 hover:bg-yellow-500 hover:text-white hover:border-yellow-500' : 'bg-green-600 text-white hover:bg-green-700 shadow-green-900/20' }}">
                             @if(auth()->user()->isFollowing($user))
-                                <span>Seguindo</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <span class="block group-hover:hidden">Seguindo</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 block group-hover:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
+                                <span class="hidden group-hover:block">Deixar de seguir</span>
                             @else
                                 <span>Seguir</span>
                             @endif

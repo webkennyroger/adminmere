@@ -69,12 +69,13 @@
                     <div class="mt-6 w-full">
                         @if(Auth::user()->isFollowing($user))
                             <button wire:click="unfollow({{ $user->id }})" wire:loading.attr="disabled"
-                                class="w-full py-2 px-4 border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-lg text-sm font-bold hover:bg-zinc-100 dark:hover:bg-zinc-700 transition">
-                                Seguindo
+                                class="group w-full py-2 px-4 border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-lg text-sm font-bold hover:bg-yellow-500 hover:text-white hover:border-yellow-500 dark:hover:bg-yellow-600 transition-colors">
+                                <span class="block group-hover:hidden">Seguindo</span>
+                                <span class="hidden group-hover:block">Deixar de seguir</span>
                             </button>
                         @else
                             <button wire:click="follow({{ $user->id }})" wire:loading.attr="disabled"
-                                class="w-full py-2 px-4 bg-[#FC4C02] text-white rounded-lg text-sm font-bold hover:bg-orange-700 shadow-lg shadow-orange-900/20 transition transform active:scale-95">
+                                class="w-full py-2 px-4 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 shadow-lg shadow-green-900/20 transition transform active:scale-95">
                                 Seguir
                             </button>
                         @endif
