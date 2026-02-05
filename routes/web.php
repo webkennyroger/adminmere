@@ -13,6 +13,13 @@ Route::get('/', function () {
     return auth()->check() ? redirect('/home') : redirect('/login');
 });
 
+// Rota de Autenticação Google (Socialite / Web)
+Route::get('/auth/google/redirect', function () {
+    return \Laravel\Socialite\Facades\Socialite::driver('google')->redirect();
+})->name('auth.google');
+
+Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleCallback'])->name('auth.google.callback');
+
 Route::get('/dashboard', function () {
     // Regular users go to home, admins/managers see dashboard
     if (!auth()->user()->isAdmin() && !auth()->user()->isManager()) {

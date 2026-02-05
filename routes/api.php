@@ -21,7 +21,7 @@ Route::get('/app-version', function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
-    
+
     Route::get('/user', function (Request $request) {
         $user = $request->user();
         $user->load('profile');
@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'destroy']);
     Route::post('/activities/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleLike']);
     Route::post('/activities/{id}/comment', [\App\Http\Controllers\Api\ActivityController::class, 'comment']);
+    Route::post('/comments/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleCommentLike']);
     Route::post('/activities/sync', [\App\Http\Controllers\Api\ActivityController::class, 'sync']);
     Route::post('/activities/upload', [\App\Http\Controllers\Api\ActivityController::class, 'upload']);
 
@@ -72,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages', [\App\Http\Controllers\Api\MessageController::class, 'sendMessage']);
     Route::post('/messages/{userId}/read', [\App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
     Route::get('/conversations', [\App\Http\Controllers\Api\MessageController::class, 'getConversations']);
-    
+
     // Stats & Dashboard API
     Route::get('/stats/dashboard', [\App\Http\Controllers\Api\StatsController::class, 'dashboard']);
     Route::get('/stats/challenges/active', [\App\Http\Controllers\Api\StatsController::class, 'activeChallenges']);

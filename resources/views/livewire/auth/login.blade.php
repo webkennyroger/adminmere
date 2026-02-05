@@ -9,34 +9,29 @@
             @csrf
 
             <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autofocus
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
+            <flux:input name="email" :label="__('Email address')" :value="old('email')" type="email" required autofocus
+                autocomplete="email" placeholder="email@example.com" />
 
             <!-- Password -->
             <div class="relative">
-                <flux:input
-                    name="password"
-                    :label="__('Password')"
-                    type="password"
-                    required
-                    autocomplete="current-password"
-                    :placeholder="__('Password')"
-                    viewable
-                />
+                <flux:input name="password" :label="__('Password')" type="password" required
+                    autocomplete="current-password" :placeholder="__('Password')" viewable />
 
                 @if (Route::has('password.request'))
                     <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
                         {{ __('Forgot your password?') }}
                     </flux:link>
                 @endif
+            </div>
+
+            <!-- Google Login Button (Web) -->
+            <div class="flex items-center justify-center">
+                <a href="{{ route('auth.google') }}"
+                    class="flex items-center justify-center w-full px-4 py-2 mt-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <img class="w-5 h-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg"
+                        alt="Google logo">
+                    <span>{{ __('Continue with Google') }}</span>
+                </a>
             </div>
 
             <!-- Remember Me -->

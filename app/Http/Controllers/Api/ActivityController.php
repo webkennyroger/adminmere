@@ -17,13 +17,13 @@ class ActivityController extends Controller
     {
         $user = $request->user();
         $feed = $request->query('feed', 'personal');
-        
+
         $query = Activity::with([
-            'user', 
-            'comments' => function($q) {
+            'user',
+            'comments' => function ($q) {
                 $q->whereNull('parent_id')->latest();
-            }, 
-            'comments.user', 
+            },
+            'comments.user',
             'comments.likes',
             'likes'
         ]);
@@ -41,7 +41,7 @@ class ActivityController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $activities->map(function($activity) use ($user) {
+            'data' => $activities->map(function ($activity) use ($user) {
                 return $this->formatActivity($activity, $user);
             }),
             'pagination' => [
@@ -359,7 +359,7 @@ class ActivityController extends Controller
     public function formatActivity($activity, $user)
     {
         $routePoints = $activity->polylines;
-        
+
         // If we stored it as our new structure, return only the points to the app
         if (is_array($routePoints) && isset($routePoints['points'])) {
             $routePoints = $routePoints['points'];
@@ -380,17 +380,17 @@ class ActivityController extends Controller
             'sport' => $activity->sport_type,
             'createdAt' => $activity->start_time->toIso8601String(),
             'location' => $activity->user->profile->city ?? 'Brasil',
-            'distanceInMeters' => (double)$activity->distance,
+            'distanceInMeters' => (float)$activity->distance,
             'durationInSeconds' => (int)$activity->duration,
             'routePoints' => $routePoints,
-            'calories' => (double)$activity->calories,
+            'calories' => (float)$activity->calories,
             'likes' => $activity->likes->count(),
             'isLiked' => $activity->likes->contains('user_id', $user->id),
-            'commentsList' => $activity->comments->map(function($comment) {
+            'commentsList' => $activity->comments->map(function ($comment) {
                 return $this->formatComment($comment);
             })->toArray(),
             'shares' => 0,
-            'likers' => $activity->likes->take(3)->map(function($like) {
+            'likers' => $activity->likes->take(3)->map(function ($like) {
                 return $like->user->image_url;
             })->toArray(),
             'privacy' => $activity->privacy,
@@ -404,10 +404,39 @@ class ActivityController extends Controller
     }
 
     /**
+     * Toggle like on comment.
+     */
+    public function toggleCommentLike(Request $request, $id)
+    {
+        $comment = \App\Models\Comment::findOrFail($id);
+        $user = $request->user();
+
+        $existingLike = $comment->likes()->where('user_id', $user->id)->first();
+
+        if ($existingLike) {
+            $existingLike->delete();
+            $isLiked = false;
+        } else {
+            $comment->likes()->create([
+                'user_id' => $user->id
+            ]);
+            $isLiked = true;
+        }
+
+        return response()->json([
+            'success' => true,
+            'is_liked' => $isLiked,
+            'likes_count' => $comment->likes()->count()
+        ]);
+    }
+
+    /**
      * Format comment for JSON string (app requirement)
      */
     private function formatComment($comment)
     {
+        $userId = auth()->id(); // Check current user for isLiked
+
         return json_encode([
             'id' => (string)$comment->id,
             'userId' => (string)$comment->user_id,
@@ -415,8 +444,10 @@ class ActivityController extends Controller
             'userAvatarUrl' => $comment->user->image_url,
             'text' => $comment->body,
             'timestamp' => $comment->created_at->toIso8601String(),
-            'replies' => [], // Flat list for feed
+            'replies' => [],
             'isArchived' => false,
+            'likes' => $comment->likes->count(),
+            'isLiked' => $comment->likes->contains('user_id', $userId),
         ]);
     }
 
@@ -425,6 +456,8 @@ class ActivityController extends Controller
      */
     private function encodePolyline($points)
     {
+        if (empty($points)) return '';
+
         $res = '';
         $last_lat = 0;
         $last_lng = 0;

@@ -8,49 +8,30 @@
         <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
             @csrf
             <!-- Name -->
-            <flux:input
-                name="name"
-                :label="__('Name')"
-                :value="old('name')"
-                type="text"
-                required
-                autofocus
-                autocomplete="name"
-                :placeholder="__('Full name')"
-            />
+            <flux:input name="name" :label="__('Name')" :value="old('name')" type="text" required autofocus
+                autocomplete="name" :placeholder="__('Full name')" />
 
             <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
+            <flux:input name="email" :label="__('Email address')" :value="old('email')" type="email" required
+                autocomplete="email" placeholder="email@example.com" />
 
             <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                viewable
-            />
+            <flux:input name="password" :label="__('Password')" type="password" required autocomplete="new-password"
+                :placeholder="__('Password')" viewable />
 
             <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                viewable
-            />
+            <flux:input name="password_confirmation" :label="__('Confirm password')" type="password" required
+                autocomplete="new-password" :placeholder="__('Confirm password')" />
+
+            <!-- Google Register Button (Web) -->
+            <div class="flex items-center justify-center mt-4">
+                <a href="{{ route('auth.google') }}"
+                    class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <img class="w-5 h-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg"
+                        alt="Google logo">
+                    <span>{{ __('Sign up with Google') }}</span>
+                </a>
+            </div>
 
             <div class="flex items-center justify-end">
                 <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
