@@ -18,43 +18,50 @@
             </div>
         </div>
 
-        <!-- Three Dots Menu -->
-        <div class="relative" @click.away="showMenu = false">
-            <button @click="showMenu = !showMenu"
-                class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
-                <svg class="w-5 h-5 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+        <!-- Bookmark Icon (Save Post) + Owner Menu -->
+        <div class="flex items-center gap-2">
+            <!-- Bookmark Icon -->
+            <button class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+                <svg class="w-5 h-5 text-zinc-500 hover:text-brand-600 transition-colors" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                 </svg>
             </button>
 
-            <!-- Dropdown Menu -->
-            <div x-show="showMenu" x-transition:enter="transition ease-out duration-100"
-                x-transition:enter-start="transform opacity-0 scale-95"
-                x-transition:enter-end="transform opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-75"
-                x-transition:leave-start="transform opacity-100 scale-100"
-                x-transition:leave-end="transform opacity-0 scale-95"
-                class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
-                style="display: none;">
-                <div class="py-1">
-                    @if(auth()->id() === $post->user_id)
-                        <button wire:click="startEditingPost" @click="showMenu = false"
-                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Editar post
-                        </button>
-                        <button wire:click="confirmDeletePost" @click="showMenu = false"
-                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Excluir post
-                        </button>
-                    @else
-                        <button
-                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Denunciar post
-                        </button>
-                    @endif
+            <!-- Three Dots Menu (Only for Owner) -->
+            @if(auth()->id() === $post->user_id)
+                <div class="relative" @click.away="showMenu = false">
+                    <button @click="showMenu = !showMenu"
+                        class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+                        <svg class="w-5 h-5 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="showMenu" x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
+                        style="display: none;">
+                        <div class="py-1">
+                            <button wire:click="startEditingPost" @click="showMenu = false"
+                                class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                                Editar post
+                            </button>
+                            <button wire:click="confirmDeletePost" @click="showMenu = false"
+                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                                Excluir post
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 
