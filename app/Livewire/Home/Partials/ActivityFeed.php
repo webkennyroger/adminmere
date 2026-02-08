@@ -5,11 +5,22 @@ namespace App\Livewire\Home\Partials;
 use Livewire\Component;
 
 use Livewire\Attributes\Reactive;
+use Livewire\WithFileUploads;
+use App\Models\Activity;
 
 class ActivityFeed extends Component
 {
     #[Reactive]
     public $feed = 'personal';
+
+    use WithFileUploads; 
+
+    // Propriedades do Novo Post
+    public $title = '';
+    public $content = '';
+    public $photo;
+    public $feedType = 'personal'; 
+    public $location = '';
 
     public $viewingUserProfile = null;
 
@@ -32,6 +43,42 @@ class ActivityFeed extends Component
     {
         if (!$this->hasMore) return;
         $this->page++;
+    }
+
+    public function savePost()
+    {
+        $this->validate([
+            'title' => 'nullable|string|max:100',
+            'content' => 'required|min:3',
+            'photo' => 'nullable|image|max:10240',
+        ]);
+
+        $media = [];
+
+        if ($this->photo) {
+            $path = $this->photo->store('activities/' . auth()->id(), 'public');
+            $media[] = asset('storage/' . $path);
+        }
+
+        Activity::create([
+            'user_id' => auth()->id(),
+            'title' => $this->title ?: 'Nova Publicação',
+            'sport_type' => 'Social',
+            'start_time' => now(),
+            'distance' => 0,
+            'duration' => 0,
+            'feed_type' => $this->feedType,
+            'location' => $this->location ?: (auth()->user()->profile->city ?? 'Brasil'),
+            'description' => $this->content,
+            'media' => $media,
+            'privacy' => 'public',
+        ]);
+
+        $this->reset(['title', 'content', 'photo', 'location']);
+        session()->flash('message', 'Publicado com sucesso! 🎉');
+        
+        // Force refresh
+        $this->js('window.location.reload()'); 
     }
 
 
