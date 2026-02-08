@@ -60,6 +60,12 @@ class MenuHelper
                 'name' => 'Dashboard',
                 'path' => '/dashboard',
             ];
+
+            $items[] = [
+                'icon' => 'forms', // Or another suitable icon
+                'name' => 'Atividades',
+                'path' => '/activities',
+            ];
             
             $items[] = [
                 'name' => 'Desafios',

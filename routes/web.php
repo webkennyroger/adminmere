@@ -129,6 +129,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Subscription Plans Management
         Route::get('/plans', \App\Livewire\Plans\PlanIndex::class)->name('plans.index');
+
+        // Rota de Gerenciamento de Atividades
+        Route::get('/activities', \App\Livewire\Activities\ActivityList::class)->name('activities.index');
     });
     
     // ===== PUBLIC ROUTES (All authenticated users) =====
