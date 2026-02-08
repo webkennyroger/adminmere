@@ -1,4 +1,79 @@
 <div class="p-6">
+    <!-- Feedback Message -->
+    @if (session()->has('message'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ session('message') }}</span>
+        </div>
+    @endif
+
+    <!-- Create Post Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-8">
+        <div class="flex gap-3">
+            <div class="flex-shrink-0">
+                @if(auth()->user()->image_url)
+                    <img class="h-10 w-10 rounded-full object-cover" src="{{ auth()->user()->image_url }}" alt="">
+                @else
+                    <div
+                        class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    </div>
+                @endif
+            </div>
+            <div class="flex-grow">
+                <form wire:submit.prevent="savePost">
+                    <textarea wire:model="content"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all resize-none"
+                        rows="2" placeholder="O que está em sua mente, {{ auth()->user()->name }}?"></textarea>
+
+                    <div class="flex items-center justify-between mt-3 px-1">
+                        <div class="flex gap-4 items-center">
+                            <!-- Photo Upload -->
+                            <label
+                                class="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-brand-600 transition-colors">
+                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <span>Foto/Vídeo</span>
+                                <input type="file" wire:model="photo" class="hidden">
+                            </label>
+
+                            <!-- Feed Selector -->
+                            <div class="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                                <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                    </path>
+                                </svg>
+                                <select wire:model="feedType"
+                                    class="border-none bg-transparent text-xs p-0 focus:ring-0 text-gray-600 font-semibold cursor-pointer">
+                                    <option value="personal">Feed Geral</option>
+                                    <option value="community">Comunidade</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-1.5 px-6 rounded-lg text-xs transition-transform transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span wire:loading.remove wire:target="savePost">PUBLICAR</span>
+                            <span wire:loading wire:target="savePost">ENVIANDO...</span>
+                        </button>
+                    </div>
+
+                    @if ($photo)
+                        <div class="mt-2 text-xs text-green-600 bg-green-50 p-1 rounded inline-block">
+                            📎 Imagem selecionada
+                        </div>
+                    @endif
+                    @error('content') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Atividades & Posts</h2>
         <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar posts..."
