@@ -41,13 +41,13 @@ class PostItem extends Component
     public function cancelEditingPost()
     {
         $this->editingPost = false;
-        $this->editTitle = $this\->post->title ?? '';
-        $this->editContent = $this\->post->description ?? '';
+        $this->editTitle = $this->post->title ?? '';
+        $this->editContent = $this->post->content ?? '';
     }
     
     public function updatePost()
     {
-        if ($this\->post->user_id !== auth()->id()) {
+        if ($this->post->user_id !== auth()->id()) {
             return; // Only owner can edit
         }
         
@@ -56,19 +56,19 @@ class PostItem extends Component
             'editContent' => 'required|min:3',
         ]);
         
-        $this\->post->update([
-            'title' => $this->editTitle ?: 'Publicação',
-            'description' => $this->editContent,
+        $this->post->update([
+            'title' => $this->editTitle ?: null,
+            'content' => $this->editContent,
         ]);
         
         $this->editingPost = false;
-        $this\->post->refresh();
+        $this->post->refresh();
         session()->flash('message', 'Post atualizado com sucesso!');
     }
     
     public function confirmDeletePost()
     {
-        if ($this\->post->user_id !== auth()->id()) {
+        if ($this->post->user_id !== auth()->id()) {
             return; // Only owner can delete
         }
         $this->confirmingPostDeletion = true;
@@ -81,11 +81,11 @@ class PostItem extends Component
     
     public function deletePost()
     {
-        if ($this\->post->user_id !== auth()->id()) {
+        if ($this->post->user_id !== auth()->id()) {
             return; // Only owner can delete
         }
         
-        $this\->post->delete();
+        $this->post->delete();
         $this->dispatch('post-deleted');
         session()->flash('message', 'Post deletado com sucesso!');
     }
@@ -117,14 +117,14 @@ class PostItem extends Component
     {
         $user = auth()->user();
         
-        $existingLike = $this\->post->likes()->where('user_id', $user->id)->first();
+        $existingLike = $this->post->likes()->where('user_id', $user->id)->first();
         if ($existingLike) {
             $existingLike->delete();
         } else {
-            $this\->post->likes()->create(['user_id' => $user->id]);
+            $this->post->likes()->create(['user_id' => $user->id]);
         }
         
-        $this\->post->refresh(); // Reload mainly for likes count if needed, but reactivity handles it mostly
+        $this->post->refresh();
     }
 
     public function toggleCommentLike($commentId)
@@ -140,7 +140,7 @@ class PostItem extends Component
                 $comment->likes()->create(['user_id' => $user->id]);
             }
         }
-        $this\->post->refresh(); 
+        $this->post->refresh(); 
     }
 
     public function deleteComment()
@@ -155,15 +155,15 @@ class PostItem extends Component
 
         if ($comment) {
             $isCommentOwner = $comment->user_id === $user->id;
-            $isActivityOwner = $this\->post->user_id === $user->id; // Logic simplified since we have context
+            $isPostOwner = $this->post->user_id === $user->id;
 
-            if ($isCommentOwner || $isActivityOwner) {
+            if ($isCommentOwner || $isPostOwner) {
                 $comment->delete();
             }
         }
 
         $this->confirmingCommentDeletion = null;
-        $this\->post->refresh();
+        $this->post->refresh();
     }
 
     public function postComment()
@@ -172,7 +172,7 @@ class PostItem extends Component
             'newComment' => 'required|string|max:1000',
         ]);
 
-        $this\->post->comments()->create([
+        $this->post->comments()->create([
             'user_id' => auth()->user()->id,
             'body' => $this->newComment,
             'parent_id' => $this->replyingToCommentId
@@ -181,7 +181,7 @@ class PostItem extends Component
         $this->newComment = '';
         $this->replyingToCommentId = null;
         $this->showComments = true;
-        $this\->post->refresh();
+        $this->post->refresh();
     }
     
     // Mentions logic (simplified)
