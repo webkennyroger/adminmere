@@ -16,10 +16,78 @@ class ActivityItem extends Component
     public $showComments = false;
     public $showMentions = false;
     public $filteredUsers = []; // For mentions
+    
+    // Edit/Delete Post
+    public $editingPost = false;
+    public $editTitle = '';
+    public $editContent = '';
+    public $confirmingPostDeletion = false;
 
     public function mount(Activity $activity)
     {
         $this->activity = $activity;
+        $this->editTitle = $activity->title ?? '';
+        $this->editContent = $activity->description ?? '';
+    }
+    
+    public function startEditingPost()
+    {
+        if ($this->activity->user_id !== auth()->id()) {
+            return; // Only owner can edit
+        }
+        $this->editingPost = true;
+    }
+    
+    public function cancelEditingPost()
+    {
+        $this->editingPost = false;
+        $this->editTitle = $this->activity->title ?? '';
+        $this->editContent = $this->activity->description ?? '';
+    }
+    
+    public function updatePost()
+    {
+        if ($this->activity->user_id !== auth()->id()) {
+            return; // Only owner can edit
+        }
+        
+        $this->validate([
+            'editTitle' => 'nullable|string|max:100',
+            'editContent' => 'required|min:3',
+        ]);
+        
+        $this->activity->update([
+            'title' => $this->editTitle ?: 'Publicação',
+            'description' => $this->editContent,
+        ]);
+        
+        $this->editingPost = false;
+        $this->activity->refresh();
+        session()->flash('message', 'Post atualizado com sucesso!');
+    }
+    
+    public function confirmDeletePost()
+    {
+        if ($this->activity->user_id !== auth()->id()) {
+            return; // Only owner can delete
+        }
+        $this->confirmingPostDeletion = true;
+    }
+    
+    public function cancelDeletePost()
+    {
+        $this->confirmingPostDeletion = false;
+    }
+    
+    public function deletePost()
+    {
+        if ($this->activity->user_id !== auth()->id()) {
+            return; // Only owner can delete
+        }
+        
+        $this->activity->delete();
+        $this->dispatch('post-deleted');
+        session()->flash('message', 'Post deletado com sucesso!');
     }
 
     public function confirmDelete($commentId)

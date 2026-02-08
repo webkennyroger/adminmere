@@ -43,11 +43,11 @@
                         Salvar post
                     </button>
                     @if(auth()->id() === $activity->user_id)
-                        <button
+                        <button wire:click="startEditingPost" @click="showMenu = false"
                             class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Editar post
                         </button>
-                        <button
+                        <button wire:click="confirmDeletePost" @click="showMenu = false"
                             class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Excluir post
                         </button>
@@ -392,6 +392,63 @@
                 Apagar
             </button>
             <button type="button" wire:click="cancelDelete"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
+                Cancelar
+            </button>
+        </div>
+    </x-ui.modal>
+
+    <!-- Edit Post Modal -->
+    <x-ui.modal :isOpen="$editingPost" :showCloseButton="false">
+        <div class="sm:flex sm:items-start">
+            <div class="w-full">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Publicação</h3>
+
+                <div class="space-y-3">
+                    <!-- Title Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Título</label>
+                        <input type="text" wire:model="editTitle"
+                            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-900 dark:text-white">
+                        @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Content Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Descrição</label>
+                        <textarea wire:model="editContent" rows="4"
+                            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-900 dark:text-white resize-none"></textarea>
+                        @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
+            <button type="button" wire:click="updatePost"
+                class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 sm:w-auto">
+                Salvar
+            </button>
+            <button type="button" wire:click="cancelEditingPost"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
+                Cancelar
+            </button>
+        </div>
+    </x-ui.modal>
+
+    <!-- Delete Post Confirmation Modal -->
+    <x-ui.modal :isOpen="$confirmingPostDeletion" :showCloseButton="false">
+        <div class="sm:flex sm:items-start">
+            <div class="w-full">
+                <x-ui.alert variant="error" title="Apagar publicação"
+                    message="Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos." />
+            </div>
+        </div>
+        <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
+            <button type="button" wire:click="deletePost"
+                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
+                Apagar Publicação
+            </button>
+            <button type="button" wire:click="cancelDeletePost"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
                 Cancelar
             </button>

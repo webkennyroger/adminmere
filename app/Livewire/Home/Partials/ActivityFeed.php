@@ -50,7 +50,7 @@ class ActivityFeed extends Component
         $this->validate([
             'title' => 'nullable|string|max:100',
             'content' => 'required|min:3',
-            'photo' => 'nullable|image|max:10240',
+            'photo' => 'nullable|image|max:20480', // 20MB
         ]);
 
         $media = [];
