@@ -1,5 +1,4 @@
 <div class="space-y-6">
-    <!-- Create Post Section (Functional) -->
     <div
         class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fadeIn">
         <form wire:submit.prevent="savePost">
@@ -88,17 +87,46 @@
                             {{ session('message') }}
                         </div>
                     @endif
+
+                    <!-- Photo Upload Progress -->
+                    <div wire:loading wire:target="photo"
+                        class="mt-3 text-xs text-blue-600 dark:text-blue-400 font-medium flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Carregando foto...
+                    </div>
+
+                    <!-- Photo Preview -->
                     @if ($photo)
-                        <div
-                            class="mt-3 inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800">
-                            <span class="text-green-500">📎</span>
-                            <span
-                                class="text-xs text-green-700 dark:text-green-300 font-medium truncate max-w-[200px]">{{ $photo->getClientOriginalName() }}</span>
-                            <button type="button" wire:click="$set('photo', null)"
-                                class="text-green-400 hover:text-red-500 ml-1">✕</button>
+                        <div class="mt-3 space-y-2">
+                            <!-- Photo Info -->
+                            <div
+                                class="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800">
+                                <span class="text-green-500">✓</span>
+                                <span
+                                    class="text-xs text-green-700 dark:text-green-300 font-medium truncate max-w-[200px]">{{ $photo->getClientOriginalName() }}</span>
+                                <button type="button" wire:click="$set('photo', null)"
+                                    class="text-green-400 hover:text-red-500 ml-1 font-bold">✕</button>
+                            </div>
+
+                            <!-- Photo Preview Image -->
+                            <div class="relative w-full max-w-xs">
+                                <img src="{{ $photo->temporaryUrl() }}"
+                                    class="w-full h-auto rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm"
+                                    alt="Preview">
+                            </div>
                         </div>
                     @endif
+
                     @error('content') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
+                    @enderror
+                    @error('photo') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
