@@ -20,6 +20,8 @@ class Activity extends Model
         'calories',
         'polylines',
         'privacy',
+        'feed_type', // added
+        'location',  // added
         'description',
         'mood',
         'media',

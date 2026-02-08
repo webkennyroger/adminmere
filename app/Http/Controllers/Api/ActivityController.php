@@ -69,6 +69,8 @@ class ActivityController extends Controller
             'routePoints' => 'nullable|array',
             'calories' => 'nullable|numeric',
             'privacy' => 'nullable|string',
+            'location' => 'nullable|string',
+            'feedType' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -124,6 +126,8 @@ class ActivityController extends Controller
                 'calories' => $request->calories ?? 0,
                 'polylines' => $polylines,
                 'privacy' => $request->privacy ?? 'public',
+                'feed_type' => $request->feedType ?? 'personal', // Capture feed type from app
+                'location' => $request->location, // Capture location from app
                 'description' => $request->notes,
                 'mood' => $request->mood,
                 'media' => $request->mediaPaths ?? [],
@@ -179,6 +183,8 @@ class ActivityController extends Controller
             'notes' => 'nullable|string',
             'mood' => 'nullable|integer|min:1|max:5',
             'mediaPaths' => 'nullable|array',
+            'location' => 'nullable|string',
+            'feedType' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -379,7 +385,8 @@ class ActivityController extends Controller
             'activityTitle' => $activity->title,
             'sport' => $activity->sport_type,
             'createdAt' => $activity->start_time->toIso8601String(),
-            'location' => $activity->user->profile->city ?? 'Brasil',
+            'location' => $activity->location ?? $activity->user->profile->city ?? 'Brasil',
+            'feedType' => $activity->feed_type,
             'distanceInMeters' => (float)$activity->distance,
             'durationInSeconds' => (int)$activity->duration,
             'routePoints' => $routePoints,
