@@ -1,20 +1,11 @@
 <div class="space-y-6">
-    <!-- Create Post Section -->
     <!-- Create Post Section (Functional) -->
     <div
         class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fadeIn">
         <form wire:submit.prevent="savePost">
-
-            <!-- Header: Title Input -->
-            <div class="relative mb-4 group">
-                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-green-500 rounded-l-lg"></div>
-                <input type="text" wire:model="title"
-                    class="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-r-lg text-lg font-bold text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-0 px-4 py-2.5 transition-colors"
-                    placeholder="Dê um título para sua publicação...">
-            </div>
-
             <div class="flex gap-4">
-                <div class="hidden sm:block">
+                <!-- Avatar Column (Left Side) -->
+                <div class="hidden sm:block flex-shrink-0 pt-1">
                     @if(auth()->user()->image_url)
                         <img src="{{ auth()->user()->image_url }}"
                             class="w-11 h-11 rounded-full border border-zinc-100 dark:border-zinc-700 object-cover">
@@ -26,7 +17,17 @@
                     @endif
                 </div>
 
+                <!-- Input Column (Right Side) -->
                 <div class="flex-grow">
+
+                    <!-- Header: Title Input -->
+                    <div class="relative mb-3 group">
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-green-500 rounded-l-lg"></div>
+                        <input type="text" wire:model="title"
+                            class="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-r-lg text-lg font-bold text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-0 px-4 py-2.5 transition-colors"
+                            placeholder="Dê um título para sua publicação...">
+                    </div>
+
                     <!-- Content Input -->
                     <div class="relative group mb-3">
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-500 rounded-l-lg"></div>
