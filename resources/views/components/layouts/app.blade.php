@@ -61,7 +61,7 @@
         <x-layouts.sidebar.sidebar />
         <!-- ===== Sidebar End ===== -->
         <!-- ===== Content Area Start ===== -->
-        <div class="flex-1 transition-all duration-300 ease-in-out" :class="{
+        <div class="flex-1 transition-all duration-300 ease-in-out xl:ml-[90px]" :class="{
                 'xl:ml-[290px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
                 'xl:ml-[90px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
                 'ml-0': $store.sidebar.isMobileOpen

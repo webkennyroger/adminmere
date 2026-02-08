@@ -1,5 +1,5 @@
 export function initSidebarStore() {
-    Alpine.store('sidebar', {
+    window.Alpine.store('sidebar', {
         isExpanded: window.innerWidth >= 1280,
         isMobileOpen: false,
         isHovered: false,
@@ -26,7 +26,7 @@ export function initSidebarStore() {
 
     // Resize listener
     const checkMobile = () => {
-        const sidebar = Alpine.store('sidebar');
+        const sidebar = window.Alpine.store('sidebar');
         if (!sidebar) return;
 
         if (window.innerWidth < 1280) {

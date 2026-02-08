@@ -1,5 +1,5 @@
 export function initChatStore() {
-    Alpine.store('chatSidebar', {
+    window.Alpine.store('chatSidebar', {
         isOpen: false,
         toggle() {
             this.isOpen = !this.isOpen;

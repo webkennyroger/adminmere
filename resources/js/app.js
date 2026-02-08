@@ -47,31 +47,33 @@ import { initThemeStore } from './theme';
 import { initSidebarStore } from './components/sidebar';
 import { initChatStore } from './components/chat';
 
+// Helper to initialize stores safely
+const initStores = () => {
+    if (!window.Alpine) return;
+    
+    // Only init if stores don't exist yet
+    if (!window.Alpine.store('theme')) {
+        initThemeStore();
+    }
+    if (!window.Alpine.store('sidebar')) {
+        initSidebarStore();
+    }
+    if (!window.Alpine.store('chatSidebar')) {
+        initChatStore();
+    }
+};
+
 // Wait for Livewire to inject Alpine, then initialize our stores
 document.addEventListener('livewire:init', () => {
-    // Register Alpine plugin
     if (window.Alpine) {
         window.Alpine.plugin(intersect);
+        initStores();
     }
-    
-    // Initialize stores
-    initThemeStore();
-    initSidebarStore();
-    initChatStore();
 });
 
 // Fallback for when alpine:init fires instead
 document.addEventListener('alpine:init', () => {
-    if (window.Alpine) {
-        window.Alpine.plugin(intersect);
-        
-        // Only init if stores don't exist yet
-        if (!window.Alpine.store('theme')) {
-            initThemeStore();
-            initSidebarStore();
-            initChatStore();
-        }
-    }
+    initStores();
 });
 
 // Inicializar componentes quando DOM estiver pronto

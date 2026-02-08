@@ -1,5 +1,5 @@
 export function initThemeStore() {
-    Alpine.store('theme', {
+    window.Alpine.store('theme', {
         init() {
             const savedTheme = localStorage.getItem('theme');
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
