@@ -76,6 +76,11 @@ document.addEventListener('alpine:init', () => {
     initStores();
 });
 
+// Immediate initialization if Alpine is already there (Livewire 3 might have already loaded it)
+if (window.Alpine) {
+    initStores();
+}
+
 // Inicializar componentes quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     // Gráficos

@@ -24,22 +24,37 @@ export function initSidebarStore() {
         }
     });
 
-    // Resize listener
+    // Track last width to only trigger on breakpoint crossing
+    let lastWidth = window.innerWidth;
+
     const checkMobile = () => {
+        const currentWidth = window.innerWidth;
         const sidebar = window.Alpine.store('sidebar');
         if (!sidebar) return;
 
-        if (window.innerWidth < 1280) {
+        // Only act if we cross the breakpoint
+        if (lastWidth >= 1280 && currentWidth < 1280) {
+            // Transitioning TO mobile
             sidebar.setMobileOpen(false);
             sidebar.isExpanded = false;
-        } else {
+        } else if (lastWidth < 1280 && currentWidth >= 1280) {
+            // Transitioning TO desktop
             sidebar.isMobileOpen = false;
             sidebar.isExpanded = true;
         }
+        
+        lastWidth = currentWidth;
     };
     
-    // Initial check (optional, as store init handles most)
-    // checkMobile(); 
+    // Initial state setup based on current width
+    const sidebar = window.Alpine.store('sidebar');
+    if (window.innerWidth < 1280) {
+        sidebar.isExpanded = false;
+        sidebar.isMobileOpen = false;
+    } else {
+        sidebar.isExpanded = true;
+        sidebar.isMobileOpen = false;
+    }
 
     window.addEventListener('resize', checkMobile);
 }

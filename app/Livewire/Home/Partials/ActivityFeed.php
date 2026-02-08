@@ -27,6 +27,7 @@ class ActivityFeed extends Component
     public $location = '';
 
     public $viewingUserProfile = null;
+    public $showPostForm = true;
 
     public $page = 1;
 
