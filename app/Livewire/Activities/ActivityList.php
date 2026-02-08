@@ -15,9 +15,10 @@ class ActivityList extends Component
     public $search = '';
 
     // Propriedades do Post
+    public $title = ''; // NOVO: Título do Post
     public $content = '';
     public $photo;
-    public $feedType = 'personal'; // 'personal' = feed geral, 'community' = comunidade
+    public $feedType = 'personal'; 
     public $location = '';
 
     #[Layout('layouts.app')] 
@@ -25,11 +26,10 @@ class ActivityList extends Component
     {
         $activities = Activity::with('user', 'comments', 'likes')
             ->where(function($q) {
-                // Filtro básico de busca
                 $q->where('title', 'like', '%'.$this->search.'%')
                   ->orWhere('description', 'like', '%'.$this->search.'%');
             })
-            ->latest('start_time') // Ordem cronológica decrescente
+            ->latest('start_time')
             ->paginate(10);
 
         return view('livewire.activities.activity-list', [
@@ -40,35 +40,33 @@ class ActivityList extends Component
     public function savePost()
     {
         $this->validate([
+            'title' => 'nullable|string|max:100', // Título opcional mas recomendado
             'content' => 'required|min:3',
-            'photo' => 'nullable|image|max:10240', // 10MB Máx
+            'photo' => 'nullable|image|max:10240', 
         ]);
 
         $media = [];
 
-        // Upload de Mídia
         if ($this->photo) {
             $path = $this->photo->store('activities/' . auth()->id(), 'public');
             $media[] = asset('storage/' . $path);
         }
 
-        // Criar Atividade no Banco
         Activity::create([
             'user_id' => auth()->id(),
-            'title' => 'Publicação Web', // Título padrão
-            'sport_type' => 'Social',    // Tipo padrão
+            'title' => $this->title ?: 'Nova Publicação', // Usa o título ou um padrão
+            'sport_type' => 'Social',
             'start_time' => now(),
             'distance' => 0,
             'duration' => 0,
-            'feed_type' => $this->feedType, // 'personal' ou 'community'
-            'location' => $this->location ?: (auth()->user()->profile->city ?? 'Web'),
+            'feed_type' => $this->feedType,
+            'location' => $this->location ?: (auth()->user()->profile->city ?? 'Brasil'),
             'description' => $this->content,
             'media' => $media,
             'privacy' => 'public',
         ]);
 
-        // Resetar campos e notificar sucesso
-        $this->reset(['content', 'photo', 'location']);
+        $this->reset(['title', 'content', 'photo', 'location']); // Resetar título também
         session()->flash('message', 'Publicado com sucesso! 🎉');
     }
 }
