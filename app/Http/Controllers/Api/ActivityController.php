@@ -5,51 +5,81 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class ActivityController extends Controller
 {
     /**
-     * Get list of user activities with feed filtering.
+     * Get list of user activities and posts with feed filtering.
      */
     public function index(Request $request)
     {
         $user = $request->user();
         $feed = $request->query('feed', 'personal');
+        $page = (int) $request->get('page', 1);
+        $perPage = (int) $request->get('per_page', 20);
 
-        $query = Activity::with([
+        // Fetch Activities
+        $activitiesQuery = Activity::with([
             'user',
             'comments' => function ($q) {
                 $q->whereNull('parent_id')->latest();
             },
             'comments.user',
             'comments.likes',
-            'likes'
+            'likes',
+        ]);
+
+        // Fetch Posts
+        $postsQuery = \App\Models\Post::with([
+            'user',
+            'comments' => function ($q) {
+                $q->whereNull('parent_id')->latest();
+            },
+            'comments.user',
+            'comments.likes',
+            'likes',
         ]);
 
         if ($feed === 'personal') {
-            $query->where('user_id', $user->id);
+            $activitiesQuery->where('user_id', $user->id);
+            $postsQuery->where('user_id', $user->id);
         } elseif ($feed === 'timeline' || $feed === 'network') {
             $followingIds = $user->following()->pluck('users.id')->toArray();
             $followingIds[] = $user->id;
-            $query->whereIn('user_id', $followingIds);
+            $activitiesQuery->whereIn('user_id', $followingIds);
+            $postsQuery->whereIn('user_id', $followingIds);
         }
 
-        $activities = $query->latest('start_time')
-            ->paginate($request->get('per_page', 20));
+        $activities = $activitiesQuery->latest('start_time')->get();
+        $posts = $postsQuery->latest('created_at')->get();
+
+        // Merge and sort
+        $items = collect([])
+            ->merge($activities->map(fn ($item) => ['type' => 'activity', 'data' => $item, 'date' => $item->start_time]))
+            ->merge($posts->map(fn ($item) => ['type' => 'post', 'data' => $item, 'date' => $item->created_at]))
+            ->sortByDesc('date');
+
+        // Manual pagination
+        $total = $items->count();
+        $paginatedItems = $items->forPage($page, $perPage);
 
         return response()->json([
             'success' => true,
-            'data' => $activities->map(function ($activity) use ($user) {
-                return $this->formatActivity($activity, $user);
-            }),
+            'data' => $paginatedItems->map(function ($item) use ($user) {
+                if ($item['type'] === 'activity') {
+                    return $this->formatActivity($item['data'], $user);
+                } else {
+                    return $this->formatPost($item['data'], $user);
+                }
+            })->values(),
             'pagination' => [
-                'current_page' => $activities->currentPage(),
-                'last_page' => $activities->lastPage(),
-                'per_page' => $activities->perPage(),
-                'total' => $activities->total(),
-            ]
+                'current_page' => $page,
+                'last_page' => (int) ceil($total / $perPage),
+                'per_page' => $perPage,
+                'total' => $total,
+            ],
         ]);
     }
 
@@ -73,14 +103,32 @@ class ActivityController extends Controller
             'feedType' => 'nullable|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $user = $request->user();
+
+        // Check if this is a regular post (Social/Post sport type)
+        if ($request->sport === 'Social' || $request->sport === 'Post') {
+            $post = \App\Models\Post::updateOrCreate(
+                [
+                    'id' => str_replace('post_', '', $request->id ?? ''),
+                    'user_id' => $user->id,
+                ],
+                [
+                    'title' => $request->activityTitle,
+                    'content' => $request->notes ?? '',
+                    'media' => $request->mediaPaths ?? [],
+                    'privacy' => $request->privacy ?? 'public',
+                    'feed_type' => $request->feedType ?? 'personal',
+                ]
+            );
+
+            $post->load('user', 'likes', 'comments');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post synced successfully',
+                'data' => $this->formatPost($post, $user),
+            ], 201);
+        }
 
         // Resolve Tagged Users if provided
         $taggedUsers = [];
@@ -96,14 +144,14 @@ class ActivityController extends Controller
 
         // Process polylines/route points
         $polylines = $request->routePoints ?? [];
-        if (is_array($polylines) && !empty($polylines)) {
+        if (is_array($polylines) && ! empty($polylines)) {
             // Check if already encoded with summary
-            if (!isset($polylines['summary_polyline'])) {
+            if (! isset($polylines['summary_polyline'])) {
                 // Store both raw points and encoded summary
                 $summary = $this->encodePolyline($polylines);
                 $polylines = [
                     'points' => $polylines,
-                    'summary_polyline' => $summary
+                    'summary_polyline' => $summary,
                 ];
             }
         } elseif (empty($polylines)) {
@@ -140,7 +188,7 @@ class ActivityController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Activity synced successfully',
-            'data' => $this->formatActivity($activity, $user)
+            'data' => $this->formatActivity($activity, $user),
         ], 201);
     }
 
@@ -149,13 +197,20 @@ class ActivityController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $activity = Activity::with(['user', 'likes', 'comments.user', 'comments.replies'])
-            ->findOrFail($id);
+        $item = $this->resolveItem($id);
+        $user = $request->user();
 
-        return response()->json([
-            'success' => true,
-            'data' => $this->formatActivity($activity, $request->user())
-        ]);
+        if ($item instanceof \App\Models\Activity) {
+            return response()->json([
+                'success' => true,
+                'data' => $this->formatActivity($item->load(['user', 'likes', 'comments.user']), $user),
+            ]);
+        } else {
+            return response()->json([
+                'success' => true,
+                'data' => $this->formatPost($item->load(['user', 'likes', 'comments.user']), $user),
+            ]);
+        }
     }
 
     /**
@@ -163,13 +218,13 @@ class ActivityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $activity = Activity::findOrFail($id);
+        $item = $this->resolveItem($id);
 
-        // Check if user owns this activity
-        if ($activity->user_id !== $request->user()->id) {
+        // Check if user owns this item
+        if ($item->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
 
@@ -190,28 +245,79 @@ class ActivityController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
-        $updateData = [];
-        if ($request->has('activityTitle')) $updateData['title'] = $request->activityTitle;
-        if ($request->has('sport')) $updateData['sport_type'] = $request->sport;
-        if ($request->has('distanceInMeters')) $updateData['distance'] = $request->distanceInMeters;
-        if ($request->has('durationInSeconds')) $updateData['duration'] = $request->durationInSeconds;
-        if ($request->has('calories')) $updateData['calories'] = $request->calories;
-        if ($request->has('privacy')) $updateData['privacy'] = $request->privacy;
-        if ($request->has('notes')) $updateData['description'] = $request->notes;
-        if ($request->has('mood')) $updateData['mood'] = $request->mood;
-        if ($request->has('mediaPaths')) $updateData['media'] = $request->mediaPaths;
+        if ($item instanceof \App\Models\Activity) {
+            $updateData = [];
+            if ($request->has('activityTitle')) {
+                $updateData['title'] = $request->activityTitle;
+            }
+            if ($request->has('sport')) {
+                $updateData['sport_type'] = $request->sport;
+            }
+            if ($request->has('distanceInMeters')) {
+                $updateData['distance'] = $request->distanceInMeters;
+            }
+            if ($request->has('durationInSeconds')) {
+                $updateData['duration'] = $request->durationInSeconds;
+            }
+            if ($request->has('calories')) {
+                $updateData['calories'] = $request->calories;
+            }
+            if ($request->has('privacy')) {
+                $updateData['privacy'] = $request->privacy;
+            }
+            if ($request->has('notes')) {
+                $updateData['description'] = $request->notes;
+            }
+            if ($request->has('mood')) {
+                $updateData['mood'] = $request->mood;
+            }
+            if ($request->has('mediaPaths')) {
+                $updateData['media'] = $request->mediaPaths;
+            }
+            if ($request->has('location')) {
+                $updateData['location'] = $request->location;
+            }
+            if ($request->has('feedType')) {
+                $updateData['feed_type'] = $request->feedType;
+            }
 
-        $activity->update($updateData);
+            $item->update($updateData);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Activity updated successfully',
-            'data' => $this->formatActivity($activity, $request->user())
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Activity updated successfully',
+                'data' => $this->formatActivity($item, $request->user()),
+            ]);
+        } else {
+            $updateData = [];
+            if ($request->has('activityTitle')) {
+                $updateData['title'] = $request->activityTitle;
+            }
+            if ($request->has('notes')) {
+                $updateData['content'] = $request->notes;
+            }
+            if ($request->has('mediaPaths')) {
+                $updateData['media'] = $request->mediaPaths;
+            }
+            if ($request->has('privacy')) {
+                $updateData['privacy'] = $request->privacy;
+            }
+            if ($request->has('feedType')) {
+                $updateData['feed_type'] = $request->feedType;
+            }
+
+            $item->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post updated successfully',
+                'data' => $this->formatPost($item, $request->user()),
+            ]);
+        }
     }
 
     /**
@@ -219,21 +325,21 @@ class ActivityController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $activity = Activity::findOrFail($id);
+        $item = $this->resolveItem($id);
 
-        // Check if user owns this activity
-        if ($activity->user_id !== $request->user()->id) {
+        // Check if user owns this item
+        if ($item->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
 
-        $activity->delete();
+        $item->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Activity deleted successfully'
+            'message' => ($item instanceof \App\Models\Activity ? 'Activity' : 'Post').' deleted successfully',
         ]);
     }
 
@@ -242,22 +348,23 @@ class ActivityController extends Controller
      */
     public function toggleLike(Request $request, $id)
     {
-        $activity = Activity::findOrFail($id);
+        $item = $this->resolveItem($id);
         $user = $request->user();
 
-        $existingLike = $activity->likes()->where('user_id', $user->id)->first();
+        $existingLike = $item->likes()->where('user_id', $user->id)->first();
 
         if ($existingLike) {
             $existingLike->delete();
             $isLiked = false;
         } else {
-            $activity->likes()->create(['user_id' => $user->id]);
+            $item->likes()->create(['user_id' => $user->id]);
             $isLiked = true;
         }
+
         return response()->json([
             'success' => true,
             'is_liked' => $isLiked,
-            'likes_count' => $activity->likes()->count()
+            'likes_count' => $item->likes()->count(),
         ]);
     }
 
@@ -268,21 +375,21 @@ class ActivityController extends Controller
     {
         $request->validate([
             'body' => 'required|string',
-            'parent_id' => 'nullable|exists:comments,id'
+            'parent_id' => 'nullable|exists:comments,id',
         ]);
 
-        $activity = Activity::findOrFail($id);
+        $item = $this->resolveItem($id);
         $user = $request->user();
 
-        $comment = $activity->comments()->create([
+        $comment = $item->comments()->create([
             'user_id' => $user->id,
             'body' => $request->body,
-            'parent_id' => $request->parent_id
+            'parent_id' => $request->parent_id,
         ]);
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatComment($comment->load('user'))
+            'data' => $this->formatComment($comment->load('user')),
         ]);
     }
 
@@ -304,7 +411,7 @@ class ActivityController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -313,12 +420,31 @@ class ActivityController extends Controller
 
         foreach ($request->activities as $activityData) {
             try {
+                if ($activityData['sport'] === 'Social' || $activityData['sport'] === 'Post') {
+                    $item = \App\Models\Post::updateOrCreate(
+                        [
+                            'id' => str_replace('post_', '', $activityData['id']),
+                            'user_id' => $request->user()->id,
+                        ],
+                        [
+                            'title' => $activityData['activityTitle'],
+                            'content' => $activityData['notes'] ?? '',
+                            'media' => $activityData['mediaPaths'] ?? [],
+                            'privacy' => $activityData['privacy'] ?? 'public',
+                            'created_at' => Carbon::parse($activityData['createdAt']),
+                        ]
+                    );
+                    $synced[] = 'post_'.$item->id;
+
+                    continue;
+                }
+
                 $polylines = $activityData['routePoints'] ?? [];
-                if (is_array($polylines) && !empty($polylines) && !isset($polylines['summary_polyline'])) {
+                if (is_array($polylines) && ! empty($polylines) && ! isset($polylines['summary_polyline'])) {
                     $summary = $this->encodePolyline($polylines);
                     $polylines = [
                         'points' => $polylines,
-                        'summary_polyline' => $summary
+                        'summary_polyline' => $summary,
                     ];
                 }
 
@@ -342,11 +468,11 @@ class ActivityController extends Controller
                     ]
                 );
 
-                $synced[] = $activity->id;
+                $synced[] = 'activity_'.$activity->id;
             } catch (\Exception $e) {
                 $errors[] = [
                     'app_id' => $activityData['id'] ?? 'unknown',
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             }
         }
@@ -355,7 +481,7 @@ class ActivityController extends Controller
             'success' => true,
             'synced_count' => count($synced),
             'synced_ids' => $synced,
-            'errors' => $errors
+            'errors' => $errors,
         ]);
     }
 
@@ -372,14 +498,14 @@ class ActivityController extends Controller
         }
 
         // Ensure routePoints is always an array, never null
-        if (!is_array($routePoints)) {
+        if (! is_array($routePoints)) {
             $routePoints = [];
         }
 
         return [
-            'id' => (string)$activity->id,
+            'id' => 'activity_'.$activity->id,
             'app_id' => $activity->app_id,
-            'user_id' => (string)$activity->user_id,
+            'user_id' => (string) $activity->user_id,
             'userName' => $activity->user->name,
             'userAvatarUrl' => $activity->user->image_url,
             'activityTitle' => $activity->title,
@@ -387,10 +513,10 @@ class ActivityController extends Controller
             'createdAt' => $activity->start_time->toIso8601String(),
             'location' => $activity->location ?? $activity->user->profile->city ?? 'Brasil',
             'feedType' => $activity->feed_type,
-            'distanceInMeters' => (float)$activity->distance,
-            'durationInSeconds' => (int)$activity->duration,
+            'distanceInMeters' => (float) $activity->distance,
+            'durationInSeconds' => (int) $activity->duration,
             'routePoints' => $routePoints,
-            'calories' => (float)$activity->calories,
+            'calories' => (float) $activity->calories,
             'likes' => $activity->likes->count(),
             'isLiked' => $activity->likes->contains('user_id', $user->id),
             'commentsList' => $activity->comments->map(function ($comment) {
@@ -402,12 +528,70 @@ class ActivityController extends Controller
             })->toArray(),
             'privacy' => $activity->privacy,
             'notes' => $activity->description,
-            'taggedPartnerIds' => collect($activity->tagged_users ?? [])->pluck('id')->map(fn($id) => (string)$id)->toArray(),
+            'taggedPartnerIds' => collect($activity->tagged_users ?? [])->pluck('id')->map(fn ($id) => (string) $id)->toArray(),
             'mood' => $activity->mood,
             'mediaPaths' => $activity->media ?? [],
             'mapType' => 'normal',
-            'points' => (int)($activity->distance / 100),
+            'points' => (int) ($activity->distance / 100),
         ];
+    }
+
+    /**
+     * Format post for API response.
+     */
+    public function formatPost($post, $user)
+    {
+        return [
+            'id' => 'post_'.$post->id,
+            'app_id' => null,
+            'user_id' => (string) $post->user_id,
+            'userName' => $post->user->name,
+            'userAvatarUrl' => $post->user->image_url,
+            'activityTitle' => $post->title ?? 'Publicação',
+            'sport' => 'Post',
+            'createdAt' => $post->created_at->toIso8601String(),
+            'location' => $post->location ?? $post->user->profile->city ?? 'Brasil',
+            'feedType' => $post->feed_type,
+            'distanceInMeters' => 0.0,
+            'durationInSeconds' => 0,
+            'routePoints' => [],
+            'calories' => 0.0,
+            'likes' => $post->likes->count(),
+            'isLiked' => $post->likes->contains('user_id', $user->id),
+            'commentsList' => $post->comments->map(function ($comment) {
+                return $this->formatComment($comment);
+            })->toArray(),
+            'shares' => 0,
+            'likers' => $post->likes->take(3)->map(function ($like) {
+                return $like->user->image_url;
+            })->toArray(),
+            'privacy' => $post->privacy,
+            'notes' => $post->content,
+            'taggedPartnerIds' => [],
+            'mood' => null,
+            'mediaPaths' => $post->media ?? [],
+            'mapType' => 'none',
+            'points' => 0,
+        ];
+    }
+
+    /**
+     * Resolve item by prefixed ID.
+     */
+    private function resolveItem($id)
+    {
+        if (is_string($id) && str_starts_with($id, 'post_')) {
+            $realId = str_replace('post_', '', $id);
+
+            return \App\Models\Post::findOrFail($realId);
+        } elseif (is_string($id) && str_starts_with($id, 'activity_')) {
+            $realId = str_replace('activity_', '', $id);
+
+            return Activity::findOrFail($realId);
+        }
+
+        // Fallback for legacy numeric IDs (assume Activity)
+        return Activity::findOrFail($id);
     }
 
     /**
@@ -425,7 +609,7 @@ class ActivityController extends Controller
             $isLiked = false;
         } else {
             $comment->likes()->create([
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ]);
             $isLiked = true;
         }
@@ -433,7 +617,7 @@ class ActivityController extends Controller
         return response()->json([
             'success' => true,
             'is_liked' => $isLiked,
-            'likes_count' => $comment->likes()->count()
+            'likes_count' => $comment->likes()->count(),
         ]);
     }
 
@@ -445,8 +629,8 @@ class ActivityController extends Controller
         $userId = auth()->id(); // Check current user for isLiked
 
         return json_encode([
-            'id' => (string)$comment->id,
-            'userId' => (string)$comment->user_id,
+            'id' => (string) $comment->id,
+            'userId' => (string) $comment->user_id,
             'userName' => $comment->user->name,
             'userAvatarUrl' => $comment->user->image_url,
             'text' => $comment->body,
@@ -463,7 +647,9 @@ class ActivityController extends Controller
      */
     private function encodePolyline($points)
     {
-        if (empty($points)) return '';
+        if (empty($points)) {
+            return '';
+        }
 
         $res = '';
         $last_lat = 0;
@@ -473,8 +659,8 @@ class ActivityController extends Controller
             $lat = round($point['lat'] * 1e5);
             $lng = round($point['lng'] * 1e5);
 
-            $d_lat = (int)$lat - (int)$last_lat;
-            $d_lng = (int)$lng - (int)$last_lng;
+            $d_lat = (int) $lat - (int) $last_lat;
+            $d_lng = (int) $lng - (int) $last_lng;
 
             $res .= $this->encodePart($d_lat);
             $res .= $this->encodePart($d_lng);
@@ -498,14 +684,14 @@ class ActivityController extends Controller
         $paths = [];
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $path = $file->store('activities/' . $request->user()->id, 'public');
-                $paths[] = asset('storage/' . $path);
+                $path = $file->store('activities/'.$request->user()->id, 'public');
+                $paths[] = asset('storage/'.$path);
             }
         }
 
         return response()->json([
             'success' => true,
-            'data' => $paths
+            'data' => $paths,
         ]);
     }
 
@@ -514,10 +700,11 @@ class ActivityController extends Controller
         $v = $v < 0 ? ~($v << 1) : $v << 1;
         $res = '';
         while ($v >= 0x20) {
-            $res .= chr((0x20 | ($v & 0x1f)) + 63);
+            $res .= chr((0x20 | ($v & 0x1F)) + 63);
             $v >>= 5;
         }
         $res .= chr($v + 63);
+
         return $res;
     }
 }

@@ -14,7 +14,7 @@
             }
         });
     }
-}" x-show="open" x-cloak @keydown.escape.window="open = false"
+}" x-effect="open = @js($isOpen)" x-show="open" x-cloak @keydown.escape.window="open = false"
     class="modal fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5"
     {{ $attributes->except('class') }}>
 
