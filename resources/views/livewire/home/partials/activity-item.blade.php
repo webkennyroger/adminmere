@@ -288,8 +288,11 @@
                                 <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
                                     <span>{{ $comment->created_at->diffForHumans() }}</span>
                                     <button wire:click="toggleCommentLike({{ $comment->id }})"
-                                        class="font-semibold hover:underline {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : '' }}">
-                                        Curtir ({{ $comment->likes->count() }})
+                                        class="flex items-center gap-1 hover:scale-110 transition-transform">
+                                        <span
+                                            class="{{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-400' }}">❤️</span>
+                                        <span
+                                            class="text-[10px] font-semibold {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $comment->likes->count() }}</span>
                                     </button>
                                     <button
                                         @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@{{ $comment->user->name }} ');"
@@ -329,8 +332,11 @@
                                                     <div class="flex items-center gap-3 mt-1 ml-2 text-[10px] text-zinc-500">
                                                         <span>{{ $reply->created_at->diffForHumans() }}</span>
                                                         <button wire:click="toggleCommentLike({{ $reply->id }})"
-                                                            class="font-semibold hover:underline {{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : '' }}">
-                                                            Curtir ({{ $reply->likes->count() }})
+                                                            class="flex items-center gap-1 hover:scale-110 transition-transform">
+                                                            <span
+                                                                class="{{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-400' }}">❤️</span>
+                                                            <span
+                                                                class="text-[10px] font-semibold {{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $reply->likes->count() }}</span>
                                                         </button>
                                                         @if(auth()->id() === $reply->user_id || auth()->id() === $activity->user_id)
                                                             <button wire:click="confirmDelete({{ $reply->id }})"
