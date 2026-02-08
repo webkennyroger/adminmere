@@ -134,11 +134,15 @@
     </div>
 
     <!-- Feed Items -->
-    @forelse($activities as $activity)
-        <livewire:home.partials.activity-item :activity="$activity" :key="'activity-' . $activity->id" />
+    @forelse($items as $item)
+        @if($item['type'] === 'post')
+            <livewire:home.partials.post-item :post="$item['item']" :key="'post-' . $item['item']->id" />
+        @else
+            <livewire:home.partials.activity-item :activity="$item['item']" :key="'activity-' . $item['item']->id" />
+        @endif
     @empty
         <div class="text-center py-12">
-            <p class="text-zinc-500 dark:text-zinc-400">Nenhuma atividade recente.</p>
+            <p class="text-zinc-500 dark:text-zinc-400">Nenhuma atividade ou publicação recente.</p>
         </div>
     @endforelse
 
