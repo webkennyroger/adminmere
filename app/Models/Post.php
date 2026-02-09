@@ -21,6 +21,7 @@ class Post extends Model
         'media',
         'feed_type',
         'location',
+        'is_mandatory',
         'privacy',
     ];
 
@@ -69,7 +70,7 @@ class Post extends Model
     {
         return $this->pollVotes()->where('user_id', $user->id)->exists();
     }
-    
+
     public function getTotalVotesAttribute(): int
     {
         return $this->pollVotes()->count();

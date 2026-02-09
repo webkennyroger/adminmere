@@ -22,6 +22,7 @@ class PollController extends Controller
             'expiresAt' => 'nullable|date',
             'privacy' => 'nullable|in:public,friends,private',
             'feedType' => 'nullable|string',
+            'isMandatory' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -39,6 +40,7 @@ class PollController extends Controller
             'privacy' => $request->privacy ?? 'public',
             'feed_type' => $request->feedType ?? 'personal',
             'poll_expires_at' => $request->expiresAt ? Carbon::parse($request->expiresAt) : null,
+            'is_mandatory' => $request->isMandatory ?? false,
         ]);
 
         foreach ($request->options as $optionText) {
@@ -147,6 +149,7 @@ class PollController extends Controller
 
         $pollData = [
             'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
+            'isMandatory' => (bool)$post->is_mandatory,
             'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
             'hasVoted' => $hasVoted,
             'totalVotes' => $totalVotes,

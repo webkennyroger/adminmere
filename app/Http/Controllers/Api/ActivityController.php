@@ -59,8 +59,8 @@ class ActivityController extends Controller
 
         // Merge and sort
         $items = collect([])
-            ->merge($activities->map(fn ($item) => ['type' => 'activity', 'data' => $item, 'date' => $item->start_time]))
-            ->merge($posts->map(fn ($item) => ['type' => $item->type, 'data' => $item, 'date' => $item->created_at]))
+            ->merge($activities->map(fn($item) => ['type' => 'activity', 'data' => $item, 'date' => $item->start_time]))
+            ->merge($posts->map(fn($item) => ['type' => $item->type, 'data' => $item, 'date' => $item->created_at]))
             ->sortByDesc('date');
 
         // Manual pagination
@@ -110,7 +110,7 @@ class ActivityController extends Controller
         // Check if this is a regular post (Social/Post sport type) or Poll
         if ($request->sport === 'Social' || $request->sport === 'Post' || ($request->type === 'poll' || $request->sport === 'Poll')) {
             $isPoll = $request->type === 'poll' || $request->sport === 'Poll';
-            
+
             // Get poll data from nested object if present
             $pollData = $request->input('pollData', []);
             $options = $pollData['options'] ?? $request->input('options', []);
@@ -138,9 +138,10 @@ class ActivityController extends Controller
                     'media' => $request->mediaPaths ?? [],
                     'privacy' => $request->privacy ?? 'public',
                     'feed_type' => $request->feedType ?? 'personal',
-                    'poll_expires_at' => ($isPoll && $pollDuration) 
-                        ? Carbon::now()->addHours((int)$pollDuration) 
+                    'poll_expires_at' => ($isPoll && $pollDuration)
+                        ? Carbon::now()->addHours((int)$pollDuration)
                         : ($request->poll_expires_at ? Carbon::parse($request->poll_expires_at) : null),
+                    'is_mandatory' => $pollData['isMandatory'] ?? $request->input('isMandatory', false),
                 ]
             );
 
@@ -373,7 +374,7 @@ class ActivityController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => ($item instanceof \App\Models\Activity ? 'Activity' : 'Post').' deleted successfully',
+            'message' => ($item instanceof \App\Models\Activity ? 'Activity' : 'Post') . ' deleted successfully',
         ]);
     }
 
@@ -408,9 +409,9 @@ class ActivityController extends Controller
     public function vote(Request $request, $id)
     {
         $request->validate(['option_id' => 'required|exists:poll_options,id']);
-        
+
         $post = $this->resolveItem($id);
-        
+
         // Ensure it is a Post and is a Poll
         if ($post instanceof \App\Models\Activity || $post->type !== 'poll') {
             return response()->json(['success' => false, 'message' => 'This item is not a poll'], 400);
@@ -419,14 +420,14 @@ class ActivityController extends Controller
         $user = $request->user();
 
         if ($post->hasVoted($user)) {
-             return response()->json(['success' => false, 'message' => 'You have already voted on this poll'], 400);
+            return response()->json(['success' => false, 'message' => 'You have already voted on this poll'], 400);
         }
-        
+
         // Check expiration
         if ($post->poll_expires_at && $post->poll_expires_at->isPast()) {
             return response()->json(['success' => false, 'message' => 'This poll has ended'], 400);
         }
-        
+
         $option = $post->pollOptions()->find($request->option_id);
         if (!$option) {
             return response()->json(['success' => false, 'message' => 'Invalid option for this poll'], 400);
@@ -436,11 +437,11 @@ class ActivityController extends Controller
             'user_id' => $user->id,
             'poll_option_id' => $option->id
         ]);
-        
+
         $option->increment('votes_count');
-        
+
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'data' => $this->formatPost($post->refresh(), $user)
         ]);
     }
@@ -511,7 +512,7 @@ class ActivityController extends Controller
                             'created_at' => Carbon::parse($activityData['createdAt']),
                         ]
                     );
-                    $synced[] = 'post_'.$item->id;
+                    $synced[] = 'post_' . $item->id;
 
                     continue;
                 }
@@ -545,7 +546,7 @@ class ActivityController extends Controller
                     ]
                 );
 
-                $synced[] = 'activity_'.$activity->id;
+                $synced[] = 'activity_' . $activity->id;
             } catch (\Exception $e) {
                 $errors[] = [
                     'app_id' => $activityData['id'] ?? 'unknown',
@@ -580,7 +581,7 @@ class ActivityController extends Controller
         }
 
         return [
-            'id' => 'activity_'.$activity->id,
+            'id' => 'activity_' . $activity->id,
             'app_id' => $activity->app_id,
             'user_id' => (string) $activity->user_id,
             'userName' => $activity->user->name,
@@ -608,7 +609,7 @@ class ActivityController extends Controller
             })->toArray(),
             'privacy' => $activity->privacy,
             'notes' => $activity->description,
-            'taggedPartnerIds' => collect($activity->tagged_users ?? [])->pluck('id')->map(fn ($id) => (string) $id)->toArray(),
+            'taggedPartnerIds' => collect($activity->tagged_users ?? [])->pluck('id')->map(fn($id) => (string) $id)->toArray(),
             'mood' => $activity->mood,
             'mediaPaths' => $activity->media ?? [],
             'mapType' => 'normal',
@@ -625,36 +626,37 @@ class ActivityController extends Controller
         if ($post->type === 'poll') {
             $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
             $totalVotes = $post->total_votes;
-            
+
             $pollData = [
                 'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
+                'isMandatory' => (bool)$post->is_mandatory,
                 'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
                 'hasVoted' => $hasVoted,
                 'totalVotes' => $totalVotes,
-                'options' => $post->pollOptions->map(function($opt) use ($user, $post, $totalVotes) {
-                     $isUserVote = $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty();
-                     
-                     // Get voter avatars (limit 3)
-                     $voterAvatars = $post->pollVotes->where('poll_option_id', $opt->id)
+                'options' => $post->pollOptions->map(function ($opt) use ($user, $post, $totalVotes) {
+                    $isUserVote = $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty();
+
+                    // Get voter avatars (limit 3)
+                    $voterAvatars = $post->pollVotes->where('poll_option_id', $opt->id)
                         ->take(3)
-                        ->map(function($vote) {
-                            return $vote->user->image_url; 
+                        ->map(function ($vote) {
+                            return $vote->user->image_url;
                         })->values()->toArray();
 
-                     return [
-                         'id' => $opt->id,
-                         'text' => $opt->option_text,
-                         'votes' => $opt->votes_count,
-                         'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
-                         'isUserVote' => $isUserVote,
-                         'voterAvatars' => $voterAvatars
-                     ];
+                    return [
+                        'id' => $opt->id,
+                        'text' => $opt->option_text,
+                        'votes' => $opt->votes_count,
+                        'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
+                        'isUserVote' => $isUserVote,
+                        'voterAvatars' => $voterAvatars
+                    ];
                 })->values()
             ];
         }
 
         return [
-            'id' => 'post_'.$post->id,
+            'id' => 'post_' . $post->id,
             'app_id' => null,
             'user_id' => (string) $post->user_id,
             'userName' => $post->user->name,
@@ -800,8 +802,8 @@ class ActivityController extends Controller
         $paths = [];
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $path = $file->store('activities/'.$request->user()->id, 'public');
-                $paths[] = asset('storage/'.$path);
+                $path = $file->store('activities/' . $request->user()->id, 'public');
+                $paths[] = asset('storage/' . $path);
             }
         }
 
