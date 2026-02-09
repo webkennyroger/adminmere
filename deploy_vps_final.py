@@ -18,6 +18,7 @@ def deploy():
         commands = [
             'cd /var/www/adminmere && git pull origin main',
             'cd /var/www/adminmere && composer install --no-interaction --optimize-autoloader',
+            'cd /var/www/adminmere && rm -rf node_modules package-lock.json', # Clean specific npm files
             'cd /var/www/adminmere && npm install',
             'cd /var/www/adminmere && npm run build',
             'cd /var/www/adminmere && php artisan view:clear',
