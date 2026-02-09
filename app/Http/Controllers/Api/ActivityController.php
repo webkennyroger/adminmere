@@ -111,6 +111,21 @@ class ActivityController extends Controller
         if ($request->sport === 'Social' || $request->sport === 'Post' || ($request->type === 'poll' || $request->sport === 'Poll')) {
             $isPoll = $request->type === 'poll' || $request->sport === 'Poll';
             
+            // Get poll data from nested object if present
+            $pollData = $request->input('pollData', []);
+            $options = $pollData['options'] ?? $request->input('options', []);
+            $pollDuration = $pollData['poll_duration'] ?? $request->input('poll_duration');
+
+            // Validation for poll options and duration if it's a poll
+            if ($isPoll) {
+                if (count($options) < 2 || !$pollDuration) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Enquetes precisam de pelo menos 2 opções e uma duração válida.',
+                    ], 422);
+                }
+            }
+
             $post = \App\Models\Post::updateOrCreate(
                 [
                     'id' => str_replace(['post_', 'poll_'], '', $request->id ?? ''),
@@ -123,13 +138,16 @@ class ActivityController extends Controller
                     'media' => $request->mediaPaths ?? [],
                     'privacy' => $request->privacy ?? 'public',
                     'feed_type' => $request->feedType ?? 'personal',
+                    'poll_expires_at' => ($isPoll && $pollDuration) 
+                        ? Carbon::now()->addHours((int)$pollDuration) 
+                        : ($request->poll_expires_at ? Carbon::parse($request->poll_expires_at) : null),
                 ]
             );
 
             // If it's a poll and has options, sync them
-            if ($isPoll && $request->has('options')) {
+            if ($isPoll && !empty($options)) {
                 $post->pollOptions()->delete(); // Reset options for update
-                foreach ($request->options as $optionText) {
+                foreach ($options as $optionText) {
                     $post->pollOptions()->create([
                         'option_text' => is_array($optionText) ? ($optionText['text'] ?? '') : $optionText,
                         'votes_count' => 0
@@ -567,10 +585,13 @@ class ActivityController extends Controller
             'user_id' => (string) $activity->user_id,
             'userName' => $activity->user->name,
             'userAvatarUrl' => $activity->user->image_url,
+            'title' => $activity->title,
+            'description' => $activity->description,
+            'type' => 'activity',
             'activityTitle' => $activity->title,
             'sport' => $activity->sport_type,
             'createdAt' => $activity->start_time->toIso8601String(),
-            'location' => $activity->location ?? $activity->user->profile->city ?? 'Brasil',
+            'location' => ($activity->location && $activity->location !== 'Sua Cidade') ? $activity->location : null,
             'feedType' => $activity->feed_type,
             'distanceInMeters' => (float) $activity->distance,
             'durationInSeconds' => (int) $activity->duration,
@@ -642,8 +663,10 @@ class ActivityController extends Controller
             'sport' => 'Post',
             'type' => $post->type, // 'post' or 'poll'
             'pollData' => $pollData,
+            'title' => $post->title,
+            'description' => $post->content,
             'createdAt' => $post->created_at->toIso8601String(),
-            'location' => $post->type === 'poll' ? null : ($post->location ?? $post->user->profile->city ?? 'Brasil'),
+            'location' => ($post->type === 'poll') ? null : (($post->location && $post->location !== 'Sua Cidade') ? $post->location : null),
             'feedType' => $post->feed_type,
             'distanceInMeters' => 0.0,
             'durationInSeconds' => 0,
@@ -721,7 +744,7 @@ class ActivityController extends Controller
     {
         $userId = auth()->id(); // Check current user for isLiked
 
-        return json_encode([
+        return [
             'id' => (string) $comment->id,
             'userId' => (string) $comment->user_id,
             'userName' => $comment->user->name,
@@ -732,7 +755,7 @@ class ActivityController extends Controller
             'isArchived' => false,
             'likes' => $comment->likes->count(),
             'isLiked' => $comment->likes->contains('user_id', $userId),
-        ]);
+        ];
     }
 
     /**
