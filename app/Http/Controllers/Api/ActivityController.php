@@ -369,6 +369,49 @@ class ActivityController extends Controller
     }
 
     /**
+     * Vote on a poll.
+     */
+    public function vote(Request $request, $id)
+    {
+        $request->validate(['option_id' => 'required|exists:poll_options,id']);
+        
+        $post = $this->resolveItem($id);
+        
+        // Ensure it is a Post and is a Poll
+        if ($post instanceof \App\Models\Activity || $post->type !== 'poll') {
+            return response()->json(['success' => false, 'message' => 'This item is not a poll'], 400);
+        }
+
+        $user = $request->user();
+
+        if ($post->hasVoted($user)) {
+             return response()->json(['success' => false, 'message' => 'You have already voted on this poll'], 400);
+        }
+        
+        // Check expiration
+        if ($post->poll_expires_at && $post->poll_expires_at->isPast()) {
+            return response()->json(['success' => false, 'message' => 'This poll has ended'], 400);
+        }
+        
+        $option = $post->pollOptions()->find($request->option_id);
+        if (!$option) {
+            return response()->json(['success' => false, 'message' => 'Invalid option for this poll'], 400);
+        }
+
+        $post->pollVotes()->create([
+            'user_id' => $user->id,
+            'poll_option_id' => $option->id
+        ]);
+        
+        $option->increment('votes_count');
+        
+        return response()->json([
+            'success' => true, 
+            'data' => $this->formatPost($post->refresh(), $user)
+        ]);
+    }
+
+    /**
      * Store comment on activity.
      */
     public function comment(Request $request, $id)
@@ -541,6 +584,29 @@ class ActivityController extends Controller
      */
     public function formatPost($post, $user)
     {
+        $pollData = null;
+        if ($post->type === 'poll') {
+            $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
+            $totalVotes = $post->total_votes;
+            
+            $pollData = [
+                'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
+                'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
+                'hasVoted' => $hasVoted,
+                'totalVotes' => $totalVotes,
+                'options' => $post->pollOptions->map(function($opt) use ($user, $post, $totalVotes) {
+                     $isUserVote = $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty();
+                     return [
+                         'id' => $opt->id,
+                         'text' => $opt->option_text,
+                         'votes' => $opt->votes_count,
+                         'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
+                         'isUserVote' => $isUserVote
+                     ];
+                })->values()
+            ];
+        }
+
         return [
             'id' => 'post_'.$post->id,
             'app_id' => null,
@@ -549,6 +615,8 @@ class ActivityController extends Controller
             'userAvatarUrl' => $post->user->image_url,
             'activityTitle' => $post->title ?? 'Publicação',
             'sport' => 'Post',
+            'type' => $post->type, // 'post' or 'poll'
+            'pollData' => $pollData,
             'createdAt' => $post->created_at->toIso8601String(),
             'location' => $post->location ?? $post->user->profile->city ?? 'Brasil',
             'feedType' => $post->feed_type,

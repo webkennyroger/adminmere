@@ -17,22 +17,20 @@ class ActivityFeed extends Component
 
     // Propriedades do Novo Post
     public $title = '';
-
     public $content = '';
-
     public $photo;
-
     public $feedType = 'personal';
-
     public $location = '';
+    
+    // Poll Properties
+    public $isPoll = false;
+    public $pollOptions = ['', '']; // Start with 2 empty options
+    public $pollDuration = 7; // Days
 
     public $viewingUserProfile = null;
     public $showPostForm = true;
-
     public $page = 1;
-
     public $perPage = 10;
-
     public $hasMore = true;
 
     public function viewUserProfile($name)
@@ -54,13 +52,45 @@ class ActivityFeed extends Component
         $this->page++;
     }
 
+    // --- Poll Methods ---
+
+    public function togglePoll()
+    {
+        $this->isPoll = !$this->isPoll;
+        if ($this->isPoll && count($this->pollOptions) < 2) {
+            $this->pollOptions = ['', ''];
+        }
+    }
+
+    public function addPollOption()
+    {
+        if (count($this->pollOptions) < 5) {
+            $this->pollOptions[] = '';
+        }
+    }
+
+    public function removePollOption($index)
+    {
+        if (count($this->pollOptions) > 2) {
+            unset($this->pollOptions[$index]);
+            $this->pollOptions = array_values($this->pollOptions);
+        }
+    }
+
     public function savePost()
     {
-        $this->validate([
+        $rules = [
             'title' => 'nullable|string|max:100',
             'content' => 'required|min:3',
             'photo' => 'nullable|image|max:20480', // 20MB
-        ]);
+        ];
+
+        if ($this->isPoll) {
+            $rules['pollOptions.*'] = 'required|string|max:255';
+            $rules['pollOptions'] = 'array|min:2';
+        }
+
+        $this->validate($rules);
 
         $media = [];
 
@@ -69,7 +99,7 @@ class ActivityFeed extends Component
             $media[] = asset('storage/'.$path);
         }
 
-        Post::create([
+        $post = Post::create([
             'user_id' => auth()->id(),
             'title' => $this->title ?: null,
             'content' => $this->content,
@@ -77,9 +107,22 @@ class ActivityFeed extends Component
             'feed_type' => $this->feedType,
             'location' => $this->location ?: (auth()->user()->profile->city ?? null),
             'privacy' => 'public',
+            'type' => $this->isPoll ? 'poll' : 'post',
+            'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
         ]);
 
-        $this->reset(['title', 'content', 'photo', 'location']);
+        if ($this->isPoll) {
+            foreach ($this->pollOptions as $optionText) {
+                if (trim($optionText)) {
+                    $post->pollOptions()->create(['option_text' => trim($optionText)]);
+                }
+            }
+        }
+
+        $this->reset(['title', 'content', 'photo', 'location', 'isPoll', 'pollOptions']);
+        // Re-init poll defaults
+        $this->pollOptions = ['', ''];
+        
         session()->flash('message', 'Publicado com sucesso! 🎉');
 
         // Force refresh

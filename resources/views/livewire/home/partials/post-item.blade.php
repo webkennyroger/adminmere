@@ -77,6 +77,66 @@
         </div>
     @endif
 
+    <!-- Poll Section -->
+    @if($post->is_poll)
+        <div class="px-4 pb-4">
+            <div class="space-y-2 mt-2">
+                @php
+                    $hasVoted = $post->hasVoted(auth()->user());
+                    $totalVotes = $post->total_votes;
+                    $isExpired = $post->poll_expires_at && $post->poll_expires_at->isPast();
+                    $showResults = $hasVoted || $isExpired || $post->user_id === auth()->id();
+                @endphp
+
+                @foreach($post->pollOptions as $option)
+                    @php
+                        $percentage = $totalVotes > 0 ? round(($option->votes_count / $totalVotes) * 100) : 0;
+                        $isVotedOption = $hasVoted && $post->pollVotes->where('user_id', auth()->id())->where('poll_option_id', $option->id)->isNotEmpty();
+                    @endphp
+
+                    <div class="relative w-full">
+                        @if($showResults)
+                            <!-- Result View -->
+                            <div class="relative w-full h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                                <!-- Progress Bar -->
+                                <div class="absolute top-0 left-0 h-full bg-purple-100 dark:bg-purple-900/30 transition-all duration-500"
+                                     style="width: {{ $percentage }}%"></div>
+                                
+                                <!-- Content -->
+                                <div class="absolute inset-0 flex items-center justify-between px-4 z-10">
+                                    <span class="text-sm font-medium {{ $isVotedOption ? 'text-purple-700 dark:text-purple-300' : 'text-zinc-700 dark:text-zinc-300' }}">
+                                        {{ $option->option_text }}
+                                        @if($isVotedOption) <span class="ml-1 text-xs bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-1.5 py-0.5 rounded-md">Você</span> @endif
+                                    </span>
+                                    <span class="text-xs font-bold text-zinc-600 dark:text-zinc-400">{{ $percentage }}%</span>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Voting View -->
+                            <button wire:click="vote({{ $option->id }})" wire:loading.attr="disabled"
+                                class="w-full text-left px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 text-zinc-900 dark:text-white transition-all text-sm font-medium">
+                                {{ $option->option_text }}
+                            </button>
+                        @endif
+                    </div>
+                @endforeach
+
+                <div class="flex justify-between items-center mt-2 text-xs text-zinc-500 dark:text-zinc-400 px-1">
+                    <span>{{ $totalVotes }} votos</span>
+                    <span>
+                        @if($isExpired)
+                            Encerrado
+                        @elseif($post->poll_expires_at)
+                            Termina em {{ $post->poll_expires_at->diffForHumans() }}
+                        @else
+                            Sem prazo
+                        @endif
+                    </span>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Media Section -->
     @php
         $mediaItems = collect($post->media ?? [])->filter(function ($path) {

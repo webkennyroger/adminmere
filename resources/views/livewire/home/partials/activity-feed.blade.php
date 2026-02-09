@@ -36,6 +36,49 @@
                                 placeholder="O que está em sua mente, {{ auth()->user()->first_name }}?"></textarea>
                         </div>
 
+                        <!-- Poll Options Area -->
+                        @if($isPoll)
+                            <div class="mb-4 bg-zinc-100 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700">
+                                <h4 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                    Opções da Enquete
+                                </h4>
+                                <div class="space-y-2.5">
+                                    @foreach($pollOptions as $index => $option)
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" wire:model="pollOptions.{{ $index }}" 
+                                                class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm px-3 py-2 focus:ring-purple-500 focus:border-purple-500 dark:text-white"
+                                                placeholder="Opção {{ $index + 1 }}">
+                                            @if($index > 1)
+                                                <button type="button" wire:click="removePollOption({{ $index }})" class="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-1.5 rounded-lg transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                </button>
+                                            @endif
+                                        </div>
+                                        @error('pollOptions.'.$index) <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    @endforeach
+                                </div>
+                                @if(count($pollOptions) < 5)
+                                    <button type="button" wire:click="addPollOption" class="mt-3 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        Adicionar Opção
+                                    </button>
+                                @endif
+                                
+                                <div class="mt-4 flex items-center gap-2">
+                                    <span class="text-xs text-zinc-500">Duração:</span>
+                                    <select wire:model="pollDuration" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs rounded-lg py-1 px-2">
+                                        <option value="1">1 Dia</option>
+                                        <option value="3">3 Dias</option>
+                                        <option value="7">1 Semana</option>
+                                        <option value="30">1 Mês</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Toolbar -->
                         <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
 
@@ -54,18 +97,18 @@
                                 <input type="file" wire:model="photo" class="hidden">
                             </label>
 
-                            <!-- Poll Button (Visual) -->
-                            <div class="hidden sm:flex items-center gap-2 px-3 py-2 opacity-50 cursor-not-allowed"
-                                title="Enquete (Em breve)">
+                            <!-- Poll Button (Active) -->
+                            <button type="button" wire:click="togglePoll"
+                                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors group {{ $isPoll ? 'bg-purple-50 dark:bg-purple-900/10' : '' }}">
                                 <div
-                                    class="p-1 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                                    class="p-1 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/50 transition-colors">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
                                 </div>
-                                <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Enquete</span>
-                            </div>
+                                <span class="text-xs font-semibold {{ $isPoll ? 'text-purple-600 dark:text-purple-400' : 'text-zinc-600 dark:text-zinc-400' }}">Enquete</span>
+                            </button>
 
                             <div class="ml-auto relative z-20">
                                 <select wire:model="feedType"

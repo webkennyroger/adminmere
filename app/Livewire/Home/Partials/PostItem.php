@@ -237,6 +237,32 @@ class PostItem extends Component
         $this->showMentions = false;
     }
 
+    public function vote($optionId)
+    {
+        if (!$this->post->is_poll) return;
+
+        $user = auth()->user();
+        
+        // Check if duplicate vote
+        if ($this->post->hasVoted($user)) {
+            // Optional: Toggle vote or show error
+            return;
+        }
+
+        $option = \App\Models\PollOption::find($optionId);
+        if (!$option || $option->post_id !== $this->post->id) return;
+
+        \App\Models\PollVote::create([
+            'user_id' => $user->id,
+            'post_id' => $this->post->id,
+            'poll_option_id' => $option->id,
+        ]);
+
+        $option->increment('votes_count');
+        
+        $this->post->refresh();
+    }
+
     public function render()
     {
         return view('livewire.home.partials.post-item');

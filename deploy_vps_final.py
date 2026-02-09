@@ -20,7 +20,8 @@ def deploy():
             'cd /var/www/adminmere && composer install --no-interaction --optimize-autoloader',
             # 'cd /var/www/adminmere && rm -rf node_modules package-lock.json', # Commented out to save time if not needed immediately
             'cd /var/www/adminmere && npm install',
-            'cd /var/www/adminmere && npm run build 2>&1', # Capture error output
+            'cd /var/www/adminmere && npm run build 2>&1',
+            'cd /var/www/adminmere && php artisan migrate --force',
             'cd /var/www/adminmere && php artisan view:clear',
             'cd /var/www/adminmere && php artisan optimize:clear'
         ]
