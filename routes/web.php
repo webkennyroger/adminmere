@@ -15,7 +15,9 @@ Route::get('/', function () {
 
 // Rota de Autenticação Google (Socialite / Web)
 Route::get('/auth/google/redirect', function () {
-    return \Laravel\Socialite\Facades\Socialite::driver('google')->redirect();
+    return \Laravel\Socialite\Facades\Socialite::driver('google')
+        ->scopes(['openid', 'email', 'profile'])
+        ->redirect();
 })->name('auth.google');
 
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleCallback'])->name('auth.google.callback');

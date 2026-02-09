@@ -38,7 +38,8 @@ class GoogleAuthController extends Controller
 
             return redirect()->intended('/home');
         } catch (\Exception $e) {
-            return redirect('/login')->withErrors(['email' => 'Unable to login with Google. Please try again.']);
+            dd($e->getMessage()); // Debugging: Stop loop and show error
+            // return redirect('/login')->withErrors(['email' => 'Unable to login with Google. Please try again.']);
         }
     }
 }

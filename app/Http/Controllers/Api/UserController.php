@@ -14,10 +14,10 @@ class UserController extends Controller
     public function suggested(Request $request)
     {
         $user = $request->user();
-        
+
         // Get IDs of users already followed
         $followingIds = $user->following()->pluck('following_id')->toArray();
-        
+
         // Suggest users not followed and not the current user
         $suggested = User::whereNotIn('id', $followingIds)
             ->where('id', '!=', $user->id)
@@ -27,7 +27,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $suggested->map(function($u) {
+            'data' => $suggested->map(function ($u) {
                 return [
                     'id' => $u->id,
                     'name' => $u->name,
@@ -46,14 +46,14 @@ class UserController extends Controller
     public function following(Request $request)
     {
         $user = $request->user();
-        
+
         $following = $user->following()
             ->with(['profile'])
             ->get();
-            
+
         return response()->json([
             'success' => true,
-            'data' => $following->map(function($u) {
+            'data' => $following->map(function ($u) {
                 return [
                     'id' => $u->id,
                     'name' => $u->name,
@@ -110,7 +110,7 @@ class UserController extends Controller
 
         // Calcula estatísticas semanais (últimos 7 dias)
         $weeklyStats = $this->getWeeklyStats($user);
-        
+
         // Busca troféus/achievements
         $achievements = $this->getAchievements($user);
 
@@ -139,7 +139,7 @@ class UserController extends Controller
                 ],
                 'weekly_stats' => $weeklyStats,
                 'achievements' => $achievements,
-                'activities' => $activities->map(function($activity) use ($currentUser, $activityController) {
+                'activities' => $activities->map(function ($activity) use ($currentUser, $activityController) {
                     return $activityController->formatActivity($activity, $currentUser);
                 }),
             ]
@@ -166,10 +166,10 @@ class UserController extends Controller
         $dailyData = [];
         for ($i = 6; $i >= 0; $i--) {
             $day = $now->copy()->subDays($i);
-            $dayActivities = $activities->filter(function($a) use ($day) {
+            $dayActivities = $activities->filter(function ($a) use ($day) {
                 return \Carbon\Carbon::parse($a->start_time)->format('Y-m-d') === $day->format('Y-m-d');
             });
-            
+
             $dailyData[] = [
                 'day' => $day->format('Y-m-d'),
                 'day_name' => strtoupper($day->format('D')),
@@ -195,17 +195,17 @@ class UserController extends Controller
     private function getAchievements($user)
     {
         $achievements = [];
-        
+
         // Badge de 75 atividades
         if ($user->activities()->count() >= 75) {
             $achievements[] = ['id' => 1, 'name' => '75', 'label' => 'ATIVIDADE', 'color' => 'green', 'unlocked' => true];
         }
-        
+
         // Badge de 50 atividades
         if ($user->activities()->count() >= 50) {
             $achievements[] = ['id' => 2, 'name' => '50', 'label' => 'ATIVIDADE', 'color' => 'yellow', 'unlocked' => true];
         }
-        
+
         // Badge de 40 atividades
         if ($user->activities()->count() >= 40) {
             $achievements[] = ['id' => 3, 'name' => '40', 'label' => 'ATIVIDADE', 'color' => 'green', 'unlocked' => true];
@@ -229,15 +229,17 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $user = $request->user();
-        
+
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'image' => 'nullable|image|max:10240', // 10MB max
             'cover_image' => 'nullable|image|max:10240', // 10MB max
         ]);
 
-        $user->name = $request->name;
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
         if ($request->has('email')) {
             $user->email = $request->email;
         }
@@ -245,24 +247,26 @@ class UserController extends Controller
 
         // Update or create profile
         $profile = $user->profile ?? new \App\Models\Profile(['user_id' => $user->id]);
-        
+
         if ($request->has('surname')) $profile->last_name = $request->surname;
+        if ($request->has('last_name')) $profile->last_name = $request->last_name; // Support both
         if ($request->has('phone')) $profile->phone = $request->phone;
         if ($request->has('location')) $profile->city = $request->location;
+        if ($request->has('city')) $profile->city = $request->city; // Support both
         if ($request->has('nickname')) $profile->nickname = $request->nickname;
         if ($request->has('bio')) $profile->bio = $request->bio;
         if ($request->has('gender')) $profile->gender = $request->gender;
         if ($request->has('birth_date')) $profile->birth_date = $request->birth_date;
         if ($request->has('height')) $profile->height = $request->height;
         if ($request->has('weight')) $profile->weight = $request->weight;
-        
+
         // Handle Image Upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($profile->image) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->image);
             }
-            
+
             $path = $request->file('image')->store('profiles', 'public');
             $profile->image = $path;
         }
@@ -273,7 +277,7 @@ class UserController extends Controller
             if ($profile->cover_image) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->cover_image);
             }
-            
+
             $path = $request->file('cover_image')->store('covers', 'public');
             $profile->cover_image = $path;
         }
