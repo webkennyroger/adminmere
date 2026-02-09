@@ -4,6 +4,27 @@ export function initSidebarStore() {
         isMobileOpen: false,
         isHovered: false,
 
+        init() {
+            // Initial check
+            this.handleResize();
+
+            // Resize listener
+            window.addEventListener('resize', () => {
+                this.handleResize();
+            });
+        },
+
+        handleResize() {
+            const width = window.innerWidth;
+            if (width < 1280) {
+                this.isMobileOpen = false;
+                this.isExpanded = false;
+            } else {
+                this.isMobileOpen = false;
+                this.isExpanded = true;
+            }
+        },
+
         toggleExpanded() {
             this.isExpanded = !this.isExpanded;
             this.isMobileOpen = false;
@@ -23,38 +44,4 @@ export function initSidebarStore() {
             }
         }
     });
-
-    // Track last width to only trigger on breakpoint crossing
-    let lastWidth = window.innerWidth;
-
-    const checkMobile = () => {
-        const currentWidth = window.innerWidth;
-        const sidebar = window.Alpine.store('sidebar');
-        if (!sidebar) return;
-
-        // Only act if we cross the breakpoint
-        if (lastWidth >= 1280 && currentWidth < 1280) {
-            // Transitioning TO mobile
-            sidebar.setMobileOpen(false);
-            sidebar.isExpanded = false;
-        } else if (lastWidth < 1280 && currentWidth >= 1280) {
-            // Transitioning TO desktop
-            sidebar.isMobileOpen = false;
-            sidebar.isExpanded = true;
-        }
-        
-        lastWidth = currentWidth;
-    };
-    
-    // Initial state setup based on current width
-    const sidebar = window.Alpine.store('sidebar');
-    if (window.innerWidth < 1280) {
-        sidebar.isExpanded = false;
-        sidebar.isMobileOpen = false;
-    } else {
-        sidebar.isExpanded = true;
-        sidebar.isMobileOpen = false;
-    }
-
-    window.addEventListener('resize', checkMobile);
 }

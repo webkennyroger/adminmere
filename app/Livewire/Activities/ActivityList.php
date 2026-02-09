@@ -25,7 +25,7 @@ class ActivityList extends Component
             ->latest('start_time')
             ->paginate(10);
 
-        return view('livewire.activities.activity-list', [
+        return view('livewire.activities.activity-index', [
             'activities' => $activities,
         ]);
     }

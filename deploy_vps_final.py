@@ -28,36 +28,16 @@ def deploy():
             print(f"\nExecuting: {cmd}")
             stdin, stdout, stderr = ssh.exec_command(f"bash -l -c '{cmd}'")
             
-            # Stream stdout
+            # Stream output
             while True:
-                if stdout.channel.recv_ready():
-                    line_bytes = stdout.channel.recv(1024)
-                    if not line_bytes:
-                        break
-                    sys.stdout.buffer.write(line_bytes)
-                    sys.stdout.buffer.flush()
-                
-                if stdout.channel.exit_status_ready():
+                line_bytes = stdout.channel.recv(1024)
+                if not line_bytes:
                     break
-                
-                if stderr.channel.recv_ready():
-                    err_bytes = stderr.channel.recv(1024)
-                    sys.stderr.buffer.write(err_bytes)
-                    sys.stderr.buffer.flush()
-                    
-                time.sleep(0.1)
+                sys.stdout.buffer.write(line_bytes)
+                sys.stdout.buffer.flush()
                 
             status = stdout.channel.recv_exit_status()
-            
-            # Flush any remaining stderr
-            while stderr.channel.recv_ready():
-                err_bytes = stderr.channel.recv(1024)
-                sys.stderr.buffer.write(err_bytes)
-                sys.stderr.buffer.flush()
-
             print(f"\nExit status: {status}")
-            if status != 0:
-                print("Command failed!")
             
     except Exception as e:
         print(f"An error occurred: {e}")
