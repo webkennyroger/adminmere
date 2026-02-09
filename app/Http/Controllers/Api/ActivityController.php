@@ -353,10 +353,7 @@ class ActivityController extends Controller
      */
     public function vote(Request $request, $id)
     {
-    public function vote(Request $request, $id)
-    {
-        return response()->json(['success' => false, 'message' => 'Please use the Polls API for voting.'], 400); 
-    }
+        return response()->json(['success' => false, 'message' => 'Please use the Polls API for voting.'], 400);
     }
 
     /**
