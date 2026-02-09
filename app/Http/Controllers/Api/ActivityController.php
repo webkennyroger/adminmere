@@ -60,7 +60,7 @@ class ActivityController extends Controller
         // Merge and sort
         $items = collect([])
             ->merge($activities->map(fn ($item) => ['type' => 'activity', 'data' => $item, 'date' => $item->start_time]))
-            ->merge($posts->map(fn ($item) => ['type' => 'post', 'data' => $item, 'date' => $item->created_at]))
+            ->merge($posts->map(fn ($item) => ['type' => $item->type, 'data' => $item, 'date' => $item->created_at]))
             ->sortByDesc('date');
 
         // Manual pagination
@@ -107,27 +107,41 @@ class ActivityController extends Controller
 
         $user = $request->user();
 
-        // Check if this is a regular post (Social/Post sport type)
-        if ($request->sport === 'Social' || $request->sport === 'Post') {
+        // Check if this is a regular post (Social/Post sport type) or Poll
+        if ($request->sport === 'Social' || $request->sport === 'Post' || ($request->type === 'poll' || $request->sport === 'Poll')) {
+            $isPoll = $request->type === 'poll' || $request->sport === 'Poll';
+            
             $post = \App\Models\Post::updateOrCreate(
                 [
-                    'id' => str_replace('post_', '', $request->id ?? ''),
+                    'id' => str_replace(['post_', 'poll_'], '', $request->id ?? ''),
                     'user_id' => $user->id,
                 ],
                 [
                     'title' => $request->activityTitle,
                     'content' => $request->notes ?? '',
+                    'type' => $isPoll ? 'poll' : 'post',
                     'media' => $request->mediaPaths ?? [],
                     'privacy' => $request->privacy ?? 'public',
                     'feed_type' => $request->feedType ?? 'personal',
                 ]
             );
 
-            $post->load('user', 'likes', 'comments');
+            // If it's a poll and has options, sync them
+            if ($isPoll && $request->has('options')) {
+                $post->pollOptions()->delete(); // Reset options for update
+                foreach ($request->options as $optionText) {
+                    $post->pollOptions()->create([
+                        'option_text' => is_array($optionText) ? ($optionText['text'] ?? '') : $optionText,
+                        'votes_count' => 0
+                    ]);
+                }
+            }
+
+            $post->load('user', 'likes', 'comments', 'pollOptions');
 
             return response()->json([
                 'success' => true,
-                'message' => 'Post synced successfully',
+                'message' => ($isPoll ? 'Poll' : 'Post') . ' synced successfully',
                 'data' => $this->formatPost($post, $user),
             ], 201);
         }
@@ -629,7 +643,7 @@ class ActivityController extends Controller
             'type' => $post->type, // 'post' or 'poll'
             'pollData' => $pollData,
             'createdAt' => $post->created_at->toIso8601String(),
-            'location' => $post->location ?? $post->user->profile->city ?? 'Brasil',
+            'location' => $post->type === 'poll' ? null : ($post->location ?? $post->user->profile->city ?? 'Brasil'),
             'feedType' => $post->feed_type,
             'distanceInMeters' => 0.0,
             'durationInSeconds' => 0,
@@ -659,8 +673,8 @@ class ActivityController extends Controller
      */
     private function resolveItem($id)
     {
-        if (is_string($id) && str_starts_with($id, 'post_')) {
-            $realId = str_replace('post_', '', $id);
+        if (is_string($id) && (str_starts_with($id, 'post_') || str_starts_with($id, 'poll_'))) {
+            $realId = str_replace(['post_', 'poll_'], '', $id);
 
             return \App\Models\Post::findOrFail($realId);
         } elseif (is_string($id) && str_starts_with($id, 'activity_')) {
