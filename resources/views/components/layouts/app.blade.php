@@ -9,14 +9,62 @@
     <title>{{ $title ?? 'Dashboard' }} | MERE APP</title>
 
 
-    <!-- Theme initialization (runs before CSS loads) -->
+    <!-- Critical Stores Initialization -->
     <script>
+        // Theme Pre-check
         const savedTheme = localStorage.getItem('theme');
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         const theme = savedTheme || systemTheme;
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
         }
+
+        // Alpine Store Registration
+        document.addEventListener('alpine:init', () => {
+            // Theme Store
+            Alpine.store('theme', {
+                theme: theme,
+                toggle() {
+                    this.theme = this.theme === 'light' ? 'dark' : 'light';
+                    localStorage.setItem('theme', this.theme);
+                    if (this.theme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                }
+            });
+
+            // Sidebar Store
+            Alpine.store('sidebar', {
+                isExpanded: window.innerWidth >= 1280,
+                isMobileOpen: false,
+                isHovered: false,
+                init() {
+                    window.addEventListener('resize', () => {
+                        if (window.innerWidth < 1280) {
+                            this.isMobileOpen = false;
+                            this.isExpanded = false;
+                        } else {
+                            this.isMobileOpen = false;
+                            this.isExpanded = true;
+                        }
+                    });
+                },
+                toggleExpanded() { this.isExpanded = !this.isExpanded; this.isMobileOpen = false; },
+                setMobileOpen(val) { this.isMobileOpen = val; },
+                setHovered(val) { if (window.innerWidth >= 1280 && !this.isExpanded) this.isHovered = val; }
+            });
+
+            // Chat Sidebar Store
+            Alpine.store('chatSidebar', {
+                isOpen: false,
+                activeChat: null,
+                toggle() { this.isOpen = !this.isOpen; },
+                openChat(chat) { this.activeChat = chat; this.isOpen = true; },
+                close() { this.isOpen = false; }
+            });
+        });
     </script>
 
     <!-- Scripts -->
