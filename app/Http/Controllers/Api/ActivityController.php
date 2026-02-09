@@ -107,63 +107,8 @@ class ActivityController extends Controller
 
         $user = $request->user();
 
-        // Check if this is a regular post (Social/Post sport type) or Poll
-        if ($request->sport === 'Social' || $request->sport === 'Post' || ($request->type === 'poll' || $request->sport === 'Poll')) {
-            $isPoll = $request->type === 'poll' || $request->sport === 'Poll';
 
-            // Get poll data from nested object if present
-            $pollData = $request->input('pollData', []);
-            $options = $pollData['options'] ?? $request->input('options', []);
-            $pollDuration = $pollData['poll_duration'] ?? $request->input('poll_duration');
-
-            // Validation for poll options and duration if it's a poll
-            if ($isPoll) {
-                if (count($options) < 2 || !$pollDuration) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Enquetes precisam de pelo menos 2 opções e uma duração válida.',
-                    ], 422);
-                }
-            }
-
-            $post = \App\Models\Post::updateOrCreate(
-                [
-                    'id' => str_replace(['post_', 'poll_'], '', $request->id ?? ''),
-                    'user_id' => $user->id,
-                ],
-                [
-                    'title' => $request->activityTitle,
-                    'content' => $request->notes ?? '',
-                    'type' => $isPoll ? 'poll' : 'post',
-                    'media' => $request->mediaPaths ?? [],
-                    'privacy' => $request->privacy ?? 'public',
-                    'feed_type' => $request->feedType ?? 'personal',
-                    'poll_expires_at' => ($isPoll && $pollDuration)
-                        ? Carbon::now()->addHours((int)$pollDuration)
-                        : ($request->poll_expires_at ? Carbon::parse($request->poll_expires_at) : null),
-                    'is_mandatory' => $pollData['isMandatory'] ?? $request->input('isMandatory', false),
-                ]
-            );
-
-            // If it's a poll and has options, sync them
-            if ($isPoll && !empty($options)) {
-                $post->pollOptions()->delete(); // Reset options for update
-                foreach ($options as $optionText) {
-                    $post->pollOptions()->create([
-                        'option_text' => is_array($optionText) ? ($optionText['text'] ?? '') : $optionText,
-                        'votes_count' => 0
-                    ]);
-                }
-            }
-
-            $post->load('user', 'likes', 'comments', 'pollOptions');
-
-            return response()->json([
-                'success' => true,
-                'message' => ($isPoll ? 'Poll' : 'Post') . ' synced successfully',
-                'data' => $this->formatPost($post, $user),
-            ], 201);
-        }
+        // Proceed to create Activity (Sport/Exercise)
 
         // Resolve Tagged Users if provided
         $taggedUsers = [];
@@ -408,42 +353,10 @@ class ActivityController extends Controller
      */
     public function vote(Request $request, $id)
     {
-        $request->validate(['option_id' => 'required|exists:poll_options,id']);
-
-        $post = $this->resolveItem($id);
-
-        // Ensure it is a Post and is a Poll
-        if ($post instanceof \App\Models\Activity || $post->type !== 'poll') {
-            return response()->json(['success' => false, 'message' => 'This item is not a poll'], 400);
-        }
-
-        $user = $request->user();
-
-        if ($post->hasVoted($user)) {
-            return response()->json(['success' => false, 'message' => 'You have already voted on this poll'], 400);
-        }
-
-        // Check expiration
-        if ($post->poll_expires_at && $post->poll_expires_at->isPast()) {
-            return response()->json(['success' => false, 'message' => 'This poll has ended'], 400);
-        }
-
-        $option = $post->pollOptions()->find($request->option_id);
-        if (!$option) {
-            return response()->json(['success' => false, 'message' => 'Invalid option for this poll'], 400);
-        }
-
-        $post->pollVotes()->create([
-            'user_id' => $user->id,
-            'poll_option_id' => $option->id
-        ]);
-
-        $option->increment('votes_count');
-
-        return response()->json([
-            'success' => true,
-            'data' => $this->formatPost($post->refresh(), $user)
-        ]);
+    public function vote(Request $request, $id)
+    {
+        return response()->json(['success' => false, 'message' => 'Please use the Polls API for voting.'], 400); 
+    }
     }
 
     /**
@@ -744,6 +657,11 @@ class ActivityController extends Controller
      */
     private function formatComment($comment)
     {
+        // Ensure relations are loaded
+        if (!$comment->relationLoaded('likes') || !$comment->relationLoaded('user')) {
+            $comment->load(['user', 'likes']);
+        }
+
         $userId = auth()->id(); // Check current user for isLiked
 
         return [
