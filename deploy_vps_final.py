@@ -22,7 +22,6 @@ def deploy():
             'cd /var/www/adminmere && npm install',
             'cd /var/www/adminmere && rm -rf public/build && npm run build 2>&1',
             'cd /var/www/adminmere && php artisan migrate --force',
-            'cd /var/www/adminmere && php artisan view:clear',
             'cd /var/www/adminmere && php artisan optimize:clear'
         ]
         
