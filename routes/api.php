@@ -49,6 +49,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stories', [\App\Http\Controllers\Api\StoryController::class, 'index']);
     Route::post('/stories', [\App\Http\Controllers\Api\StoryController::class, 'store']);
 
+    // Polls API
+    Route::post('/polls', [\App\Http\Controllers\Api\PollController::class, 'store']);
+    Route::delete('/polls/{id}', [\App\Http\Controllers\Api\PollController::class, 'destroy']);
+    Route::post('/polls/{id}/vote', [\App\Http\Controllers\Api\PollController::class, 'vote']);
+    Route::post('/polls/{id}/like', [\App\Http\Controllers\Api\PollController::class, 'toggleLike']);
+
+    // Posts API
+    Route::post('/posts', [\App\Http\Controllers\Api\PostController::class, 'store']);
+    Route::delete('/posts/{id}', [\App\Http\Controllers\Api\PostController::class, 'destroy']);
+    Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\PostController::class, 'toggleLike']);
+
     // Activities API
     Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
     Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);
