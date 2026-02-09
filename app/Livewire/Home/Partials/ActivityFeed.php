@@ -108,7 +108,7 @@ class ActivityFeed extends Component
             'location' => $this->location ?: (auth()->user()->profile->city ?? null),
             'privacy' => 'public',
             'type' => $this->isPoll ? 'poll' : 'post',
-            'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
+            'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
         ]);
 
         if ($this->isPoll) {
