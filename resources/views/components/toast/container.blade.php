@@ -1,4 +1,53 @@
 <!-- Toast Container - All toasts in top center -->
+<script>
+    if (!window.toastManager) {
+        window.toastManager = function () {
+            return {
+                toasts: [],
+                addToast(data) {
+                    if (Array.isArray(data) && data.length > 0) data = data[0];
+                    if (typeof data === 'string') data = { message: data, type: 'info' };
+
+                    const id = Date.now() + Math.random();
+                    const type = data.type || 'success';
+                    const bgClasses = { success: 'bg-green-500', info: 'bg-blue-500', warning: 'bg-yellow-500', error: 'bg-red-500', custom: 'bg-orange-500' };
+                    const textClasses = { success: 'text-green-500', info: 'text-blue-500', warning: 'text-yellow-500', error: 'text-red-500', custom: 'text-orange-500' };
+                    const defaultTitles = { success: 'Sucesso!', info: 'Informação', warning: 'Atenção!', error: 'Erro!', custom: 'Atenção' };
+
+                    let normalizedType = type;
+                    if (!bgClasses[normalizedType]) normalizedType = 'success';
+
+                    const toast = {
+                        id,
+                        type: normalizedType,
+                        title: data.title || defaultTitles[normalizedType] || 'Notificação',
+                        message: data.message || '',
+                        bgClass: bgClasses[normalizedType],
+                        textClass: textClasses[normalizedType],
+                        show: false
+                    };
+                    this.toasts.push(toast);
+                    setTimeout(() => { if (this.toasts.find(t => t.id === id)) this.toasts.find(t => t.id === id).show = true; }, 100);
+                    setTimeout(() => this.removeToast(id), data.duration || 5000);
+                },
+                removeToast(id) {
+                    const toast = this.toasts.find(t => t.id === id);
+                    if (toast) {
+                        toast.show = false;
+                        setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 300);
+                    }
+                }
+            }
+        }
+    }
+
+    // Global helper
+    if (!window.showToast) {
+        window.showToast = function (type, message, title = null, duration = 5000) {
+            window.dispatchEvent(new CustomEvent('toast', { detail: { type, message, title, duration } }));
+        }
+    }
+</script>
 <div x-data="toastManager()" @toast.window="addToast($event.detail)">
     <div class="fixed top-4 right-4 z-[999999] space-y-4 pointer-events-none w-full max-w-sm px-4 sm:px-0">
         <template x-for="toast in toasts" :key="toast.id">

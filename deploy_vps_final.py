@@ -16,11 +16,11 @@ def deploy():
         print("Connected!")
         
         commands = [
-            'cd /var/www/adminmere && git pull origin main',
+            'cd /var/www/adminmere && git fetch origin && git reset --hard origin/main', # Force sync
             'cd /var/www/adminmere && composer install --no-interaction --optimize-autoloader',
-            'cd /var/www/adminmere && rm -rf node_modules package-lock.json', # Clean specific npm files
+            # 'cd /var/www/adminmere && rm -rf node_modules package-lock.json', # Commented out to save time if not needed immediately
             'cd /var/www/adminmere && npm install',
-            'cd /var/www/adminmere && npm run build',
+            'cd /var/www/adminmere && npm run build 2>&1', # Capture error output
             'cd /var/www/adminmere && php artisan view:clear',
             'cd /var/www/adminmere && php artisan optimize:clear'
         ]
