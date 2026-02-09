@@ -377,7 +377,7 @@ class ActivityController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatComment($comment->load('user')),
+            'data' => $this->formatComment($comment->load('user'), $user->id),
         ]);
     }
 
@@ -510,8 +510,8 @@ class ActivityController extends Controller
             'calories' => (float) $activity->calories,
             'likes' => $activity->likes->count(),
             'isLiked' => $activity->likes->contains('user_id', $user->id),
-            'commentsList' => $activity->comments->map(function ($comment) {
-                return $this->formatComment($comment);
+            'commentsList' => $activity->comments->map(function ($comment) use ($user) {
+                return $this->formatComment($comment, $user->id);
             })->toArray(),
             'shares' => 0,
             'likers' => $activity->likes->take(3)->map(function ($like) {
@@ -586,8 +586,8 @@ class ActivityController extends Controller
             'calories' => 0.0,
             'likes' => $post->likes->count(),
             'isLiked' => $post->likes->contains('user_id', $user->id),
-            'commentsList' => $post->comments->map(function ($comment) {
-                return $this->formatComment($comment);
+            'commentsList' => $post->comments->map(function ($comment) use ($user) {
+                return $this->formatComment($comment, $user->id);
             })->toArray(),
             'shares' => 0,
             'likers' => $post->likes->take(3)->map(function ($like) {
@@ -652,14 +652,12 @@ class ActivityController extends Controller
     /**
      * Format comment for JSON string (app requirement)
      */
-    private function formatComment($comment)
+    private function formatComment($comment, $userId)
     {
         // Ensure relations are loaded
         if (!$comment->relationLoaded('likes') || !$comment->relationLoaded('user')) {
             $comment->load(['user', 'likes']);
         }
-
-        $userId = auth()->id(); // Check current user for isLiked
 
         return [
             'id' => (string) $comment->id,
