@@ -40,6 +40,8 @@ class ActivityController extends Controller
             'comments.user',
             'comments.likes',
             'likes',
+            'pollOptions',
+            'pollVotes.user'
         ]);
 
         if ($feed === 'personal') {
@@ -596,12 +598,21 @@ class ActivityController extends Controller
                 'totalVotes' => $totalVotes,
                 'options' => $post->pollOptions->map(function($opt) use ($user, $post, $totalVotes) {
                      $isUserVote = $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty();
+                     
+                     // Get voter avatars (limit 3)
+                     $voterAvatars = $post->pollVotes->where('poll_option_id', $opt->id)
+                        ->take(3)
+                        ->map(function($vote) {
+                            return $vote->user->image_url; 
+                        })->values()->toArray();
+
                      return [
                          'id' => $opt->id,
                          'text' => $opt->option_text,
                          'votes' => $opt->votes_count,
                          'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
-                         'isUserVote' => $isUserVote
+                         'isUserVote' => $isUserVote,
+                         'voterAvatars' => $voterAvatars
                      ];
                 })->values()
             ];
