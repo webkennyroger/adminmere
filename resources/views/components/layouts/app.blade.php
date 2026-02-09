@@ -19,52 +19,68 @@
             document.documentElement.classList.add('dark');
         }
 
-        // Alpine Store Registration
-        document.addEventListener('alpine:init', () => {
+        // Define Store Initialization Logic
+        function initMyStores() {
+            if (!window.Alpine) return;
+
             // Theme Store
-            Alpine.store('theme', {
-                theme: theme,
-                toggle() {
-                    this.theme = this.theme === 'light' ? 'dark' : 'light';
-                    localStorage.setItem('theme', this.theme);
-                    if (this.theme === 'dark') {
-                        document.documentElement.classList.add('dark');
-                    } else {
-                        document.documentElement.classList.remove('dark');
+            if (!Alpine.store('theme')) {
+                Alpine.store('theme', {
+                    theme: theme,
+                    toggle() {
+                        this.theme = this.theme === 'light' ? 'dark' : 'light';
+                        localStorage.setItem('theme', this.theme);
+                        if (this.theme === 'dark') {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
                     }
-                }
-            });
+                });
+            }
 
             // Sidebar Store
-            Alpine.store('sidebar', {
-                isExpanded: window.innerWidth >= 1280,
-                isMobileOpen: false,
-                isHovered: false,
-                init() {
-                    window.addEventListener('resize', () => {
-                        if (window.innerWidth < 1280) {
-                            this.isMobileOpen = false;
-                            this.isExpanded = false;
-                        } else {
-                            this.isMobileOpen = false;
-                            this.isExpanded = true;
-                        }
-                    });
-                },
-                toggleExpanded() { this.isExpanded = !this.isExpanded; this.isMobileOpen = false; },
-                setMobileOpen(val) { this.isMobileOpen = val; },
-                setHovered(val) { if (window.innerWidth >= 1280 && !this.isExpanded) this.isHovered = val; }
-            });
+            if (!Alpine.store('sidebar')) {
+                Alpine.store('sidebar', {
+                    isExpanded: window.innerWidth >= 1280,
+                    isMobileOpen: false,
+                    isHovered: false,
+                    init() {
+                        window.addEventListener('resize', () => {
+                            if (window.innerWidth < 1280) {
+                                this.isMobileOpen = false;
+                                this.isExpanded = false;
+                            } else {
+                                this.isMobileOpen = false;
+                                this.isExpanded = true;
+                            }
+                        });
+                    },
+                    toggleExpanded() { this.isExpanded = !this.isExpanded; this.isMobileOpen = false; },
+                    setMobileOpen(val) { this.isMobileOpen = val; },
+                    setHovered(val) { if (window.innerWidth >= 1280 && !this.isExpanded) this.isHovered = val; }
+                });
+            }
 
             // Chat Sidebar Store
-            Alpine.store('chatSidebar', {
-                isOpen: false,
-                activeChat: null,
-                toggle() { this.isOpen = !this.isOpen; },
-                openChat(chat) { this.activeChat = chat; this.isOpen = true; },
-                close() { this.isOpen = false; }
-            });
-        });
+            if (!Alpine.store('chatSidebar')) {
+                Alpine.store('chatSidebar', {
+                    isOpen: false,
+                    activeChat: null,
+                    toggle() { this.isOpen = !this.isOpen; },
+                    openChat(chat) { this.activeChat = chat; this.isOpen = true; },
+                    close() { this.isOpen = false; }
+                });
+            }
+        }
+
+        // Attempt initialization on multiple hooks to catch the right moment
+        document.addEventListener('alpine:init', initMyStores);
+        document.addEventListener('livewire:init', initMyStores);
+        document.addEventListener('DOMContentLoaded', initMyStores);
+
+        // Immediate check (if Alpine is already loaded via defer)
+        if (window.Alpine) initMyStores();
     </script>
 
     <!-- Scripts -->

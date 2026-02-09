@@ -85,59 +85,63 @@
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-90">
 
-            <div
-                class="relative w-full max-w-md h-full md:h-[80vh] bg-black md:rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <template x-if="activeStory">
+                <div
+                    class="relative w-full max-w-md h-full md:h-[80vh] bg-black md:rounded-2xl overflow-hidden shadow-2xl flex flex-col">
 
-                <!-- Barra de Progresso -->
-                <div class="absolute top-0 left-0 right-0 z-20 px-2 pt-2 flex gap-1">
-                    <div class="h-1 flex-1 bg-white/30 rounded-full overflow-hidden">
-                        <div class="h-full bg-white transition-all duration-100 ease-linear"
-                            :style="'width: ' + progress + '%'"></div>
-                    </div>
-                </div>
-
-                <!-- Header (Avatar + Nome + Fechar) -->
-                <div class="absolute top-6 left-0 right-0 z-20 px-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <img :src="activeStory.avatar" class="w-10 h-10 rounded-full border-2 border-white/50">
-                        <span class="text-white font-semibold text-sm drop-shadow-md" x-text="activeStory.name"></span>
-                    </div>
-                    <button @click="closeStory" class="text-white/80 hover:text-white">
-                        <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Imagem do Story -->
-                <div class="flex-1 flex items-center justify-center bg-zinc-900 relative">
-                    <img :src="activeStory.story_image" class="max-w-full max-h-full object-contain">
-                </div>
-
-                <!-- Footer (Input fictício para resposta) -->
-                <div class="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex-1 h-12 rounded-full border border-white/30 bg-white/10 flex items-center px-4 text-white/70 text-sm backdrop-blur-md">
-                            Responder a <span x-text="activeStory.name" class="ml-1"></span>...
+                    <!-- Barra de Progresso -->
+                    <div class="absolute top-0 left-0 right-0 z-20 px-2 pt-2 flex gap-1">
+                        <div class="h-1 flex-1 bg-white/30 rounded-full overflow-hidden">
+                            <div class="h-full bg-white transition-all duration-100 ease-linear"
+                                :style="'width: ' + progress + '%'"></div>
                         </div>
-                        <button class="text-white">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    </div>
+
+                    <!-- Header (Avatar + Nome + Fechar) -->
+                    <div class="absolute top-6 left-0 right-0 z-20 px-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img :src="activeStory.avatar" class="w-10 h-10 rounded-full border-2 border-white/50">
+                            <span class="text-white font-semibold text-sm drop-shadow-md"
+                                x-text="activeStory.name"></span>
+                        </div>
+                        <button @click="closeStory" class="text-white/80 hover:text-white">
+                            <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                                </path>
-                            </svg>
-                        </button>
-                        <button class="text-white">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
+
+                    <!-- Imagem do Story -->
+                    <div class="flex-1 flex items-center justify-center bg-zinc-900 relative">
+                        <img :src="activeStory.story_image" class="max-w-full max-h-full object-contain">
+                    </div>
+
+                    <!-- Footer (Input fictício para resposta) -->
+                    <div
+                        class="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex-1 h-12 rounded-full border border-white/30 bg-white/10 flex items-center px-4 text-white/70 text-sm backdrop-blur-md">
+                                Responder a <span x-text="activeStory.name" class="ml-1"></span>...
+                            </div>
+                            <button class="text-white">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button class="text-white">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </template>
         </div>
     </template>
 </div>
