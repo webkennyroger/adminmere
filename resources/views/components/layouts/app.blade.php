@@ -17,6 +17,10 @@
         const theme = savedTheme || systemTheme;
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
+            // Ensure body gets the class as soon as it exists (DOMContentLoaded or later)
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('dark', 'bg-zinc-900');
+            });
         }
 
         // Define Store Initialization Logic

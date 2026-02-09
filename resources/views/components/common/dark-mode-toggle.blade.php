@@ -1,6 +1,20 @@
-<button @click="$store.theme.toggle()"
-    {{ $attributes->merge(['class' => 'flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors']) }}
-    title="Alternar Tema">
+<button x-data="{
+        toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark', 'bg-zinc-900');
+                localStorage.setItem('theme', 'light');
+                if (this.$store.theme) this.$store.theme.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark', 'bg-zinc-900');
+                localStorage.setItem('theme', 'dark');
+                if (this.$store.theme) this.$store.theme.theme = 'dark';
+            }
+        }
+    }" @click="toggleTheme()" {{ $attributes->merge(['class' => 'flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors cursor-pointer']) }} title="Alternar Tema" type="button">
+
     <!-- Sun Icon (Show when Dark) -->
     <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
