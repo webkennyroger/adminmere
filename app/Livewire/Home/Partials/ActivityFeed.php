@@ -144,7 +144,7 @@ class ActivityFeed extends Component
         $mentionableUsers = \App\Models\User::select('id', 'name', 'avatar')->take(50)->get();
 
         // Fetch Posts
-        $postsQuery = Post::with(['user', 'comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes', 'likes']);
+        $postsQuery = Post::with(['user', 'comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes', 'likes', 'pollOptions', 'pollVotes']);
 
         // Fetch Activities
         $activitiesQuery = \App\Models\Activity::with(['user', 'comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes', 'likes']);

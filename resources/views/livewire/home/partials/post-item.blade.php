@@ -85,7 +85,8 @@
                     $hasVoted = $post->hasVoted(auth()->user());
                     $totalVotes = $post->total_votes;
                     $isExpired = $post->poll_expires_at && $post->poll_expires_at->isPast();
-                    $showResults = $hasVoted || $isExpired || $post->user_id === auth()->id();
+                    // Show results ONLY if voted or expired. Don't force show for owner unless voted.
+                    $showResults = $hasVoted || $isExpired;
                 @endphp
 
                 @foreach($post->pollOptions as $option)
