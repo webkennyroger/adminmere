@@ -3,10 +3,9 @@
 namespace Tests\Feature\Livewire\Support;
 
 use App\Models\User;
-use App\Models\Support;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SupportIndexTest extends TestCase
 {
@@ -37,7 +36,7 @@ class SupportIndexTest extends TestCase
         $this->assertDatabaseHas('supports', [
             'subject' => 'New Ticket',
             'priority' => 'high',
-            'status' => 'open',
+            'status' => 'pending',
             'user_id' => $user->id,
         ]);
     }

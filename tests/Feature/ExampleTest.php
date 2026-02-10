@@ -1,7 +1,8 @@
 <?php
 
 test('returns a successful response', function () {
-    $response = $this->get(route('home'));
+    $user = \App\Models\User::factory()->create();
+    $response = $this->actingAs($user)->get(route('home'));
 
     $response->assertStatus(200);
 });

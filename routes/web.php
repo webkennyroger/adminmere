@@ -1,13 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
-use Livewire\Volt\Volt;
+use App\Livewire\Categories\CategoryIndex;
+use App\Livewire\Challenges\ChallengeIndex;
 use App\Livewire\Chat\ChatApp;
 use App\Livewire\Schedule\ScheduleIndex;
-use App\Livewire\Challenges\ChallengeIndex;
-use App\Livewire\Categories\CategoryIndex;
 use App\Livewire\Users\UserIndex;
+use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 Route::get('/', function () {
     return auth()->check() ? redirect('/home') : redirect('/login');
@@ -24,9 +23,10 @@ Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthContro
 
 Route::get('/dashboard', function () {
     // Regular users go to home, admins/managers see dashboard
-    if (!auth()->user()->isAdmin() && !auth()->user()->isManager()) {
+    if (! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
         return redirect()->route('home');
     }
+
     return view('dashboard');
 })
     ->middleware(['auth', 'verified'])
@@ -41,85 +41,85 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['check.admin.or.manager'])->group(function () {
         // Rota da Agenda/Calendário
         Route::get('/schedule', ScheduleIndex::class)->name('schedule.index');
-    
-    // API routes for calendar events
-    Route::get('/api/events', function () {
-        return response()->json(
-            \App\Models\Schedule::where('user_id', auth()->id())
-                ->get()
-                ->map(function ($event) {
-                    return [
-                        'id' => $event->id,
-                        'title' => $event->title,
-                        'start' => $event->event_date->format('Y-m-d'),
-                        'end' => $event->event_date->format('Y-m-d'),
-                        'extendedProps' => [
-                            'calendar' => $event->color ?? 'Primary',
-                            'description' => $event->description,
-                            'photo' => $event->photo,
-                            'time' => $event->event_time,
-                        ]
-                    ];
-                })
-        );
-    })->name('api.events.index');
-    
-    Route::post('/api/events', function (\Illuminate\Http\Request $request) {
-        $data = [
-            'user_id' => auth()->id(),
-            'title' => $request->title,
-            'description' => $request->description ?? '',
-            'event_date' => $request->start_date,
-            'event_time' => $request->event_time ?? '00:00',
-            'color' => $request->event_level ?? 'Primary',
-        ];
 
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('events', 'public');
-        }
-        
-        $event = \App\Models\Schedule::create($data);
-        
-        return response()->json(['id' => $event->id, 'success' => true]);
-    })->name('api.events.store');
-    
-    Route::put('/api/events/{id}', function (\Illuminate\Http\Request $request, $id) {
-        $event = \App\Models\Schedule::where('user_id', auth()->id())->findOrFail($id);
-        
-        $data = [
-            'title' => $request->title,
-            'description' => $request->description ?? '',
-            'event_date' => $request->start_date,
-            'event_time' => $request->event_time ?? '00:00',
-            'color' => $request->event_level ?? 'Primary',
-        ];
+        // API routes for calendar events
+        Route::get('/api/events', function () {
+            return response()->json(
+                \App\Models\Schedule::where('user_id', auth()->id())
+                    ->get()
+                    ->map(function ($event) {
+                        return [
+                            'id' => $event->id,
+                            'title' => $event->title,
+                            'start' => $event->event_date->format('Y-m-d'),
+                            'end' => $event->event_date->format('Y-m-d'),
+                            'extendedProps' => [
+                                'calendar' => $event->color ?? 'Primary',
+                                'description' => $event->description,
+                                'photo' => $event->photo,
+                                'time' => $event->event_time,
+                            ],
+                        ];
+                    })
+            );
+        })->name('api.events.index');
 
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('events', 'public');
-        }
-        
-        $event->update($data);
-        
-        return response()->json(['success' => true]);
-    })->name('api.events.update');
-    
-    Route::delete('/api/events/{id}', function ($id) {
-        $event = \App\Models\Schedule::where('user_id', auth()->id())->findOrFail($id);
-        $event->delete();
-        
-        return response()->json(['success' => true]);
-    })->name('api.events.destroy');
-        
+        Route::post('/api/events', function (\Illuminate\Http\Request $request) {
+            $data = [
+                'user_id' => auth()->id(),
+                'title' => $request->title,
+                'description' => $request->description ?? '',
+                'event_date' => $request->start_date,
+                'event_time' => $request->event_time ?? '00:00',
+                'color' => $request->event_level ?? 'Primary',
+            ];
+
+            if ($request->hasFile('photo')) {
+                $data['photo'] = $request->file('photo')->store('events', 'public');
+            }
+
+            $event = \App\Models\Schedule::create($data);
+
+            return response()->json(['id' => $event->id, 'success' => true]);
+        })->name('api.events.store');
+
+        Route::put('/api/events/{id}', function (\Illuminate\Http\Request $request, $id) {
+            $event = \App\Models\Schedule::where('user_id', auth()->id())->findOrFail($id);
+
+            $data = [
+                'title' => $request->title,
+                'description' => $request->description ?? '',
+                'event_date' => $request->start_date,
+                'event_time' => $request->event_time ?? '00:00',
+                'color' => $request->event_level ?? 'Primary',
+            ];
+
+            if ($request->hasFile('photo')) {
+                $data['photo'] = $request->file('photo')->store('events', 'public');
+            }
+
+            $event->update($data);
+
+            return response()->json(['success' => true]);
+        })->name('api.events.update');
+
+        Route::delete('/api/events/{id}', function ($id) {
+            $event = \App\Models\Schedule::where('user_id', auth()->id())->findOrFail($id);
+            $event->delete();
+
+            return response()->json(['success' => true]);
+        })->name('api.events.destroy');
+
         // Rota de Gerenciamento de Desafios Mensais (Admin)
         Route::get('/admin/challenges', ChallengeIndex::class)->name('admin.challenges.index');
-        
+
         // Rota de Gerenciamento de Categorias
         Route::get('/categories', CategoryIndex::class)->name('categories.index');
         Route::view('/categories/create', 'livewire.categories.create')->name('categories.create');
         Route::get('/categories/{category}/edit', function ($category) {
             return view('livewire.categories.edit', compact('category'));
         })->name('categories.edit');
-        
+
         // Goals (Metas)
         Route::get('/goals', \App\Livewire\Goals\GoalIndex::class)->name('goals.index');
 
@@ -135,7 +135,7 @@ Route::middleware(['auth'])->group(function () {
         // Rota de Gerenciamento de Atividades
         Route::get('/activities', \App\Livewire\Activities\ActivityList::class)->name('activities.index');
     });
-    
+
     // ===== PUBLIC ROUTES (All authenticated users) =====
     // Billing / Minha Assinatura
     Route::get('/billing', [\App\Http\Controllers\BillingController::class, 'index'])->name('billing.index');
@@ -143,16 +143,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/billing/cancel', [\App\Http\Controllers\BillingController::class, 'cancel'])->name('billing.cancel');
     Route::post('/billing/resume', [\App\Http\Controllers\BillingController::class, 'resume'])->name('billing.resume');
     Route::get('/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
-    
+
     // Rota do Aplicativo de Chat
     Route::get('/chat', ChatApp::class)->name('chat.index');
-    
+
     // Rota do Perfil do Usuário
     Route::get('/profile', function () {
         $user = auth()->user();
         if ($user->profile && $user->profile->nickname) {
-            return redirect()->to('/@' . $user->profile->nickname);
+            return redirect()->to('/@'.$user->profile->nickname);
         }
+
         return redirect()->route('profile.edit');
     })->name('profile');
 
@@ -160,10 +161,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/@{nickname}', \App\Livewire\Profile\UserProfile::class)->name('profile.view');
     // Legacy support (optional, can be removed if strict handle usage is desired)
     // Route::get('/athletes/{user}', \App\Livewire\Profile\UserProfile::class)->name('profile.view.legacy');
-    
+
     // Find Friends
     Route::get('/find-friends', \App\Livewire\Users\FindFriends::class)->name('users.find');
-    
+
     // User Relationships (Followers/Following)
     Route::get('/athletes/{user}/following', \App\Livewire\Users\UserRelationships::class)->name('users.following');
     Route::get('/athletes/{user}/followers', \App\Livewire\Users\UserRelationships::class)->name('users.followers');
@@ -181,7 +182,7 @@ Route::middleware(['auth'])->group(function () {
             'priority' => 'required|in:low,medium,high',
             'message' => 'required|min:10',
         ]);
-        
+
         \App\Models\Support::create([
             'user_id' => auth()->id(),
             'subject' => $request->subject,
@@ -189,49 +190,50 @@ Route::middleware(['auth'])->group(function () {
             'message' => $request->message,
             'status' => 'pending',
         ]);
-        
+
         return redirect()->route('support.list')->with('status', 'Ticket criado com sucesso!');
     })->name('support.store');
-    
+
     Route::get('/support-list', \App\Livewire\Support\SupportList::class)->name('support.list');
-    
+
     Route::get('/support/{support}', \App\Livewire\Support\SupportShow::class)->name('support.show');
     Route::post('/support/{support}/reply', function (\App\Models\Support $support, \Illuminate\Http\Request $request) {
         // Ensure user owns the ticket or is admin
-        if ($support->user_id !== auth()->id() && !auth()->user()->is_admin) {
+        if ($support->user_id !== auth()->id() && ! auth()->user()->is_admin) {
             abort(403);
         }
-        
+
         $request->validate([
-            'message' => 'required|string|min:2'
+            'message' => 'required|string|min:2',
         ]);
-        
+
         $support->replies()->create([
             'user_id' => auth()->id(),
             'message' => $request->message,
         ]);
-        
+
         return redirect()->route('support.show', $support)->with('message', 'Resposta enviada com sucesso!');
     })->name('support.reply');
-    
+
     Route::patch('/support/{support}/status', function (\App\Models\Support $support, \Illuminate\Http\Request $request) {
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             abort(403);
         }
-        
+
         $request->validate([
-            'status' => 'required|in:open,pending,resolved,closed'
+            'status' => 'required|in:open,pending,resolved,closed',
         ]);
-        
+
         $support->update(['status' => $request->status]);
-        
+
         return redirect()->route('support.show', $support)->with('message', 'Status atualizado com sucesso!');
     })->name('support.update-status');
-    Route::redirect('/support-show', '/support-show'); 
+    // Rota de Redirecionamento de Suporte (Legado)
+    Route::redirect('/support-show', '/support');
 
     // Rotas de faq
     Route::view('/faq', 'pages.faq')->name('faq');
-    
+
     // Rotas de Termos e Privacidade
     Route::view('/terms', 'pages.terms')->name('terms.show');
     Route::view('/policy', 'pages.policy')->name('policy.show');
@@ -239,9 +241,13 @@ Route::middleware(['auth'])->group(function () {
     // Rotas de coming
     Route::view('/coming', 'pages.coming-soon')->name('coming');
 
-
     // Profile Settings Routes
     Route::get('profile/edit', App\Livewire\Profile\UserProfileEdit::class)->name('profile.edit');
+    Volt::route('settings/password', 'settings.password')->name('user-password.edit');
+    Volt::route('settings/appearance', 'settings.appearance')->name('appearance.edit');
+    Volt::route('settings/two-factor', 'settings.two-factor')
+        ->name('two-factor.show')
+        ->middleware('password.confirm');
 
     // Volt::route('/test-volt', function () {
     //     return 'Volt Routing Works';

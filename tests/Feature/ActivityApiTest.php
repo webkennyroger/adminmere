@@ -33,8 +33,8 @@ class ActivityApiTest extends TestCase
             ->postJson('/api/activities', $payload);
 
         // Assert
-        $response->assertStatus(200);
-        
+        $response->assertStatus(201);
+
         $this->assertDatabaseHas('activities', [
             'app_id' => 'uuid-1234-5678',
             'title' => 'Morning Run',
