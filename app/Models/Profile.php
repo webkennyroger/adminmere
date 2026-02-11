@@ -31,6 +31,11 @@ class Profile extends Model
         'facebook',
         'youtube',
         'tiktok',
+        'settings',
+    ];
+
+    protected $casts = [
+        'settings' => 'array',
     ];
 
     public function user()

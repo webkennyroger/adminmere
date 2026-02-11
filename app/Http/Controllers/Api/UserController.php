@@ -259,6 +259,11 @@ class UserController extends Controller
         if ($request->has('birth_date')) $profile->birth_date = $request->birth_date;
         if ($request->has('height')) $profile->height = $request->height;
         if ($request->has('weight')) $profile->weight = $request->weight;
+        if ($request->has('settings')) {
+            $currentSettings = $profile->settings ?? [];
+            $newSettings = is_string($request->settings) ? json_decode($request->settings, true) : $request->settings;
+            $profile->settings = array_merge($currentSettings, $newSettings);
+        }
 
         // Handle Image Upload
         if ($request->hasFile('image')) {

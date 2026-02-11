@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $data['birthDate'] = $user->profile->birth_date ?? '';
         $data['height'] = $user->profile->height ?? '';
         $data['weight'] = $user->profile->weight ?? '';
+        $data['settings'] = $user->profile->settings ?? [];
         return $data;
     });
 
@@ -63,6 +64,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Activities API
     Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
     Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);
+    Route::post('/activities/sync', [\App\Http\Controllers\Api\ActivityController::class, 'sync']);
+    Route::post('/activities/upload', [\App\Http\Controllers\Api\ActivityController::class, 'upload']);
+    Route::get('/activities/history', [\App\Http\Controllers\Api\ActivityController::class, 'history']);
     Route::get('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'show']);
     Route::put('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'update']);
     Route::delete('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'destroy']);
@@ -70,8 +74,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/activities/{id}/vote', [\App\Http\Controllers\Api\ActivityController::class, 'vote']);
     Route::post('/activities/{id}/comment', [\App\Http\Controllers\Api\ActivityController::class, 'comment']);
     Route::post('/comments/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleCommentLike']);
-    Route::post('/activities/sync', [\App\Http\Controllers\Api\ActivityController::class, 'sync']);
-    Route::post('/activities/upload', [\App\Http\Controllers\Api\ActivityController::class, 'upload']);
 
     // User/Social API
     Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);

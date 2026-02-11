@@ -3,5 +3,5 @@
   "scope": "codebase",
   "type": "backend",
   "localEndpoint": "http://localhost:8000/",
-  "serverPort": 55549
+  "serverPort": 56507
 }

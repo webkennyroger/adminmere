@@ -86,6 +86,34 @@ class ActivityController extends Controller
     }
 
     /**
+     * Get user's activity history for challenges.
+     * Filters only sport activities (no posts).
+     */
+    public function history(Request $request)
+    {
+        $user = $request->user();
+        $perPage = (int) $request->get('per_page', 20);
+
+        $activities = Activity::where('user_id', $user->id)
+            ->whereNotNull('sport_type') // Ensure it's a sport activity
+            ->latest('start_time')
+            ->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $activities->map(function ($activity) use ($user) {
+                return $this->formatActivity($activity, $user);
+            }),
+            'pagination' => [
+                'current_page' => $activities->currentPage(),
+                'last_page' => $activities->lastPage(),
+                'per_page' => $activities->perPage(),
+                'total' => $activities->total(),
+            ],
+        ]);
+    }
+
+    /**
      * Store or update an activity from the mobile app.
      */
     public function store(Request $request)
