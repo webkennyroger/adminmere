@@ -79,3 +79,34 @@ php artisan boost:update
 - Implementar validação de nickname único no `UserController.php`.
 - Refinar tela de detalhes de atividade no App Mobile.
 - Configurar Laravel Echo para notificações em tempo real.
+
+---
+
+## 🆘 6. Procedimento de Recuperação (Site Offline)
+
+Se o site não estiver abrindo (Erro 500 ou Tela Branca), execute estes comandos para corrigir permissões e recompilar assets:
+
+### No Computador Local (Windows/Herd):
+
+
+
+```
+
+### Na VPS (Executar no terminal):
+
+```bash
+cd /var/www/adminmere
+
+# 1. Corrigir Permissões e Limpar Cache
+chown -R www-data:www-data /var/www/adminmere
+chmod -R 775 storage bootstrap/cache
+php artisan optimize:clear
+
+# 2. Reinstalar Dependências (Corrige erros no vendor)
+rm -rf vendor
+composer install --no-dev --optimize-autoloader
+
+# 3. Recompilar Frontend (Essencial para Vite/Tailwind)
+npm install
+npm run build
+```
