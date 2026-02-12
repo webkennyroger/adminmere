@@ -129,9 +129,6 @@ class ChatBox extends Component
     public $attachments = [];
     public $audioAttachment;
 
-    protected $listeners = [
-        'open-chat-box' => 'openChat',
-    ];
 
     public function sendAudioMessage()
     {
@@ -159,7 +156,11 @@ class ChatBox extends Component
             ]);
             $message->load('sender.profile');
             // broadcast(new GroupMessageSent($message))->toOthers();
-            $this->chatMessages->push($message);
+            if (is_array($this->chatMessages)) {
+                $this->chatMessages[] = $message;
+            } else {
+                $this->chatMessages->push($message);
+            }
         } else {
             $message = Message::create([
                 'sender_id' => Auth::id(),
@@ -168,7 +169,11 @@ class ChatBox extends Component
                 'attachments' => $attachmentsData,
             ]);
             broadcast(new MessageSent($message))->toOthers();
-            $this->chatMessages->push($message);
+            if (is_array($this->chatMessages)) {
+                $this->chatMessages[] = $message;
+            } else {
+                $this->chatMessages->push($message);
+            }
         }
 
         $this->audioAttachment = null;
@@ -193,19 +198,36 @@ class ChatBox extends Component
         }
     }
 
-    #[On('echo-private:chat.{auth.id},.message.sent')]
+    public function getListeners()
+    {
+        $authId = Auth::id();
+        return [
+            "echo-private:chat.{$authId},.message.sent" => 'receiveMessage',
+            'open-chat-box' => 'openChat',
+            'open-group-chat' => 'openGroup',
+        ];
+    }
+
     public function receiveMessage($event)
     {
-        $message = Message::find($event['message']['id']);
+        $messageData = $event['message'] ?? $event;
+        $message = Message::find($messageData['id']);
 
         if ($this->isOpen && $this->selectedUser && $this->selectedUser->id === $message->sender_id) {
-            $this->chatMessages->push($message);
+            if (is_array($this->chatMessages)) {
+                $this->chatMessages[] = $message;
+            } else {
+                if (is_array($this->chatMessages)) {
+                    $this->chatMessages[] = $message;
+                } else {
+                    $this->chatMessages->push($message);
+                }
+            }
             $message->update(['read_at' => now()]);
             $this->dispatch('scroll-chat-to-bottom');
         }
     }
 
-    #[On('open-chat-box')]
     public function openChat($userId)
     {
         $this->selectedGroup = null;
@@ -232,7 +254,6 @@ class ChatBox extends Component
         $this->dispatch('scroll-chat-to-bottom');
     }
 
-    #[On('open-group-chat')]
     public function openGroup($groupId)
     {
         $this->selectedUser = null;
@@ -407,7 +428,11 @@ class ChatBox extends Component
             // TODO: Broadcast GroupMessageSent event
             // broadcast(new GroupMessageSent($message))->toOthers();
 
-            $this->chatMessages->push($message);
+            if (is_array($this->chatMessages)) {
+                $this->chatMessages[] = $message;
+            } else {
+                $this->chatMessages->push($message);
+            }
         } else {
             $message = Message::create([
                 'sender_id' => Auth::id(),
@@ -419,7 +444,11 @@ class ChatBox extends Component
             // Broadcast
             broadcast(new MessageSent($message))->toOthers();
 
-            $this->chatMessages->push($message);
+            if (is_array($this->chatMessages)) {
+                $this->chatMessages[] = $message;
+            } else {
+                $this->chatMessages->push($message);
+            }
         }
 
         $this->content = '';

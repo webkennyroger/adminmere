@@ -31,7 +31,7 @@
                             let channelName = null;
                             @if($selectedGroup)
                                 channelName = 'chat.group.{{ $selectedGroup->id }}';
-                            @elseif($selectedUser)
+                            @elseif($selectedUser && auth()->check())
                                 let ids = [{{ auth()->id() }}, {{ $selectedUser->id }}].sort((a, b) => a - b);
                                 channelName = 'chat.' + ids[0] + '_' + ids[1];
                             @endif
@@ -60,7 +60,7 @@
                         if (typeof Echo !== 'undefined' && this.channel) {
                             Echo.private(this.channel).whisper('typing', { 
                                 userId: '{{ auth()->id() }}',
-                                avatar: '{{ auth()->user()->profile?->image ? Storage::url(auth()->user()->profile->image) : (auth()->user()->image_url ?? 'https://ui-avatars.com/api/?name='.auth()->user()->name) }}'
+                                avatar: '{{ auth()->user()?->profile?->image ? Storage::url(auth()->user()->profile->image) : (auth()->user()?->image_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'User')) }}'
                             });
                         }
                     }
@@ -182,7 +182,11 @@
                                 $senderId = $message->sender_id ?? $message->user_id;
                                 $isMe = $senderId === auth()->id(); 
                                 $senderRes = $message->sender ?? null;
-                                $senderImage = $senderRes->image_url ?? $senderRes->profile->image ?? 'https://ui-avatars.com/api/?name='.($senderRes->name ?? 'User');
+                                $senderImage = 'https://ui-avatars.com/api/?name=' . urlencode($senderRes->name ?? 'User');
+                                if ($senderRes) {
+                                    if ($senderRes->image_url) $senderImage = $senderRes->image_url;
+                                    elseif ($senderRes->profile && $senderRes->profile->image) $senderImage = Storage::url($senderRes->profile->image);
+                                }
                                 if($senderRes && isset($senderRes->profile) && $senderRes->profile && $senderRes->profile->image) {
                                      $senderImage = Storage::url($senderRes->profile->image);
                                 }
