@@ -14,9 +14,8 @@ export function initThemeStore() {
         },
 
         toggle() {
-            if (this.theme === 'light') this.setTheme('dark');
-            else if (this.theme === 'dark') this.setTheme('system');
-            else this.setTheme('light');
+            if (this.theme === 'dark') this.setTheme('light');
+            else this.setTheme('dark');
         },
 
         setTheme(theme) {
@@ -35,10 +34,8 @@ export function initThemeStore() {
             const html = document.documentElement;
             if (targetTheme === 'dark') {
                 html.classList.add('dark');
-                if (document.body) document.body.classList.add('dark', 'bg-zinc-900');
             } else {
                 html.classList.remove('dark');
-                if (document.body) document.body.classList.remove('dark', 'bg-zinc-900');
             }
         }
     });

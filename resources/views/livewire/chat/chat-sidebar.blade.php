@@ -1,6 +1,6 @@
 <div>
     <!-- Mobile Backdrop -->
-    <div x-show="$store.chatSidebar.isOpen" 
+    <div x-cloak x-show="$store.chatSidebar.isOpen" 
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -8,11 +8,11 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @click="$store.chatSidebar.close()"
-        class="fixed inset-0 bg-black/50 z-[60] md:hidden">
+        class="fixed inset-0 bg-black/60 z-99998 md:hidden">
     </div>
 
     <!-- Widget Container -->
-    <div 
+    <div x-cloak
         x-show="$store.chatSidebar.isOpen"
         x-transition:enter="transform transition ease-in-out duration-300"
         x-transition:enter-start="translate-x-full"
@@ -20,8 +20,7 @@
         x-transition:leave="transform transition ease-in-out duration-300"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="fixed top-0 right-0 z-[55] h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col"
-        style="display: none;">
+        class="fixed top-0 right-0 z-[99999] h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col">
 
         <!-- Header -->
         <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">

@@ -11,12 +11,18 @@
 
     <!-- Theme initialization (runs before CSS loads) -->
     <script>
-        const savedTheme = localStorage.getItem('theme');
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        const theme = savedTheme || systemTheme;
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        }
+        try {
+            const theme = localStorage.getItem('theme') || 'system';
+            let target = theme;
+            if (theme === 'system') {
+                target = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            if (target === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        } catch (e) { }
     </script>
 
     <!-- Scripts -->

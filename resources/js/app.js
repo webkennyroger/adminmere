@@ -47,38 +47,27 @@ import { initThemeStore } from './theme';
 import { initSidebarStore } from './components/sidebar';
 import { initChatStore } from './components/chat';
 
-// Helper to initialize stores safely
-const initStores = () => {
+// Single point of initialization for Alpine stores
+const registerStores = () => {
     if (!window.Alpine) return;
     
-    // Only init if stores don't exist yet
-    if (!window.Alpine.store('theme')) {
-        initThemeStore();
-    }
-    if (!window.Alpine.store('sidebar')) {
-        initSidebarStore();
-    }
-    if (!window.Alpine.store('chatSidebar')) {
-        initChatStore();
-    }
+    // Check if already initialized to avoid duplication
+    if (window.Alpine.store('theme')) return;
+
+    // Register plugins
+    window.Alpine.plugin(intersect);
+
+    // Initialize stores
+    initThemeStore();
+    initSidebarStore();
+    initChatStore();
 };
 
-// Listen for custom event or immediate init
-document.addEventListener('livewire:init', () => {
-    if (window.Alpine) {
-        window.Alpine.plugin(intersect);
-        initStores();
-    }
-});
-
-// Fallback for when alpine:init fires instead or if Alpine is already there
-document.addEventListener('alpine:init', () => {
-    initStores();
-});
-
-// Immediate check in case everything is already loaded
+// Listen for Alpine initialization
 if (window.Alpine) {
-    initStores();
+    registerStores();
+} else {
+    document.addEventListener('alpine:init', registerStores);
 }
 
 // Inicializar componentes quando DOM estiver pronto
