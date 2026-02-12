@@ -198,16 +198,7 @@ class ChatBox extends Component
         }
     }
 
-    public function getListeners()
-    {
-        $authId = Auth::id();
-        return [
-            "echo-private:chat.{$authId},.message.sent" => 'receiveMessage',
-            'open-chat-box' => 'openChat',
-            'open-group-chat' => 'openGroup',
-        ];
-    }
-
+    #[On('echo-private:chat.{auth.id},.message.sent')]
     public function receiveMessage($event)
     {
         $messageData = $event['message'] ?? $event;
@@ -217,17 +208,14 @@ class ChatBox extends Component
             if (is_array($this->chatMessages)) {
                 $this->chatMessages[] = $message;
             } else {
-                if (is_array($this->chatMessages)) {
-                    $this->chatMessages[] = $message;
-                } else {
-                    $this->chatMessages->push($message);
-                }
+                $this->chatMessages->push($message);
             }
             $message->update(['read_at' => now()]);
             $this->dispatch('scroll-chat-to-bottom');
         }
     }
 
+    #[On('open-chat-box')]
     public function openChat($userId)
     {
         $this->selectedGroup = null;
@@ -254,6 +242,7 @@ class ChatBox extends Component
         $this->dispatch('scroll-chat-to-bottom');
     }
 
+    #[On('open-group-chat')]
     public function openGroup($groupId)
     {
         $this->selectedUser = null;
