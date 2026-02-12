@@ -9,13 +9,11 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-Doy9kVMG.js",
+    "file": "assets/app-yCKdLcNN.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "dynamicImports": [
-      "resources/js/bootstrap.js",
-      "resources/js/components/toast.js",
       "resources/js/components/goals-chart.js",
       "resources/js/components/user-growth-chart.js",
       "resources/js/components/calendar-init.js",
@@ -25,14 +23,8 @@
       "assets/app-CksuuEqD.css"
     ]
   },
-  "resources/js/bootstrap.js": {
-    "file": "assets/bootstrap-B0Mh3Ag9.js",
-    "name": "bootstrap",
-    "src": "resources/js/bootstrap.js",
-    "isDynamicEntry": true
-  },
   "resources/js/components/calendar-init.js": {
-    "file": "assets/calendar-init-B-hwV81t.js",
+    "file": "assets/calendar-init-CdgIgQcK.js",
     "name": "calendar-init",
     "src": "resources/js/components/calendar-init.js",
     "isDynamicEntry": true,
@@ -50,12 +42,6 @@
     "file": "assets/quill-editor-CXM9C2Sb.js",
     "name": "quill-editor",
     "src": "resources/js/components/quill-editor.js",
-    "isDynamicEntry": true
-  },
-  "resources/js/components/toast.js": {
-    "file": "assets/toast-CAj37wmn.js",
-    "name": "toast",
-    "src": "resources/js/components/toast.js",
     "isDynamicEntry": true
   },
   "resources/js/components/user-growth-chart.js": {
