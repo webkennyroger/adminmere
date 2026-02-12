@@ -12,29 +12,30 @@ import { initThemeStore } from './theme';
 import { initSidebarStore } from './components/sidebar';
 import { initChatStore } from './components/chat';
 
-// 1. Initialize & Globalize Alpine (without starting it, Livewire 3 will start it)
+// 1. Initialize & Globalize Alpine
 window.Alpine = Alpine;
+Alpine.plugin(intersect);
 
-document.addEventListener('alpine:init', () => {
-    console.log('Alpine init: Registering Mere Stores...');
-    
-    // Plugins
-    Alpine.plugin(intersect);
-    
-    // Register Stores
-    initThemeStore();
-    initSidebarStore();
-    initChatStore();
-    
-    window.mereStoresReady = true;
-});
+// 2. Register Stores
+initThemeStore();
+initSidebarStore();
+initChatStore();
 
-// 2. Global Libraries
+// 3. Start Alpine (CRITICAL for non-Livewire 3 or combined apps)
+// Livewire 3 usually handles this, but if multiple features are broken, 
+// explicit starting is safer as long as we don't have double-init.
+if (!window.alpineInitialized) {
+    Alpine.start();
+    window.alpineInitialized = true;
+    console.log('Alpine Started Manually');
+}
+
+// 4. Global Libraries
 window.ApexCharts = ApexCharts;
 window.flatpickr = flatpickr;
 window.FullCalendar = Calendar;
 
-// 3. Localization & Components
+// 5. Localization & Components
 const Portuguese = {
     weekdays: { shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"], longhand: ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"] },
     months: { shorthand: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"], longhand: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"] },
