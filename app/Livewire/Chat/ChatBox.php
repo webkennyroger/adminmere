@@ -24,15 +24,15 @@ class ChatBox extends Component
     public function loadPreferences()
     {
         if ($this->selectedGroup) {
-             $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
-             if ($member) {
-                 $this->isArchived = $member->pivot->is_archived;
-                 $this->isMuted = false; 
-             } else {
-                 $this->isArchived = false;
-                 $this->isMuted = false;
-             }
-             return;
+            $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
+            if ($member) {
+                $this->isArchived = $member->pivot->is_archived;
+                $this->isMuted = false;
+            } else {
+                $this->isArchived = false;
+                $this->isMuted = false;
+            }
+            return;
         }
 
         if (!$this->selectedUser) return;
@@ -60,21 +60,21 @@ class ChatBox extends Component
 
         $pref->is_muted = !$pref->is_muted;
         $pref->save();
-        
+
         $this->isMuted = $pref->is_muted;
     }
 
     public function toggleArchive()
     {
         if ($this->selectedGroup) {
-             $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
-             if ($member) {
-                 $newState = !$member->pivot->is_archived;
-                 $this->selectedGroup->members()->updateExistingPivot(Auth::id(), [
+            $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
+            if ($member) {
+                $newState = !$member->pivot->is_archived;
+                $this->selectedGroup->members()->updateExistingPivot(Auth::id(), [
                     'is_archived' => $newState
-                 ]);
-                 $this->isArchived = $newState;
-             }
+                ]);
+                $this->isArchived = $newState;
+            }
         } elseif ($this->selectedUser) {
             $pref = ChatPreference::firstOrCreate(
                 ['user_id' => Auth::id(), 'peer_id' => $this->selectedUser->id]
@@ -82,34 +82,34 @@ class ChatBox extends Component
 
             $pref->is_archived = !$pref->is_archived;
             $pref->save();
-            
+
             $this->isArchived = $pref->is_archived;
         } else {
             return;
         }
-        
-        $this->dispatch('refresh-chat-sidebar'); 
-        
+
+        $this->dispatch('refresh-chat-sidebar');
+
         if ($this->isArchived) {
-             $this->closeChat();
+            $this->closeChat();
         }
     }
-    
+
     public function reportUser($reason = 'spam')
     {
-         if (!$this->selectedUser) return;
-         
-         Report::create([
-             'reporter_id' => Auth::id(),
-             'reported_user_id' => $this->selectedUser->id,
-             'reason' => $reason,
-             'status' => 'pending'
-         ]);
-         
-         $this->dispatch('notify', message: 'Usuário denunciado com sucesso.');
-         $this->closeChat();
+        if (!$this->selectedUser) return;
+
+        Report::create([
+            'reporter_id' => Auth::id(),
+            'reported_user_id' => $this->selectedUser->id,
+            'reason' => $reason,
+            'status' => 'pending'
+        ]);
+
+        $this->dispatch('notify', message: 'Usuário denunciado com sucesso.');
+        $this->closeChat();
     }
-    
+
     public function startVideoCall()
     {
         $this->dispatch('notify', message: 'Iniciando chamada de vídeo (Funcionalidade em breve)');
@@ -142,14 +142,14 @@ class ChatBox extends Component
         if (!$this->selectedUser && !$this->selectedGroup) return;
 
         $path = $this->audioAttachment->store('chat-attachments', 'public');
-        
+
         $attachmentsData[] = [
             'path' => $path,
             'mime_type' => $this->audioAttachment->getMimeType(),
             'name' => 'voice-message.webm',
             'size' => $this->audioAttachment->getSize(),
         ];
-        
+
         if ($this->selectedGroup) {
             $message = GroupMessage::create([
                 'chat_group_id' => $this->selectedGroup->id,
@@ -182,7 +182,7 @@ class ChatBox extends Component
         if (session()->has('chat_isOpen') && session('chat_isOpen')) {
             $this->isOpen = true;
             $this->isMinimized = session('chat_isMinimized', false);
-            
+
             $userId = session('chat_selectedUserId');
             if ($userId) {
                 $this->selectedUser = User::find($userId);
@@ -193,67 +193,63 @@ class ChatBox extends Component
         }
     }
 
-    public function getListeners()
+    #[On('echo-private:chat.{auth.id},.message.sent')]
+    public function receiveMessage($event)
     {
-        $authId = Auth::id();
-        return [
-            "echo-private:chat.{$authId},.message.sent" => 'receiveMessage',
-            'open-chat-box' => 'openChat',
-            'open-group-chat' => 'openGroup',
-        ];
+        $message = Message::find($event['message']['id']);
+
+        if ($this->isOpen && $this->selectedUser && $this->selectedUser->id === $message->sender_id) {
+            $this->chatMessages->push($message);
+            $message->update(['read_at' => now()]);
+            $this->dispatch('scroll-chat-to-bottom');
+        }
     }
 
+    #[On('open-chat-box')]
     public function openChat($userId)
     {
         $this->selectedGroup = null;
         $this->selectedUser = User::find($userId);
         $this->isOpen = true;
-        // If it's a new user or explicitly opening, unminimize unless previously minimized for same user? 
-        // Logic: Open chat should show the chat.
         $this->isMinimized = false;
-        
+
         if ($this->selectedUser) {
-            // Persist state
             session([
                 'chat_isOpen' => true,
                 'chat_selectedUserId' => $this->selectedUser->id,
                 'chat_isMinimized' => false
             ]);
 
-            // Mark messages as read
             Message::where('sender_id', $this->selectedUser->id)
                 ->where('receiver_id', Auth::id())
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
-            
+
             $this->loadPreferences();
             $this->loadMessages();
         }
-        
+
         $this->dispatch('scroll-chat-to-bottom');
     }
 
+    #[On('open-group-chat')]
     public function openGroup($groupId)
     {
         $this->selectedUser = null;
         $this->isMinimized = false;
 
         $this->selectedGroup = ChatGroup::with('members.profile')->findOrFail($groupId);
-
-        // Load Messages
         $this->loadMessages();
 
-        // Dispatch
         $this->isOpen = true;
-        
-        // Persist session
+
         session([
-            'chat_isOpen' => true, 
+            'chat_isOpen' => true,
             'chat_selectedGroupId' => $groupId,
             'chat_selectedUserId' => null,
             'chat_isMinimized' => false
         ]);
-        
+
         $this->loadPreferences();
         $this->dispatch('scroll-chat-to-bottom');
     }
@@ -272,7 +268,7 @@ class ChatBox extends Component
         $this->selectedUser = null;
         $this->selectedGroup = null;
         $this->chatMessages = [];
-        
+
         // Clear session state
         session()->forget(['chat_isOpen', 'chat_selectedUserId', 'chat_selectedGroupId', 'chat_isMinimized']);
     }
@@ -301,9 +297,9 @@ class ChatBox extends Component
                 ->where('receiver_id', $authId)
                 ->where('deleted_by_receiver', false);
         })
-        ->orderBy('created_at', 'asc')
-        ->limit(100)
-        ->get();
+            ->orderBy('created_at', 'asc')
+            ->limit(100)
+            ->get();
     }
 
     public function deleteMessage($messageId)
@@ -332,9 +328,9 @@ class ChatBox extends Component
     public function deleteConversation()
     {
         if (!$this->selectedUser) return;
-        
+
         $authId = Auth::id();
-        
+
         // Messages where I am the sender -> mark deleted_by_sender
         Message::where('sender_id', $authId)
             ->where('receiver_id', $this->selectedUser->id)
@@ -344,7 +340,7 @@ class ChatBox extends Component
         Message::where('sender_id', $this->selectedUser->id)
             ->where('receiver_id', $authId)
             ->update(['deleted_by_receiver' => true]);
-            
+
         // Clean up messages deleted by both (Optional, but good for cleanup)
         Message::where('deleted_by_sender', true)
             ->where('deleted_by_receiver', true)
@@ -357,21 +353,21 @@ class ChatBox extends Component
 
     public function markAsUnread()
     {
-         if (!$this->selectedUser) return;
-         
-         $authId = Auth::id();
-         
-         // Find the last message sent by them to me
-         $lastMessage = Message::where('sender_id', $this->selectedUser->id)
+        if (!$this->selectedUser) return;
+
+        $authId = Auth::id();
+
+        // Find the last message sent by them to me
+        $lastMessage = Message::where('sender_id', $this->selectedUser->id)
             ->where('receiver_id', $authId)
             ->latest()
             ->first();
-            
-         if ($lastMessage) {
-             $lastMessage->update(['read_at' => null]);
-         }
-         
-         $this->closeChat();
+
+        if ($lastMessage) {
+            $lastMessage->update(['read_at' => null]);
+        }
+
+        $this->closeChat();
     }
 
     public function sendMessage()
@@ -404,10 +400,10 @@ class ChatBox extends Component
                 'content' => $this->content ?? '',
                 'attachments' => !empty($attachmentsData) ? $attachmentsData : null,
             ]);
-            
+
             // Reload to get relations like sender
             $message->load('sender.profile');
-            
+
             // TODO: Broadcast GroupMessageSent event
             // broadcast(new GroupMessageSent($message))->toOthers();
 
@@ -428,20 +424,9 @@ class ChatBox extends Component
 
         $this->content = '';
         $this->attachments = [];
-        
+
         $this->dispatch('scroll-chat-to-bottom');
         $this->dispatch('refresh-chat-sidebar');
-    }
-
-    public function receiveMessage($event)
-    {
-        $message = Message::find($event['message']['id']);
-
-        if ($this->isOpen && $this->selectedUser && $this->selectedUser->id === $message->sender_id) {
-            $this->chatMessages->push($message);
-            $message->update(['read_at' => now()]);
-            $this->dispatch('scroll-chat-to-bottom');
-        }
     }
 
     public function formatFileSize($bytes, $precision = 1)

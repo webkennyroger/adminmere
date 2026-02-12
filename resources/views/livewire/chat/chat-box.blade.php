@@ -1,12 +1,12 @@
 <div>
     <div>
     @if($isOpen && ($selectedUser || $selectedGroup))
-            <div class="fixed bottom-0 z-60 w-[calc(100%-2rem)] md:w-96 bg-white dark:bg-zinc-900 shadow-2xl rounded-t-xl border-x border-t border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 overflow-hidden"
-                style="display: none;"
+            <div x-cloak
+                class="fixed bottom-0 z-99990 w-[calc(100%-2rem)] md:w-96 bg-white dark:bg-zinc-900 shadow-2xl rounded-t-xl border-x border-t border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 overflow-hidden"
                 x-show="true"
                 :class="{
-                    'right-4 md:right-[26rem]': $store.chatSidebar.isOpen,
-                    'right-4': !$store.chatSidebar.isOpen,
+                    'right-4 md:right-104': $store.chatSidebar?.isOpen,
+                    'right-4': !$store.chatSidebar?.isOpen,
                     'h-[500px]': !minimized,
                     'h-14 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800': minimized
                 }"
