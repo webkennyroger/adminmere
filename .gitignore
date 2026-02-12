@@ -10,6 +10,7 @@
 # Build / runtime
 /public/hot
 /public/storage
+/public/build
 /storage/*.key
 /storage/pail
 
