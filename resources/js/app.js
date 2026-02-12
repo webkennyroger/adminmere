@@ -49,18 +49,35 @@ import { initChatStore } from './components/chat';
 
 // Single point of initialization for Alpine stores
 const registerStores = () => {
-    if (!window.Alpine) return;
-    
-    // Check if already initialized to avoid duplication
-    if (window.Alpine.store('theme')) return;
+    try {
+        if (!window.Alpine) {
+            console.error('Alpine not found during store registration');
+            return;
+        }
+        
+        // Prevent duplicate registration
+        if (window.Alpine.store('theme')) {
+            console.log('Stores already registered, skipping...');
+            return;
+        }
 
-    // Register plugins
-    window.Alpine.plugin(intersect);
+        console.log('Registering Alpine Stores...');
 
-    // Initialize stores
-    initThemeStore();
-    initSidebarStore();
-    initChatStore();
+        // Initialize stores
+        initThemeStore();
+        initSidebarStore();
+        initChatStore();
+
+        // Register plugins
+        if (typeof intersect !== 'undefined') {
+            window.Alpine.plugin(intersect);
+        }
+
+        console.log('Alpine Stores & Plugins Ready');
+        window.mereStoresReady = true;
+    } catch (e) {
+        console.error('Error in registerStores:', e);
+    }
 };
 
 // Listen for Alpine initialization
@@ -69,6 +86,13 @@ if (window.Alpine) {
 } else {
     document.addEventListener('alpine:init', registerStores);
 }
+
+// Fallback for Livewire
+document.addEventListener('livewire:init', () => {
+    if (!window.mereStoresReady) {
+        registerStores();
+    }
+});
 
 // Inicializar componentes quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {

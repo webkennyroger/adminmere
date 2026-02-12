@@ -20,7 +20,7 @@
         x-transition:leave="transform transition ease-in-out duration-300"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="fixed top-0 right-0 z-[99999] h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col">
+        class="fixed top-0 right-0 z-99999 h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col">
 
         <!-- Header -->
         <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">
@@ -250,7 +250,7 @@
 
         <!-- Modals (Outside the layout flow but inside the component) -->
         @if($showNewChatModal)
-            <div class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4">
+            <div class="fixed inset-0 z-80 flex items-center justify-center bg-black/50 p-4">
                 <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                     <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                         <h3 class="font-bold text-lg dark:text-white">Nova Conversa</h3>
@@ -277,7 +277,7 @@
             </div>
         @endif
         @if($showCreateGroupModal)
-            <div class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4">
+            <div class="fixed inset-0 z-80 flex items-center justify-center bg-black/50 p-4">
                 <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                     <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                         <h3 class="font-bold text-lg dark:text-white">Criar Novo Grupo</h3>

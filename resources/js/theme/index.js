@@ -31,12 +31,11 @@ export function initThemeStore() {
                 targetTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
 
-            const html = document.documentElement;
-            if (targetTheme === 'dark') {
-                html.classList.add('dark');
-            } else {
-                html.classList.remove('dark');
-            }
+            const isDark = targetTheme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            
+            // Debug log
+            console.log('Mere Theme updated:', targetTheme, 'isDark:', isDark);
         }
     });
 }
