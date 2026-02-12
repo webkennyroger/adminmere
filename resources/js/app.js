@@ -63,7 +63,7 @@ const initStores = () => {
     }
 };
 
-// Wait for Livewire to inject Alpine, then initialize our stores
+// Listen for custom event or immediate init
 document.addEventListener('livewire:init', () => {
     if (window.Alpine) {
         window.Alpine.plugin(intersect);
@@ -71,12 +71,12 @@ document.addEventListener('livewire:init', () => {
     }
 });
 
-// Fallback for when alpine:init fires instead
+// Fallback for when alpine:init fires instead or if Alpine is already there
 document.addEventListener('alpine:init', () => {
     initStores();
 });
 
-// Immediate initialization if Alpine is already there (Livewire 3 might have already loaded it)
+// Immediate check in case everything is already loaded
 if (window.Alpine) {
     initStores();
 }

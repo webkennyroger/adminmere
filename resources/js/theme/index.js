@@ -1,20 +1,39 @@
 export function initThemeStore() {
     window.Alpine.store('theme', {
+        theme: localStorage.getItem('theme') || 'system',
+
         init() {
-            const savedTheme = localStorage.getItem('theme');
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            this.theme = savedTheme || systemTheme;
             this.updateTheme();
+            
+            // Watch for system theme changes if in system mode
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (this.theme === 'system') {
+                    this.updateTheme();
+                }
+            });
         },
-        theme: 'light',
+
         toggle() {
-            this.theme = this.theme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', this.theme);
+            if (this.theme === 'light') this.setTheme('dark');
+            else if (this.theme === 'dark') this.setTheme('system');
+            else this.setTheme('light');
+        },
+
+        setTheme(theme) {
+            this.theme = theme;
+            localStorage.setItem('theme', theme);
             this.updateTheme();
         },
+
         updateTheme() {
+            let targetTheme = this.theme;
+            
+            if (targetTheme === 'system') {
+                targetTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
             const html = document.documentElement;
-            if (this.theme === 'dark') {
+            if (targetTheme === 'dark') {
                 html.classList.add('dark');
                 if (document.body) document.body.classList.add('dark', 'bg-zinc-900');
             } else {
