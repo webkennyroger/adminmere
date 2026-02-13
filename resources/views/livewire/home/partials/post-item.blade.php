@@ -166,7 +166,7 @@
                 @if(str_contains($mediaItems[0], '.mp4'))
                     <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
                 @else
-                    <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
+                    <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 0 })">
                 @endif
             </div>
         @elseif($mediaCount === 2)
@@ -176,7 +176,7 @@
                         @if(str_contains($media, '.mp4'))
                             <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
                         @else
-                            <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
+                            <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: {{ $loop->index }} })">
                         @endif
                     </div>
                 @endforeach
@@ -184,13 +184,13 @@
         @elseif($mediaCount === 3)
             <div class="grid grid-cols-2 gap-0.5">
                 <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
+                    <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 0 })">
                 </div>
                 <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover" alt="Post image">
+                    <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 1 })">
                 </div>
                 <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover" alt="Post image">
+                    <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 2 })">
                 </div>
             </div>
         @else
@@ -198,9 +198,9 @@
                 @foreach($mediaItems as $index => $media)
                     @if($index < 4)
                         <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                            <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
+                            <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: {{ $index }} })">
                             @if($index === 3 && $mediaCount > 4)
-                                <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center cursor-pointer hover:bg-black/80 transition-colors">
+                                <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center cursor-pointer hover:bg-black/80 transition-colors" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 0 })">
                                     <span class="text-white text-4xl font-bold mb-1">+{{ $mediaCount - 4 }}</span>
                                     <span class="text-white text-sm font-medium">Ver todas</span>
                                 </div>
