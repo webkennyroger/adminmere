@@ -94,7 +94,7 @@
                                     </svg>
                                 </div>
                                 <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Foto/Vídeo</span>
-                                <input type="file" wire:model="photo" class="hidden" accept="image/*">
+                                <input type="file" wire:model="photos" class="hidden" multiple accept="image/*">
                             </label>
 
                             <!-- Poll Button (Active) -->
@@ -138,7 +138,7 @@
                             </div>
                         @endif
 
-                        <div wire:loading wire:target="photo"
+                        <div wire:loading wire:target="photos"
                             class="mt-3 text-xs text-blue-600 dark:text-blue-400 font-medium flex items-center gap-2">
                             <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">
@@ -148,32 +148,37 @@
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            Carregando foto...
+                            Carregando fotos...
                         </div>
 
-                        <!-- Single Photo Preview -->
-                        @if (isset($photo) && $photo)
+                        <!-- Multiple Photos Preview -->
+                        @if ($photos && count($photos) > 0)
                             <div class="mt-4">
                                 <div class="flex items-center justify-between mb-2 px-1">
-                                    <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Foto selecionada</span>
-                                    <button type="button" wire:click="$set('photo', null)" class="text-xs text-red-500 hover:text-red-700 font-bold hover:underline transition-all">REMOVER</button>
+                                    <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{ count($photos) }} foto(s) selecionada(s)</span>
+                                    <button type="button" wire:click="$set('photos', [])" class="text-xs text-red-500 hover:text-red-700 font-bold hover:underline transition-all">REMOVER TODAS</button>
                                 </div>
-                                <div class="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shadow-sm max-w-xs max-h-48">
-                                    @if(method_exists($photo, 'temporaryUrl'))
-                                        <img src="{{ $photo->temporaryUrl() }}" class="w-full h-auto object-cover">
-                                    @else
-                                        <div class="w-full h-48 flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-700 text-zinc-500">
-                                            <svg class="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                            <span class="text-sm">Foto pronta para envio</span>
+                                <div class="grid grid-cols-4 gap-2">
+                                    @foreach($photos as $index => $photo)
+                                        <div class="relative aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shadow-sm">
+                                            @if(method_exists($photo, 'temporaryUrl'))
+                                                <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
+                                            @else
+                                                <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-700 text-zinc-500">
+                                                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                </div>
+                                            @endif
                                         </div>
-                                    @endif
+                                    @endforeach
                                 </div>
                             </div>
                         @endif
 
                         @error('content') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
                         @enderror
-                        @error('photo') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
+                        @error('photos') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
+                        @enderror
+                        @error('photos.*') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
                         @enderror
 
                         @if($errors->any())

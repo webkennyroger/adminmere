@@ -19,7 +19,7 @@ class ActivityFeed extends Component
     // Propriedades do Novo Post
     public $title = '';
     public $content = '';
-    public $photo = null;  // Changed from $photos array to single $photo
+    public $photos = [];  // Multiple photos
     public $feedType = 'personal';
     public $location = '';
 
@@ -82,14 +82,15 @@ class ActivityFeed extends Component
     public function savePost()
     {
         Log::info('=== SAVE POST STARTED ===');
-        Log::info('Has photo: ' . ($this->photo ? 'yes' : 'no'));
+        Log::info('Photos count: ' . count($this->photos ?? []));
         Log::info('Content: ' . $this->content);
         Log::info('Feed type: ' . $this->feedType);
 
         $rules = [
             'title' => 'nullable|string|max:100',
             'content' => 'required|min:3',
-            'photo' => 'nullable|image|max:20480', // Single photo, 20MB max
+            'photos.*' => 'nullable|image|max:20480', // 20MB per photo
+            'photos' => 'nullable|array|max:5', // Max 5 photos
         ];
 
         if ($this->isPoll) {
@@ -102,15 +103,17 @@ class ActivityFeed extends Component
 
         $media = [];
 
-        if ($this->photo) {
-            Log::info('Processing photo upload');
-            try {
-                $path = $this->photo->store('posts/' . auth()->id(), 'public');
-                $fullUrl = asset('storage/' . $path);
-                $media[] = $fullUrl;
-                Log::info("Photo stored: {$path} -> {$fullUrl}");
-            } catch (\Exception $e) {
-                Log::error("Failed to store photo: " . $e->getMessage());
+        if ($this->photos && count($this->photos) > 0) {
+            Log::info('Processing ' . count($this->photos) . ' photos');
+            foreach ($this->photos as $index => $photo) {
+                try {
+                    $path = $photo->store('posts/' . auth()->id(), 'public');
+                    $fullUrl = url('storage/' . $path);
+                    $media[] = $fullUrl;
+                    Log::info("Photo {$index} stored: {$path} -> {$fullUrl}");
+                } catch (\Exception $e) {
+                    Log::error("Failed to store photo {$index}: " . $e->getMessage());
+                }
             }
         }
 
@@ -141,7 +144,7 @@ class ActivityFeed extends Component
                 }
             }
 
-            $this->reset(['title', 'content', 'photo', 'location', 'isPoll', 'pollOptions']);
+            $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
             $this->pollOptions = ['', ''];
             session()->flash('message', 'Publicado com sucesso! 🎉');
             Log::info('=== SAVE POST COMPLETED ===');
