@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Log;
 
 class ActivityFeed extends Component
 {
@@ -87,6 +88,11 @@ class ActivityFeed extends Component
 
     public function savePost()
     {
+        \Log::info('=== SAVE POST STARTED ===');
+        \Log::info('Photos count: ' . count($this->photos ?? []));
+        \Log::info('Content: ' . $this->content);
+        \Log::info('Feed type: ' . $this->feedType);
+
         $rules = [
             'title' => 'nullable|string|max:100',
             'content' => 'required|min:3',
@@ -100,18 +106,28 @@ class ActivityFeed extends Component
         }
 
         $this->validate($rules);
+        \Log::info('Validation passed');
 
         $media = [];
 
         if ($this->photos) {
-            foreach ($this->photos as $photo) {
-                $path = $photo->store('posts/' . auth()->id(), 'public');
-                $media[] = asset('storage/' . $path);
+            \Log::info('Processing ' . count($this->photos) . ' photos');
+            foreach ($this->photos as $index => $photo) {
+                try {
+                    $path = $photo->store('posts/' . auth()->id(), 'public');
+                    $fullUrl = asset('storage/' . $path);
+                    $media[] = $fullUrl;
+                    \Log::info("Photo {$index} stored: {$path} -> {$fullUrl}");
+                } catch (\Exception $e) {
+                    \Log::error("Failed to store photo {$index}: " . $e->getMessage());
+                }
             }
         }
 
+        \Log::info('Media array: ' . json_encode($media));
+
         try {
-            $post = Post::create([
+            $postData = [
                 'user_id' => auth()->id(),
                 'title' => $this->title ?: null,
                 'content' => $this->content,
@@ -121,7 +137,11 @@ class ActivityFeed extends Component
                 'privacy' => 'public',
                 'type' => $this->isPoll ? 'poll' : 'post',
                 'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
-            ]);
+            ];
+
+            \Log::info('Creating post with data: ' . json_encode($postData));
+            $post = Post::create($postData);
+            \Log::info('Post created successfully with ID: ' . $post->id);
 
             if ($this->isPoll) {
                 foreach ($this->pollOptions as $optionText) {
@@ -134,8 +154,11 @@ class ActivityFeed extends Component
             $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
             $this->pollOptions = ['', ''];
             session()->flash('message', 'Publicado com sucesso! 🎉');
+            \Log::info('=== SAVE POST COMPLETED ===');
             $this->js('window.location.reload()');
         } catch (\Exception $e) {
+            \Log::error('Failed to create post: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
             session()->flash('error', 'Erro ao publicar: ' . $e->getMessage());
         }
     }

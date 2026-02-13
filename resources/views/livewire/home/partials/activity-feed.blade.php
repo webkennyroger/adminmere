@@ -94,7 +94,17 @@
                                     </svg>
                                 </div>
                                 <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Foto/Vídeo</span>
-                                <input type="file" wire:model.live="photos" class="hidden" multiple accept="image/*">
+                                <input type="file" 
+                                    wire:model.live="photos" 
+                                    x-ref="photoInput"
+                                    @change="
+                                        const files = $event.target.files;
+                                        console.log('Files selected:', files.length);
+                                        $wire.set('photos', Array.from(files));
+                                    "
+                                    class="hidden" 
+                                    multiple 
+                                    accept="image/*">
                             </label>
 
                             <!-- Poll Button (Active) -->
@@ -153,7 +163,18 @@
 
                         <!-- Multiple Photos Preview -->
                         @if ($photos && count($photos) > 0)
-                            <div class="mt-4">
+                            <div class="mt-4" x-data="{ previewUrls: [] }" x-init="
+                                // Generate client-side previews
+                                const input = $refs.photoInput || document.querySelector('input[type=file][multiple]');
+                                if (input && input.files) {
+                                    previewUrls = [];
+                                    Array.from(input.files).forEach(file => {
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => previewUrls.push(e.target.result);
+                                        reader.readAsDataURL(file);
+                                    });
+                                }
+                            ">
                                 <div class="flex items-center justify-between mb-2 px-1">
                                     <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{ count($photos) }} fotos selecionadas</span>
                                     <button type="button" wire:click="$set('photos', [])" class="text-xs text-red-500 hover:text-red-700 font-bold hover:underline transition-all">REMOVER TODAS</button>
@@ -166,14 +187,21 @@
                                                 try { $url = $p->temporaryUrl(); } catch (\Exception $e) { $url = null; }
                                             @endphp
                                             
-                                            @if($url)
-                                                <img src="{{ $url }}" class="w-full h-full object-cover">
-                                            @else
-                                                <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-700 text-zinc-500">
-                                                    <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                    <span class="text-[10px]">Preview indisponível</span>
-                                                </div>
-                                            @endif
+                                            <!-- Try server preview first, fallback to client preview -->
+                                            <template x-if="previewUrls[{{ $index }}]">
+                                                <img :src="previewUrls[{{ $index }}]" class="w-full h-full object-cover" alt="Preview">
+                                            </template>
+                                            
+                                            <template x-if="!previewUrls[{{ $index }}]">
+                                                @if($url)
+                                                    <img src="{{ $url }}" class="w-full h-full object-cover" alt="Server preview">
+                                                @else
+                                                    <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-700 text-zinc-500">
+                                                        <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                        <span class="text-[10px]">Imagem {{ $index + 1 }}</span>
+                                                    </div>
+                                                @endif
+                                            </template>
                                             <button type="button" wire:click="removePhoto({{ $index }})" 
                                                 class="absolute top-1 right-1 bg-black/50 hover:bg-red-500 text-white p-1 rounded-full transition-colors backdrop-blur-sm">
                                                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
