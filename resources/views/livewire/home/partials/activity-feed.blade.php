@@ -97,11 +97,6 @@
                                 <input type="file" 
                                     wire:model.live="photos" 
                                     x-ref="photoInput"
-                                    @change="
-                                        const files = $event.target.files;
-                                        console.log('Files selected:', files.length);
-                                        $wire.set('photos', Array.from(files));
-                                    "
                                     class="hidden" 
                                     multiple 
                                     accept="image/*">
