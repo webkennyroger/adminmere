@@ -12,7 +12,7 @@
             @if($feed === 'timeline')
                 <livewire:home.partials.stories />
             @endif
-            <livewire:home.partials.activity-feed :feed="$feed" :showPostForm="true" />
+            <livewire:home.partials.activity-feed :feed="$feed" />
         </main>
 
         <!-- Right Sidebar -->

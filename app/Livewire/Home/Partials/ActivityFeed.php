@@ -160,14 +160,13 @@ class ActivityFeed extends Component
         // Fetch Activities
         $activitiesQuery = \App\Models\Activity::with(['user', 'comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes', 'likes']);
 
-        if ($this->feed === 'personal') {
+        if ($this->feed === 'timeline' || $this->feed === 'network') {
+            // Show public posts and activities from everyone (Discovery mode)
+            $postsQuery->where('privacy', 'public');
+            $activitiesQuery->where('privacy', 'public');
+        } elseif ($this->feed === 'personal') {
             $postsQuery->where('user_id', $user->id);
             $activitiesQuery->where('user_id', $user->id);
-        } elseif ($this->feed === 'timeline' || $this->feed === 'network') {
-            $followingIds = $user->following()->pluck('users.id')->toArray();
-            $followingIds[] = $user->id;
-            $postsQuery->whereIn('user_id', $followingIds);
-            $activitiesQuery->whereIn('user_id', $followingIds);
         } elseif ($this->feed === 'community') {
             // Community feed shows public posts from everyone
             $postsQuery->where('feed_type', 'community')->orWhere('privacy', 'public');

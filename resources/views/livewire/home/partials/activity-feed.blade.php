@@ -1,7 +1,7 @@
 <div class="space-y-6">
-    @if($showPostForm)
-        <div
-            class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fadeIn">
+    <!-- Novo Post Card -->
+    @if($feed !== 'timeline')
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 transition-all hover:shadow-md">
             <form wire:submit.prevent="savePost">
                 <div class="flex gap-4">
                     <!-- Avatar Column (Left Side) -->
@@ -33,7 +33,7 @@
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-500 rounded-l-lg"></div>
                             <textarea wire:model="content"
                                 class="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-r-lg text-base text-zinc-700 dark:text-zinc-300 placeholder-zinc-500 focus:ring-0 px-4 py-3 min-h-[100px] resize-y transition-colors"
-                                placeholder="O que está em sua mente, {{ auth()->user()->first_name }}?"></textarea>
+                                placeholder="O que está em sua mente, {{ auth()->user()->name }}?"></textarea>
                         </div>
 
                         <!-- Poll Options Area -->
@@ -132,7 +132,7 @@
                             </div>
                         @endif
 
-                        <div wire:loading wire:target="photos"
+                        <div wire:loading wire:target="photos, savePost"
                             class="mt-3 text-xs text-blue-600 dark:text-blue-400 font-medium flex items-center gap-2">
                             <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">
@@ -180,6 +180,12 @@
                         @enderror
                         @error('photos.*') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
                         @enderror
+
+                        @if($errors->any())
+                            <div class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
+                                <p class="text-xs text-red-600 dark:text-red-400 font-bold">Por favor, verifique os erros acima.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </form>
