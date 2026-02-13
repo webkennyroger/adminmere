@@ -1,6 +1,6 @@
 <div class="space-y-6">
     <!-- Novo Post Card -->
-    @if($feed !== 'timeline')
+    @if(isset($feed) && $feed !== 'timeline')
         <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 transition-all hover:shadow-md">
             <form wire:submit.prevent="savePost">
                 <div class="flex gap-4">
@@ -152,7 +152,7 @@
                         </div>
 
                         <!-- Single Photo Preview -->
-                        @if ($photo)
+                        @if (isset($photo) && $photo)
                             <div class="mt-4">
                                 <div class="flex items-center justify-between mb-2 px-1">
                                     <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Foto selecionada</span>
