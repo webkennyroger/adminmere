@@ -94,7 +94,7 @@
                                     </svg>
                                 </div>
                                 <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Foto/Vídeo</span>
-                                <input type="file" wire:model="photos" class="hidden" multiple accept="image/*">
+                                <input type="file" wire:model.live="photos" class="hidden" multiple accept="image/*">
                             </label>
 
                             <!-- Poll Button (Active) -->
@@ -118,10 +118,10 @@
                                 </select>
                             </div>
 
-                            <button type="submit"
+                            <button type="submit" wire:loading.attr="disabled" wire:target="photos, savePost"
                                 class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 px-6 rounded-xl text-sm transition-all shadow-lg hover:shadow-brand-500/30 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span wire:loading.remove wire:target="savePost">PUBLICAR</span>
-                                <span wire:loading wire:target="savePost">...</span>
+                                <span wire:loading.remove wire:target="savePost, photos">PUBLICAR</span>
+                                <span wire:loading wire:target="savePost, photos">...</span>
                             </button>
                         </div>
 
@@ -150,9 +150,9 @@
                             <div class="mt-4">
                                 <div class="flex items-center justify-between mb-2 px-1">
                                     <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{ count($photos) }} fotos selecionadas</span>
-                                    <button type="button" wire:click="$set('photos', [])" class="text-xs text-red-500 hover:text-red-600 font-bold">REMOVER TODAS</button>
+                                    <button type="button" wire:click="$set('photos', [])" class="text-xs text-red-500 hover:text-red-700 font-bold hover:underline transition-all">REMOVER TODAS</button>
                                 </div>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     @foreach($photos as $index => $p)
                                         <div class="relative group aspect-square rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shadow-sm">
                                             <img src="{{ $p->temporaryUrl() }}" class="w-full h-full object-cover">

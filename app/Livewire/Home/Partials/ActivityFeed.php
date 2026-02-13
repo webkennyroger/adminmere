@@ -117,7 +117,7 @@ class ActivityFeed extends Component
             'media' => $media,
             'feed_type' => $this->feedType,
             'location' => $this->location ?: (auth()->user()->profile->city ?? null),
-            'privacy' => 'public',
+            'privacy' => 'public', // Force public for now to ensure visibility
             'type' => $this->isPoll ? 'poll' : 'post',
             'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
         ]);
@@ -131,12 +131,12 @@ class ActivityFeed extends Component
         }
 
         $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
-        // Re-init poll defaults
         $this->pollOptions = ['', ''];
 
         session()->flash('message', 'Publicado com sucesso! 🎉');
 
-        // Force refresh
+        // Better than full reload: dispatch event or redirect
+        // But the user requested a reload-like behavior for clean state
         $this->js('window.location.reload()');
     }
 
