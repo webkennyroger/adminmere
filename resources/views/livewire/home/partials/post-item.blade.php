@@ -215,8 +215,9 @@
                         <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
                             <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
                             @if($index === 3 && $mediaCount > 4)
-                                <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                    <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
+                                <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center cursor-pointer hover:bg-black/80 transition-colors">
+                                    <span class="text-white text-4xl font-bold mb-1">+{{ $mediaCount - 4 }}</span>
+                                    <span class="text-white text-sm font-medium">Ver todas</span>
                                 </div>
                             @endif
                         </div>
