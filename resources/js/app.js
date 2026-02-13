@@ -21,14 +21,11 @@ initThemeStore();
 initSidebarStore();
 initChatStore();
 
-// 3. Start Alpine (CRITICAL for non-Livewire 3 or combined apps)
-// Livewire 3 usually handles this, but if multiple features are broken, 
-// explicit starting is safer as long as we don't have double-init.
-if (!window.alpineInitialized) {
-    Alpine.start();
-    window.alpineInitialized = true;
-    console.log('Alpine Started Manually');
-}
+// 3. Let Livewire 3 handle Alpine initialization
+// DO NOT manually start Alpine - Livewire 3 does this automatically
+// Manual Alpine.start() causes double-initialization and breaks window.Livewire.find()
+window.Alpine = Alpine;
+console.log('Alpine configured for Livewire 3');
 
 // 4. Global Libraries
 window.ApexCharts = ApexCharts;
