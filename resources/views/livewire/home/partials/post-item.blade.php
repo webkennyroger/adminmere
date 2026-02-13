@@ -162,11 +162,11 @@
 
     @if($mediaCount > 0)
         @if($mediaCount === 1)
-            <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
+            <div class="w-full max-h-[600px] bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
                 @if(str_contains($mediaItems[0], '.mp4'))
-                    <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
+                    <video src="{{ $mediaItems[0] }}" controls class="w-full max-h-[600px] object-contain"></video>
                 @else
-                    <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 0 })">
+                    <img src="{{ $mediaItems[0] }}" class="w-full max-h-[600px] object-contain cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" @click="$dispatch('open-lightbox', { images: {{ json_encode($mediaItems) }}, index: 0 })">
                 @endif
             </div>
         @elseif($mediaCount === 2)
