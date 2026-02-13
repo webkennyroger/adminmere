@@ -19,7 +19,7 @@ class ActivityFeed extends Component
     // Propriedades do Novo Post
     public $title = '';
     public $content = '';
-    public $photos = [];
+    public $photo = null;  // Changed from $photos array to single $photo
     public $feedType = 'personal';
     public $location = '';
 
@@ -70,13 +70,6 @@ class ActivityFeed extends Component
         }
     }
 
-    public function removePhoto($index)
-    {
-        if (isset($this->photos[$index])) {
-            unset($this->photos[$index]);
-            $this->photos = array_values($this->photos);
-        }
-    }
 
     public function removePollOption($index)
     {
@@ -88,16 +81,15 @@ class ActivityFeed extends Component
 
     public function savePost()
     {
-        \Log::info('=== SAVE POST STARTED ===');
-        \Log::info('Photos count: ' . count($this->photos ?? []));
-        \Log::info('Content: ' . $this->content);
-        \Log::info('Feed type: ' . $this->feedType);
+        Log::info('=== SAVE POST STARTED ===');
+        Log::info('Has photo: ' . ($this->photo ? 'yes' : 'no'));
+        Log::info('Content: ' . $this->content);
+        Log::info('Feed type: ' . $this->feedType);
 
         $rules = [
             'title' => 'nullable|string|max:100',
             'content' => 'required|min:3',
-            'photos.*' => 'nullable|image|max:20480', // 20MB per photo
-            'photos' => 'nullable|array|max:5', // Limit to 5 photos
+            'photo' => 'nullable|image|max:20480', // Single photo, 20MB max
         ];
 
         if ($this->isPoll) {
@@ -106,25 +98,23 @@ class ActivityFeed extends Component
         }
 
         $this->validate($rules);
-        \Log::info('Validation passed');
+        Log::info('Validation passed');
 
         $media = [];
 
-        if ($this->photos) {
-            \Log::info('Processing ' . count($this->photos) . ' photos');
-            foreach ($this->photos as $index => $photo) {
-                try {
-                    $path = $photo->store('posts/' . auth()->id(), 'public');
-                    $fullUrl = asset('storage/' . $path);
-                    $media[] = $fullUrl;
-                    \Log::info("Photo {$index} stored: {$path} -> {$fullUrl}");
-                } catch (\Exception $e) {
-                    \Log::error("Failed to store photo {$index}: " . $e->getMessage());
-                }
+        if ($this->photo) {
+            Log::info('Processing photo upload');
+            try {
+                $path = $this->photo->store('posts/' . auth()->id(), 'public');
+                $fullUrl = asset('storage/' . $path);
+                $media[] = $fullUrl;
+                Log::info("Photo stored: {$path} -> {$fullUrl}");
+            } catch (\Exception $e) {
+                Log::error("Failed to store photo: " . $e->getMessage());
             }
         }
 
-        \Log::info('Media array: ' . json_encode($media));
+        Log::info('Media array: ' . json_encode($media));
 
         try {
             $postData = [
@@ -139,9 +129,9 @@ class ActivityFeed extends Component
                 'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
             ];
 
-            \Log::info('Creating post with data: ' . json_encode($postData));
+            Log::info('Creating post with data: ' . json_encode($postData));
             $post = Post::create($postData);
-            \Log::info('Post created successfully with ID: ' . $post->id);
+            Log::info('Post created successfully with ID: ' . $post->id);
 
             if ($this->isPoll) {
                 foreach ($this->pollOptions as $optionText) {
@@ -151,14 +141,14 @@ class ActivityFeed extends Component
                 }
             }
 
-            $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
+            $this->reset(['title', 'content', 'photo', 'location', 'isPoll', 'pollOptions']);
             $this->pollOptions = ['', ''];
             session()->flash('message', 'Publicado com sucesso! 🎉');
-            \Log::info('=== SAVE POST COMPLETED ===');
+            Log::info('=== SAVE POST COMPLETED ===');
             $this->js('window.location.reload()');
         } catch (\Exception $e) {
-            \Log::error('Failed to create post: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            Log::error('Failed to create post: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             session()->flash('error', 'Erro ao publicar: ' . $e->getMessage());
         }
     }
