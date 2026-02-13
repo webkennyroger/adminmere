@@ -149,15 +149,6 @@
 
     <!-- Media Section -->
     @php
-        // DEBUG: Show raw media data
-        \Log::info('POST MEDIA DEBUG', [
-            'post_id' => $post->id,
-            'media_raw' => $post->media,
-            'media_type' => gettype($post->media),
-            'media_json' => json_encode($post->media)
-        ]);
-        
-        // More permissive media filter - accept any non-empty string
         $mediaItems = collect($post->media ?? [])->filter(function ($path) {
             if (empty($path)) return false;
             // Accept http/https URLs or storage paths
@@ -167,23 +158,7 @@
                    str_starts_with($path, 'storage/');
         })->values()->all();
         $mediaCount = count($mediaItems);
-        
-        \Log::info('POST MEDIA FILTERED', [
-            'post_id' => $post->id,
-            'media_items' => $mediaItems,
-            'media_count' => $mediaCount
-        ]);
     @endphp
-
-    <!-- DEBUG: Show media info -->
-    @if($mediaCount > 0)
-        <div class="px-4 py-2 bg-yellow-100 dark:bg-yellow-900 text-xs">
-            <strong>DEBUG:</strong> {{ $mediaCount }} media items<br>
-            @foreach($mediaItems as $idx => $url)
-                [{{ $idx }}]: {{ $url }}<br>
-            @endforeach
-        </div>
-    @endif
 
     @if($mediaCount > 0)
         @if($mediaCount === 1)
