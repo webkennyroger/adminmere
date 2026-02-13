@@ -5,7 +5,7 @@
             <form wire:submit.prevent="savePost">
                 <div class="flex gap-4">
                     <!-- Avatar Column (Left Side) -->
-                    <div class="hidden sm:block flex-shrink-0 pt-1">
+                    <div class="hidden sm:block shrink-0 pt-1">
                         @if(auth()->user()->image_url)
                             <img src="{{ auth()->user()->image_url }}"
                                 class="w-11 h-11 rounded-full border border-zinc-100 dark:border-zinc-700 object-cover">
@@ -18,7 +18,7 @@
                     </div>
 
                     <!-- Input Column (Right Side) -->
-                    <div class="flex-grow">
+                    <div class="grow">
 
                         <!-- Header: Title Input -->
                         <div class="relative mb-3 group">
@@ -94,7 +94,7 @@
                                     </svg>
                                 </div>
                                 <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Foto/Vídeo</span>
-                                <input type="file" wire:model="photo" class="hidden">
+                                <input type="file" wire:model="photos" class="hidden" multiple accept="image/*">
                             </label>
 
                             <!-- Poll Button (Active) -->
@@ -132,8 +132,7 @@
                             </div>
                         @endif
 
-                        <!-- Photo Upload Progress -->
-                        <div wire:loading wire:target="photo"
+                        <div wire:loading wire:target="photos"
                             class="mt-3 text-xs text-blue-600 dark:text-blue-400 font-medium flex items-center gap-2">
                             <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">
@@ -143,34 +142,43 @@
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            Carregando foto...
+                            Carregando fotos...
                         </div>
 
-                        <!-- Photo Preview -->
-                        @if ($photo)
-                            <div class="mt-3 space-y-2">
-                                <!-- Photo Info -->
-                                <div
-                                    class="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800">
-                                    <span class="text-green-500">✓</span>
-                                    <span
-                                        class="text-xs text-green-700 dark:text-green-300 font-medium truncate max-w-[200px]">{{ $photo->getClientOriginalName() }}</span>
-                                    <button type="button" wire:click="$set('photo', null)"
-                                        class="text-green-400 hover:text-red-500 ml-1 font-bold">✕</button>
+                        <!-- Multiple Photos Preview -->
+                        @if ($photos && count($photos) > 0)
+                            <div class="mt-4">
+                                <div class="flex items-center justify-between mb-2 px-1">
+                                    <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{ count($photos) }} fotos selecionadas</span>
+                                    <button type="button" wire:click="$set('photos', [])" class="text-xs text-red-500 hover:text-red-600 font-bold">REMOVER TODAS</button>
                                 </div>
-
-                                <!-- Photo Preview Image -->
-                                <div class="relative w-full max-w-xs">
-                                    <img src="{{ $photo->temporaryUrl() }}"
-                                        class="w-full h-auto rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm"
-                                        alt="Preview">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    @foreach($photos as $index => $p)
+                                        <div class="relative group aspect-square rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shadow-sm">
+                                            <img src="{{ $p->temporaryUrl() }}" class="w-full h-full object-cover">
+                                            <button type="button" wire:click="removePhoto({{ $index }})" 
+                                                class="absolute top-1 right-1 bg-black/50 hover:bg-red-500 text-white p-1 rounded-full transition-colors backdrop-blur-sm">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                    
+                                    @if(count($photos) < 5)
+                                        <label class="cursor-pointer aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center gap-1 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
+                                            <svg class="w-5 h-5 text-zinc-400 group-hover:text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                            <span class="text-[10px] font-bold text-zinc-400 group-hover:text-brand-500">ADICIONAR</span>
+                                            <input type="file" wire:model="photos" class="hidden" multiple accept="image/*">
+                                        </label>
+                                    @endif
                                 </div>
                             </div>
                         @endif
 
                         @error('content') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
                         @enderror
-                        @error('photo') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
+                        @error('photos') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
+                        @enderror
+                        @error('photos.*') <span class="text-red-500 text-xs block mt-2 font-medium">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>

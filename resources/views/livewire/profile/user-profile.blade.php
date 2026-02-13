@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-zinc-50 dark:bg-black">
     <!-- Hero/Cover -->
-    <div class="h-48 md:h-64 bg-gradient-to-r from-blue-600 to-indigo-700 relative">
+    <div class="h-48 md:h-64 bg-linear-to-r from-blue-600 to-indigo-700 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
             <!-- Profile Info Overlay -->
             <div class="absolute -bottom-16 left-4 sm:left-8 flex items-end gap-6">
@@ -10,12 +10,12 @@
                         class="w-32 h-32 rounded-2xl border-4 border-white dark:border-zinc-900 shadow-xl object-cover bg-white">
                     @if($user->subscribed() || in_array($user->profile?->plan, ['pro', 'premium']))
                         <div
-                            class="absolute -bottom-2 -right-2 bg-gradient-to-r from-orange-400 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
+                            class="absolute -bottom-2 -right-2 bg-linear-to-r from-orange-400 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
                             Assinante
                         </div>
                     @else
                         <div
-                            class="absolute -bottom-2 -right-2 bg-gradient-to-r from-zinc-400 to-zinc-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
+                            class="absolute -bottom-2 -right-2 bg-linear-to-r from-zinc-400 to-zinc-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white dark:border-zinc-900">
                             Gratuito
                         </div>
                     @endif
@@ -49,8 +49,9 @@
                             class="group px-6 py-2 rounded-lg font-semibold transition-all shadow-sm flex items-center justify-center gap-2 min-w-[120px] {{ auth()->user()->isFollowing($user) ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 hover:bg-yellow-500 hover:text-white hover:border-yellow-500' : 'bg-green-600 text-white hover:bg-green-700 shadow-green-900/20' }}">
                             @if(auth()->user()->isFollowing($user))
                                 <span class="block group-hover:hidden">Seguindo</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 block group-hover:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 block group-hover:hidden" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span class="hidden group-hover:block">Deixar de seguir</span>
                             @else
@@ -184,11 +185,18 @@
                     <!-- Re-use Activity Feed Component logic manually loop for now to avoid nesting active component issues if any -->
                     <!-- Or just include the partial view if possible, but data is different. Let's loop manually simply -->
                     <div class="space-y-6">
-                        @forelse($activities as $activity)
-                            <livewire:home.partials.activity-item :activity="$activity"
-                                :key="'profile-activity-' . $activity->id" />
+                        @forelse($activities as $item)
+                            @if($item['type'] === 'post')
+                                <livewire:home.partials.post-item :post="$item['item']" :key="'profile-post-' . $item['item']->id" />
+                            @else
+                                <livewire:home.partials.activity-item :activity="$item['item']" :key="'profile-activity-' . $item['item']->id" />
+                            @endif
                         @empty
-                            <div class="text-center py-8 text-zinc-500 text-sm">Nenhuma atividade recente para exibir.</div>
+                            <div
+                                class="text-center py-12 bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
+                                <p class="text-zinc-500 dark:text-zinc-400">Nenhuma atividade ou publicação recente para
+                                    exibir.</p>
+                            </div>
                         @endforelse
                     </div>
                 </div>

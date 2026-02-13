@@ -18,10 +18,10 @@ class ActivityFeed extends Component
     // Propriedades do Novo Post
     public $title = '';
     public $content = '';
-    public $photo;
+    public $photos = [];
     public $feedType = 'personal';
     public $location = '';
-    
+
     // Poll Properties
     public $isPoll = false;
     public $pollOptions = ['', '']; // Start with 2 empty options
@@ -69,6 +69,14 @@ class ActivityFeed extends Component
         }
     }
 
+    public function removePhoto($index)
+    {
+        if (isset($this->photos[$index])) {
+            unset($this->photos[$index]);
+            $this->photos = array_values($this->photos);
+        }
+    }
+
     public function removePollOption($index)
     {
         if (count($this->pollOptions) > 2) {
@@ -82,7 +90,8 @@ class ActivityFeed extends Component
         $rules = [
             'title' => 'nullable|string|max:100',
             'content' => 'required|min:3',
-            'photo' => 'nullable|image|max:20480', // 20MB
+            'photos.*' => 'nullable|image|max:20480', // 20MB per photo
+            'photos' => 'nullable|array|max:5', // Limit to 5 photos
         ];
 
         if ($this->isPoll) {
@@ -94,9 +103,11 @@ class ActivityFeed extends Component
 
         $media = [];
 
-        if ($this->photo) {
-            $path = $this->photo->store('posts/'.auth()->id(), 'public');
-            $media[] = asset('storage/'.$path);
+        if ($this->photos) {
+            foreach ($this->photos as $photo) {
+                $path = $photo->store('posts/' . auth()->id(), 'public');
+                $media[] = asset('storage/' . $path);
+            }
         }
 
         $post = Post::create([
@@ -119,10 +130,10 @@ class ActivityFeed extends Component
             }
         }
 
-        $this->reset(['title', 'content', 'photo', 'location', 'isPoll', 'pollOptions']);
+        $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
         // Re-init poll defaults
         $this->pollOptions = ['', ''];
-        
+
         session()->flash('message', 'Publicado com sucesso! 🎉');
 
         // Force refresh
@@ -153,20 +164,25 @@ class ActivityFeed extends Component
             $postsQuery->where('user_id', $user->id);
             $activitiesQuery->where('user_id', $user->id);
         } elseif ($this->feed === 'timeline' || $this->feed === 'network') {
-            $followingIds = $user->following()->pluck('following_id')->toArray();
+            $followingIds = $user->following()->pluck('users.id')->toArray();
             $followingIds[] = $user->id;
             $postsQuery->whereIn('user_id', $followingIds);
             $activitiesQuery->whereIn('user_id', $followingIds);
+        } elseif ($this->feed === 'community') {
+            // Community feed shows public posts from everyone
+            $postsQuery->where('feed_type', 'community')->orWhere('privacy', 'public');
+            // Activities are usually public
+            $activitiesQuery->where('privacy', 'public');
         }
 
         // Get posts and activities
-        $posts = $postsQuery->latest('created_at')->get();
-        $activities = $activitiesQuery->latest('start_time')->get();
+        $posts = $postsQuery->latest('created_at')->limit(50)->get();
+        $activities = $activitiesQuery->latest('start_time')->limit(50)->get();
 
         // Merge and sort by date
         $items = collect([])
-            ->merge($posts->map(fn ($post) => ['type' => 'post', 'item' => $post, 'date' => $post->created_at]))
-            ->merge($activities->map(fn ($activity) => ['type' => 'activity', 'item' => $activity, 'date' => $activity->start_time]))
+            ->merge($posts->map(fn($post) => ['type' => 'post', 'item' => $post, 'date' => $post->created_at]))
+            ->merge($activities->map(fn($activity) => ['type' => 'activity', 'item' => $activity, 'date' => $activity->start_time]))
             ->sortByDesc('date')
             ->take($this->perPage * $this->page)
             ->values();

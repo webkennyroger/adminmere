@@ -13,7 +13,7 @@ class UserProfile extends Component
 {
     public $user;
     public $name;
-    
+
     public $activeTab = 'overview';
 
     public function mount($nickname = null)
@@ -24,9 +24,9 @@ class UserProfile extends Component
             $this->user = $profile->user;
         } else {
             // Fallback for direct access if any, or auth user
-             $this->user = auth()->user();
+            $this->user = auth()->user();
         }
-        
+
         if (!$this->user) {
             abort(404);
         }
@@ -34,21 +34,34 @@ class UserProfile extends Component
 
     public function getActivitiesProperty()
     {
-        return $this->user->activities()
-            ->with(['comments', 'likes']) // Eager load for feed
+        $activities = $this->user->activities()
+            ->with(['comments.user', 'likes', 'user'])
             ->latest('start_time')
             ->take(20)
             ->get();
+
+        $posts = \App\Models\Post::where('user_id', $this->user->id)
+            ->with(['comments.user', 'likes', 'user', 'pollOptions'])
+            ->latest('created_at')
+            ->take(20)
+            ->get();
+
+        return collect([])
+            ->merge($activities->map(fn($item) => ['type' => 'activity', 'item' => $item, 'date' => $item->start_time]))
+            ->merge($posts->map(fn($item) => ['type' => 'post', 'item' => $item, 'date' => $item->created_at]))
+            ->sortByDesc('date')
+            ->take(20)
+            ->values();
     }
-    
+
     public function toggleFollow()
     {
         if (auth()->guest()) {
             return redirect()->route('login');
         }
-        
+
         $currentUser = auth()->user();
-        
+
         if ($currentUser->id === $this->user->id) {
             return;
         }
@@ -64,15 +77,15 @@ class UserProfile extends Component
     {
         // Calculate basic stats
         $activities = $this->user->activities;
-        
+
         $totalActivities = $activities->count();
         $totalDistance = $activities->sum('distance'); // in meters
         $totalDuration = $activities->sum('duration'); // in seconds
-        
+
         // Mode specific stats (Last 4 weeks)
         $last4Weeks = now()->subWeeks(4);
         $recentActivities = $activities->where('start_time', '>=', $last4Weeks);
-        
+
         $runDistance = $recentActivities->where('sport_type', 'run')->sum('distance');
         $rideDistance = $recentActivities->where('sport_type', 'ride')->sum('distance');
         $swimDistance = $recentActivities->where('sport_type', 'swim')->sum('distance');
