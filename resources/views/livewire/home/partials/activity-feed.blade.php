@@ -158,7 +158,7 @@
                                     <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Foto selecionada</span>
                                     <button type="button" wire:click="$set('photo', null)" class="text-xs text-red-500 hover:text-red-700 font-bold hover:underline transition-all">REMOVER</button>
                                 </div>
-                                <div class="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shadow-sm max-w-sm">
+                                <div class="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shadow-sm max-w-xs max-h-48">
                                     @if(method_exists($photo, 'temporaryUrl'))
                                         <img src="{{ $photo->temporaryUrl() }}" class="w-full h-auto object-cover">
                                     @else

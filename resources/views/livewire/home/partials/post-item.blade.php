@@ -65,6 +65,15 @@
         </div>
     </div>
 
+    <!-- Post Title -->
+    @if($post->title)
+        <div class="px-4 pb-2">
+            <h3 class="text-lg font-bold text-zinc-900 dark:text-white">
+                {{ $post->title }}
+            </h3>
+        </div>
+    @endif
+
     <!-- Post Content -->
     @if($post->content)
         <div class="px-4 pb-3">
@@ -140,8 +149,14 @@
 
     <!-- Media Section -->
     @php
+        // More permissive media filter - accept any non-empty string
         $mediaItems = collect($post->media ?? [])->filter(function ($path) {
-            return str_starts_with($path, 'http') || str_starts_with($path, '/storage') || str_starts_with($path, 'storage/');
+            if (empty($path)) return false;
+            // Accept http/https URLs or storage paths
+            return str_starts_with($path, 'http://') || 
+                   str_starts_with($path, 'https://') || 
+                   str_starts_with($path, '/storage') || 
+                   str_starts_with($path, 'storage/');
         })->values()->all();
         $mediaCount = count($mediaItems);
     @endphp
