@@ -110,34 +110,34 @@ class ActivityFeed extends Component
             }
         }
 
-        $post = Post::create([
-            'user_id' => auth()->id(),
-            'title' => $this->title ?: null,
-            'content' => $this->content,
-            'media' => $media,
-            'feed_type' => $this->feedType,
-            'location' => $this->location ?: (auth()->user()->profile->city ?? null),
-            'privacy' => 'public', // Force public for now to ensure visibility
-            'type' => $this->isPoll ? 'poll' : 'post',
-            'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
-        ]);
+        try {
+            $post = Post::create([
+                'user_id' => auth()->id(),
+                'title' => $this->title ?: null,
+                'content' => $this->content,
+                'media' => $media,
+                'feed_type' => $this->feedType,
+                'location' => $this->location ?: (auth()->user()->profile->city ?? null),
+                'privacy' => 'public',
+                'type' => $this->isPoll ? 'poll' : 'post',
+                'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
+            ]);
 
-        if ($this->isPoll) {
-            foreach ($this->pollOptions as $optionText) {
-                if (trim($optionText)) {
-                    $post->pollOptions()->create(['option_text' => trim($optionText)]);
+            if ($this->isPoll) {
+                foreach ($this->pollOptions as $optionText) {
+                    if (trim($optionText)) {
+                        $post->pollOptions()->create(['option_text' => trim($optionText)]);
+                    }
                 }
             }
+
+            $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
+            $this->pollOptions = ['', ''];
+            session()->flash('message', 'Publicado com sucesso! 🎉');
+            $this->js('window.location.reload()');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erro ao publicar: ' . $e->getMessage());
         }
-
-        $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
-        $this->pollOptions = ['', ''];
-
-        session()->flash('message', 'Publicado com sucesso! 🎉');
-
-        // Better than full reload: dispatch event or redirect
-        // But the user requested a reload-like behavior for clean state
-        $this->js('window.location.reload()');
     }
 
     #[On('post-deleted')]
@@ -180,8 +180,16 @@ class ActivityFeed extends Component
 
         // Merge and sort by date
         $items = collect([])
-            ->merge($posts->map(fn($post) => ['type' => 'post', 'item' => $post, 'date' => $post->created_at]))
-            ->merge($activities->map(fn($activity) => ['type' => 'activity', 'item' => $activity, 'date' => $activity->start_time]))
+            ->merge($posts->map(fn($post) => [
+                'type' => 'post',
+                'item' => $post,
+                'date' => $post->created_at ? $post->created_at->toDateTimeString() : now()->toDateTimeString()
+            ]))
+            ->merge($activities->map(fn($activity) => [
+                'type' => 'activity',
+                'item' => $activity,
+                'date' => $activity->start_time ? $activity->start_time->toDateTimeString() : now()->toDateTimeString()
+            ]))
             ->sortByDesc('date')
             ->take($this->perPage * $this->page)
             ->values();
