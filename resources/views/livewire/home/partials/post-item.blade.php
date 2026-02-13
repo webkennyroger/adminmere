@@ -149,6 +149,14 @@
 
     <!-- Media Section -->
     @php
+        // DEBUG: Show raw media data
+        \Log::info('POST MEDIA DEBUG', [
+            'post_id' => $post->id,
+            'media_raw' => $post->media,
+            'media_type' => gettype($post->media),
+            'media_json' => json_encode($post->media)
+        ]);
+        
         // More permissive media filter - accept any non-empty string
         $mediaItems = collect($post->media ?? [])->filter(function ($path) {
             if (empty($path)) return false;
@@ -159,6 +167,12 @@
                    str_starts_with($path, 'storage/');
         })->values()->all();
         $mediaCount = count($mediaItems);
+        
+        \Log::info('POST MEDIA FILTERED', [
+            'post_id' => $post->id,
+            'media_items' => $mediaItems,
+            'media_count' => $mediaCount
+        ]);
     @endphp
 
     @if($mediaCount > 0)
