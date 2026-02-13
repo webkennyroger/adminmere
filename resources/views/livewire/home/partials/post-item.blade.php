@@ -175,6 +175,16 @@
         ]);
     @endphp
 
+    <!-- DEBUG: Show media info -->
+    @if($mediaCount > 0)
+        <div class="px-4 py-2 bg-yellow-100 dark:bg-yellow-900 text-xs">
+            <strong>DEBUG:</strong> {{ $mediaCount }} media items<br>
+            @foreach($mediaItems as $idx => $url)
+                [{{ $idx }}]: {{ $url }}<br>
+            @endforeach
+        </div>
+    @endif
+
     @if($mediaCount > 0)
         @if($mediaCount === 1)
             <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
