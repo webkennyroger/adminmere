@@ -184,7 +184,7 @@
         cursor: pointer;
     }
     body {
-        @apply relative font-normal font-outfit z-1 bg-zinc-50 dark:bg-zinc-900 dark:text-white/90;
+        @apply relative font-normal font-outfit z-1 bg-zinc-50 dark:bg-zinc-900 dark:text-white/90 transition-colors duration-300 ease-in-out;
     }
 }
 

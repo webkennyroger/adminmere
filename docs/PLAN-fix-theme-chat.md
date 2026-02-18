@@ -53,15 +53,15 @@
 
 ### Dark Mode
 
-- [ ] Theme toggles between Light, Dark, and System.
-- [ ] Transition between themes is smooth.
-- [ ] Themes persist across page reloads.
+- [x] Theme toggles between Light, Dark, and System.
+- [x] Transition between themes is smooth.
+- [x] Themes persist across page reloads.
 
 ### Chat Sidebar
 
-- [ ] Clicking the message icon in header opens the sidebar.
-- [ ] Sidebar can be closed via the "close" action.
-- [ ] No "Race conditions" errors in browser console.
+- [x] Clicking the message icon in header opens the sidebar.
+- [x] Sidebar can be closed via the "close" action.
+- [x] No "Race conditions" errors in browser console.
 
 ### Code Quality
 

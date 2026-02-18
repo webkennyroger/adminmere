@@ -226,15 +226,27 @@ class UserController extends Controller
     /**
      * Update user profile.
      */
-    public function updateProfile(Request $request)
-    {
-        $user = $request->user();
+        $user = $request->user()->load('profile');
+        $profileId = $user->profile ? $user->profile->id : null;
+
+        $nicknameRule = \Illuminate\Validation\Rule::unique('profiles', 'nickname');
+        if ($profileId) {
+            $nicknameRule->ignore($profileId);
+        }
 
         $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'image' => 'nullable|image|max:10240', // 10MB max
             'cover_image' => 'nullable|image|max:10240', // 10MB max
+            'nickname' => [
+                'sometimes',
+                'string',
+                'max:30',
+                'alpha_dash', 
+                $nicknameRule,
+            ],
+            'bio' => 'nullable|string|max:500',
         ]);
 
         if ($request->has('name')) {
