@@ -109,7 +109,7 @@
     @stack('scripts')
 
     <!-- Lightbox Component -->
-    <x-lightbox />
+
 </body>
 
 </html>
