@@ -21,6 +21,5 @@
         </aside>
     </div>
 
-    <!-- Lightbox Component -->
-    @include('components.lightbox')
+
 </div>
