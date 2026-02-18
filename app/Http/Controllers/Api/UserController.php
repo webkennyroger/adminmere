@@ -36,7 +36,7 @@ class UserController extends Controller
                     'status' => 'Em destaque', // Label from UI
                     'city' => $u->profile->city ?? 'Brasil',
                 ];
-            })
+            }),
         ]);
     }
 
@@ -61,7 +61,7 @@ class UserController extends Controller
                     'avatar' => $u->image_url,
                     'city' => $u->profile->city ?? 'Brasil',
                 ];
-            })
+            }),
         ]);
     }
 
@@ -76,7 +76,7 @@ class UserController extends Controller
         if ($user->id === $userToFollow->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'You cannot follow yourself'
+                'message' => 'You cannot follow yourself',
             ], 400);
         }
 
@@ -90,7 +90,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'is_following' => $isFollowing
+            'is_following' => $isFollowing,
         ]);
     }
 
@@ -114,7 +114,7 @@ class UserController extends Controller
         // Busca troféus/achievements
         $achievements = $this->getAchievements($user);
 
-        $activityController = new ActivityController();
+        $activityController = new ActivityController;
 
         return response()->json([
             'success' => true,
@@ -142,7 +142,7 @@ class UserController extends Controller
                 'activities' => $activities->map(function ($activity) use ($currentUser, $activityController) {
                     return $activityController->formatActivity($activity, $currentUser);
                 }),
-            ]
+            ],
         ]);
     }
 
@@ -218,7 +218,7 @@ class UserController extends Controller
 
         return [
             'total_count' => $user->activities()->count(),
-            'unlocked_count' => count(array_filter($achievements, fn($a) => $a['unlocked'] ?? false)),
+            'unlocked_count' => count(array_filter($achievements, fn ($a) => $a['unlocked'] ?? false)),
             'achievements' => $achievements,
         ];
     }
@@ -226,26 +226,16 @@ class UserController extends Controller
     /**
      * Update user profile.
      */
+    public function updateProfile(Request $request)
+    {
         $user = $request->user()->load('profile');
-        $profileId = $user->profile ? $user->profile->id : null;
-
-        $nicknameRule = \Illuminate\Validation\Rule::unique('profiles', 'nickname');
-        if ($profileId) {
-            $nicknameRule->ignore($profileId);
-        }
 
         $request->validate([
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'email' => 'sometimes|email|unique:users,email,'.$user->id,
             'image' => 'nullable|image|max:10240', // 10MB max
             'cover_image' => 'nullable|image|max:10240', // 10MB max
-            'nickname' => [
-                'sometimes',
-                'string',
-                'max:30',
-                'alpha_dash', 
-                $nicknameRule,
-            ],
+            'nickname' => 'sometimes|string|max:30|alpha_dash|unique:profiles,nickname,'.$user->id.',user_id',
             'bio' => 'nullable|string|max:500',
         ]);
 
@@ -260,17 +250,39 @@ class UserController extends Controller
         // Update or create profile
         $profile = $user->profile ?? new \App\Models\Profile(['user_id' => $user->id]);
 
-        if ($request->has('surname')) $profile->last_name = $request->surname;
-        if ($request->has('last_name')) $profile->last_name = $request->last_name; // Support both
-        if ($request->has('phone')) $profile->phone = $request->phone;
-        if ($request->has('location')) $profile->city = $request->location;
-        if ($request->has('city')) $profile->city = $request->city; // Support both
-        if ($request->has('nickname')) $profile->nickname = $request->nickname;
-        if ($request->has('bio')) $profile->bio = $request->bio;
-        if ($request->has('gender')) $profile->gender = $request->gender;
-        if ($request->has('birth_date')) $profile->birth_date = $request->birth_date;
-        if ($request->has('height')) $profile->height = $request->height;
-        if ($request->has('weight')) $profile->weight = $request->weight;
+        if ($request->has('surname')) {
+            $profile->last_name = $request->surname;
+        }
+        if ($request->has('last_name')) {
+            $profile->last_name = $request->last_name;
+        } // Support both
+        if ($request->has('phone')) {
+            $profile->phone = $request->phone;
+        }
+        if ($request->has('location')) {
+            $profile->city = $request->location;
+        }
+        if ($request->has('city')) {
+            $profile->city = $request->city;
+        } // Support both
+        if ($request->has('nickname')) {
+            $profile->nickname = $request->nickname;
+        }
+        if ($request->has('bio')) {
+            $profile->bio = $request->bio;
+        }
+        if ($request->has('gender')) {
+            $profile->gender = $request->gender;
+        }
+        if ($request->has('birth_date')) {
+            $profile->birth_date = $request->birth_date;
+        }
+        if ($request->has('height')) {
+            $profile->height = $request->height;
+        }
+        if ($request->has('weight')) {
+            $profile->weight = $request->weight;
+        }
         if ($request->has('settings')) {
             $currentSettings = $profile->settings ?? [];
             $newSettings = is_string($request->settings) ? json_decode($request->settings, true) : $request->settings;
@@ -309,9 +321,9 @@ class UserController extends Controller
                 'email' => $user->email,
                 'avatar_url' => $user->image_url,
                 'cover_url' => $user->cover_url, // Return cover URL
-                'profile' => $profile
+                'profile' => $profile,
             ],
-            'message' => 'Profile updated successfully'
+            'message' => 'Profile updated successfully',
         ]);
     }
 
@@ -322,6 +334,7 @@ class UserController extends Controller
     {
         $hours = intdiv($seconds, 3600);
         $minutes = intdiv($seconds % 3600, 60);
+
         return sprintf('%dh %dm', $hours, $minutes);
     }
 }
