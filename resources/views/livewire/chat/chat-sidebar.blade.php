@@ -57,7 +57,7 @@
 
 
         <!-- Users List -->
-        <div class="flex-1 w-full overflow-y-auto flex flex-col space-y-2 px-2 pb-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700">
+        <div class="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col space-y-2 px-2 pb-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700">
             
             @forelse($users as $user)
                 <div wire:key="sidebar-user-{{ $user->id }}" wire:click="openChat({{ $user->id }})"
