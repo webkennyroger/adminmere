@@ -53,7 +53,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
     public function profile()
     {
         return $this->hasOne(Profile::class);
@@ -109,7 +109,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -168,6 +168,11 @@ class User extends Authenticatable
     public function following()
     {
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id')->withTimestamps();
+    }
+
+    public function blockedUsers()
+    {
+        return $this->belongsToMany(User::class, 'blocked_users', 'user_id', 'blocked_user_id')->withTimestamps();
     }
 
     public function isFollowing(User $user)

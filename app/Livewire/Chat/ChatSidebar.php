@@ -30,6 +30,11 @@ class ChatSidebar extends Component
     public $searchUser = '';
     public $filteredUsers = [];
 
+    public $showBlockedUsersModal = false;
+    public $blockedUsersList = [];
+    public $isNotificationsDisabled = false;
+    public $isMessageSoundsDisabled = false;
+
     protected $rules = [
         'newGroupName' => 'required|min:3',
         'selectedUsersForGroup' => 'required|array|min:1',
@@ -49,6 +54,10 @@ class ChatSidebar extends Component
         $this->loadUsers();
         $this->loadGroups();
         $this->filteredUsers = collect();
+
+        $settings = Auth::user()->profile->settings ?? [];
+        $this->isNotificationsDisabled = $settings['disable_notifications'] ?? false;
+        $this->isMessageSoundsDisabled = $settings['disable_sounds'] ?? false;
     }
 
     public function updateList($event = null)
@@ -251,6 +260,45 @@ class ChatSidebar extends Component
 
         // On mobile/small screen, we might want to close the sidebar?
         // For now, let's just dispatch.
+    }
+
+    public function toggleNotifications()
+    {
+        $this->isNotificationsDisabled = !$this->isNotificationsDisabled;
+        $this->updateProfileSetting('disable_notifications', $this->isNotificationsDisabled);
+    }
+
+    public function toggleMessageSounds()
+    {
+        $this->isMessageSoundsDisabled = !$this->isMessageSoundsDisabled;
+        $this->updateProfileSetting('disable_sounds', $this->isMessageSoundsDisabled);
+    }
+
+    protected function updateProfileSetting($key, $value)
+    {
+        $profile = Auth::user()->profile;
+        $settings = $profile->settings ?? [];
+        $settings[$key] = $value;
+        $profile->settings = $settings;
+        $profile->save();
+    }
+
+    public function openBlockedUsersModal()
+    {
+        $this->loadBlockedUsers();
+        $this->showBlockedUsersModal = true;
+    }
+
+    public function loadBlockedUsers()
+    {
+        $this->blockedUsersList = Auth::user()->blockedUsers()->get();
+    }
+
+    public function unblockUser($userId)
+    {
+        Auth::user()->blockedUsers()->detach($userId);
+        $this->loadBlockedUsers();
+        $this->loadUsers(); // Reload main user list
     }
 
     public function markAllAsRead()

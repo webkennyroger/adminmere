@@ -65,28 +65,28 @@
                             Configurações do chat
                         </button>
 
-                         <!-- Disable Notifications -->
-                         <button class="flex items-center w-full px-4 py-3 text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-3 whitespace-nowrap cursor-not-allowed">
-                             <svg class="w-5 h-5 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <!-- Notifications -->
+                        <button wire:click="toggleNotifications" @click="openOptions = false" class="flex items-center w-full px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-3 whitespace-nowrap">
+                             <svg class="w-5 h-5 {{ $isNotificationsDisabled ? 'text-red-500' : 'text-zinc-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                              </svg>
-                            Desativar notificações
+                            {{ $isNotificationsDisabled ? 'Ativar notificações' : 'Desativar notificações' }}
                         </button>
 
-                         <!-- Message sounds -->
-                         <button class="flex items-center w-full px-4 py-3 text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-3 whitespace-nowrap cursor-not-allowed">
-                             <svg class="w-5 h-5 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <!-- Sounds -->
+                         <button wire:click="toggleMessageSounds" @click="openOptions = false" class="flex items-center w-full px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-3 whitespace-nowrap">
+                             <svg class="w-5 h-5 {{ $isMessageSoundsDisabled ? 'text-red-500' : 'text-zinc-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                              </svg>
-                            Sons de mensagem
+                            {{ $isMessageSoundsDisabled ? 'Ativar sons' : 'Desativar sons' }}
                         </button>
 
-                         <!-- Block settings -->
-                         <button class="flex items-center w-full px-4 py-3 text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-3 whitespace-nowrap cursor-not-allowed">
+                         <!-- Blocked Users -->
+                         <button wire:click="openBlockedUsersModal" @click="openOptions = false" class="flex items-center w-full px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-3 whitespace-nowrap">
                              <svg class="w-5 h-5 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                              </svg>
-                            Configurações de bloqueio
+                            Contatos bloqueados
                         </button>
 
                         <div class="border-t border-zinc-100 dark:border-zinc-800 my-1"></div>
@@ -380,6 +380,59 @@
                     <div class="p-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-2">
                          <button wire:click="$set('showCreateGroupModal', false)" class="px-4 py-2 text-sm text-zinc-500 hover:text-zinc-700">Cancelar</button>
                          <button wire:click="createGroup" class="px-4 py-2 text-sm bg-brand-500 text-white rounded-lg hover:bg-brand-600">Criar Grupo</button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Blocked Users Modal --}}
+        @if($showBlockedUsersModal)
+            <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[80vh]">
+                    <!-- Header -->
+                    <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/30">
+                        <h3 class="font-bold text-lg text-zinc-800 dark:text-zinc-100">Contatos Bloqueados</h3>
+                        <button wire:click="$set('showBlockedUsersModal', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors rounded-lg p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Search/List -->
+                    <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                        @forelse($blockedUsersList as $blockedUser)
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 group hover:border-zinc-200 dark:hover:border-zinc-700 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <img src="{{ $blockedUser->image_url }}" class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-zinc-800">
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ $blockedUser->name }}</h4>
+                                        <p class="text-xs text-zinc-500">{{ '@' . $blockedUser->nickname }}</p>
+                                    </div>
+                                </div>
+                                <button wire:click="unblockUser({{ $blockedUser->id }})" 
+                                        class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/10 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-red-100 dark:border-red-900/30">
+                                    Desbloquear
+                                </button>
+                            </div>
+                        @empty
+                            <div class="flex flex-col items-center justify-center py-8 text-center">
+                                <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Nenhum contato bloqueado</p>
+                                <p class="text-xs text-zinc-500 mt-1 max-w-[200px]">Os contatos que você bloquear aparecerão aqui.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-800/20">
+                         <button wire:click="$set('showBlockedUsersModal', false)" class="w-full py-2.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-sm hover:shadow transition-all">
+                            Fechar
+                        </button>
                     </div>
                 </div>
             </div>
