@@ -8,7 +8,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @click="$store.chatSidebar.close()"
-        class="fixed inset-0 bg-black/60 z-99998 md:hidden">
+        class="fixed inset-0 bg-black/20 z-99998">
     </div>
 
     <!-- Widget Container -->
@@ -57,7 +57,7 @@
 
 
         <!-- Users List -->
-        <div class="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col space-y-2 px-2 pb-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700">
+        <div class="flex-1 w-full overflow-y-auto flex flex-col space-y-2 px-2 pb-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700" style="overflow-x: hidden !important;">
             
             @forelse($users as $user)
                 <div wire:key="sidebar-user-{{ $user->id }}" wire:click="openChat({{ $user->id }})"
