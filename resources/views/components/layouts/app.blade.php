@@ -149,8 +149,10 @@
     <!-- ===== Page Wrapper End ===== -->
 
     <!-- Chat Components -->
-    <livewire:chat.chat-sidebar />
-    <livewire:chat.chat-box />
+    @if(!request()->is('chat*'))
+        <livewire:chat.chat-sidebar />
+        <livewire:chat.chat-box />
+    @endif
 
     <!-- Toast Container -->
     <x-toast.container />
