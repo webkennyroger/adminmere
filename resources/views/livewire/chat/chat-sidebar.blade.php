@@ -92,12 +92,13 @@
                         <div class="border-t border-zinc-100 dark:border-zinc-800 my-1"></div>
 
                         <!-- Create Group -->
-                        <button wire:click="openCreateGroupModal" @click="openOptions = false" class="flex items-center w-full px-4 py-3 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors gap-3 font-semibold whitespace-nowrap">
-                            <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <button wire:click="openCreateGroupModal" @click="openOptions = false" class="flex items-center w-full px-4 py-3 text-sm font-bold text-green-600 bg-yellow-50 hover:bg-yellow-300 dark:bg-yellow-900/10 dark:text-green-400 dark:hover:bg-yellow-900/20 transition-colors gap-3 whitespace-nowrap">
+                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zMM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             Criar um grupo
                         </button>
+
                     </div>
                 </div>
                 <!-- Close -->
