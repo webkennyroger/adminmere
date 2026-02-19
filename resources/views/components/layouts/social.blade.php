@@ -152,11 +152,14 @@
         style="position: fixed; bottom: 24px; right: 24px; left: auto; z-index: 9999;"
         class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95 group">
         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
-        <!-- Unread Badge Demo -->
-        <span class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full border-2 border-blue-600"
-            x-show="$store.chatSidebar && !$store.chatSidebar.isOpen"></span>
+        <!-- Unread Badge (Dynamic) -->
+        @if(auth()->check() && auth()->user()->messagesReceived()->whereNull('read_at')->count() > 0)
+            <span class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full border-2 border-blue-600"
+                x-show="$store.chatSidebar && !$store.chatSidebar.isOpen"></span>
+        @endif
     </button>
 
 
