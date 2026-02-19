@@ -37,22 +37,18 @@
     <!-- Lista de Stories -->
     <div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
         <!-- Add Story Card -->
+        <!-- Add Story Card (Reference Style) -->
         <div
-            class="shrink-0 w-32 h-48 relative rounded-xl overflow-hidden cursor-pointer group transition-transform hover:scale-105">
-            <div class="absolute inset-0 bg-zinc-800"></div>
-            <!-- User Image as Background -->
-            <img src="{{ auth()->user()->image_url }}"
-                class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500">
-
-            <div class="absolute inset-0 flex flex-col items-center justify-center pt-8">
-                <div
-                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg mb-2 group-hover:scale-110 transition-transform">
-                    <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                </div>
-                <span class="text-white font-medium text-xs mt-8">Criar Story</span>
+            class="shrink-0 w-28 h-40 md:w-32 md:h-48 relative rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex flex-col items-center justify-center cursor-pointer group transition-colors gap-2">
+            <div
+                class="w-10 h-10 bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
             </div>
+            <span class="text-zinc-600 dark:text-zinc-400 font-medium text-xs text-center px-2">Post a Story</span>
+
+            <!-- Hidden User Avatar (Optional overlay if needed, currently plain dashed) -->
         </div>
 
         <!-- Rendered Stories -->
