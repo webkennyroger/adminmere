@@ -1,13 +1,13 @@
 @auth
     <div class="relative" x-data="{
-                    dropdownOpen: false,
-                    toggleDropdown() {
-                        this.dropdownOpen = !this.dropdownOpen;
-                    },
-                    closeDropdown() {
-                        this.dropdownOpen = false;
-                    }
-                }" @click.away="closeDropdown()">
+                        dropdownOpen: false,
+                        toggleDropdown() {
+                            this.dropdownOpen = !this.dropdownOpen;
+                        },
+                        closeDropdown() {
+                            this.dropdownOpen = false;
+                        }
+                    }" @click.away="closeDropdown()">
         <!-- User Button -->
         <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
             <span class="mr-3 overflow-hidden rounded-lg h-11 w-11">
@@ -117,28 +117,26 @@
             </ul>
 
             <!-- Sign Out -->
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('logout') }}" class="mt-4">
                 @csrf
                 <a href="{{ route('logout') }}"
-                    class="flex items-center w-full gap-3 px-3 py-2 mt-3 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300"
+                    class="flex items-center justify-center w-full gap-3 px-3 py-2.5 font-semibold text-white bg-red-500 rounded-xl group text-theme-sm hover:bg-red-600 transition-colors shadow-sm shadow-red-200 dark:shadow-none"
                     onclick="event.preventDefault(); this.closest('form').submit();">
-                    <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                            </path>
-                        </svg>
-                    </span>
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
                     Sair
                 </a>
             </form>
 
             <!-- Divider -->
-            <div class="my-3 border-t border-zinc-200 dark:border-zinc-700"></div>
+            <div class="my-5 border-t border-zinc-200 dark:border-zinc-800/50"></div>
 
             <!-- Theme Switcher (Flux UI) -->
-            <div class="flex items-center pt-2">
-                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
+            <div class="flex justify-center w-full pb-1">
+                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance" class="w-full justify-center">
                     <flux:radio value="light" icon="sun" />
                     <flux:radio value="dark" icon="moon" />
                     <flux:radio value="system" icon="computer-desktop" />
