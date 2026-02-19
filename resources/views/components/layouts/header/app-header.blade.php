@@ -96,7 +96,7 @@
 
             <!-- Chat Icon -->
             <a href="{{ route('chat.index') }}"
-                class="flex items-center justify-center w-10 h-10 rounded-lg transition-all relative {{ request()->routeIs('chat.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'bg-zinc-100/50 text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-800/50 dark:text-zinc-400 dark:hover:bg-zinc-800' }}">
+                class="flex md:hidden items-center justify-center w-10 h-10 rounded-lg transition-all relative {{ request()->routeIs('chat.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'bg-zinc-100/50 text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-800/50 dark:text-zinc-400 dark:hover:bg-zinc-800' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -108,7 +108,9 @@
             </a>
 
             <!-- Notifications -->
-            <livewire:layouts.header.notification-dropdown />
+            <div class="md:hidden">
+                <livewire:layouts.header.notification-dropdown />
+            </div>
 
             <!-- User Profile Dropdown -->
             <x-layouts.header.user-dropdown />

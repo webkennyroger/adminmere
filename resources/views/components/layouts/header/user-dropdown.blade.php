@@ -1,13 +1,13 @@
 @auth
     <div class="relative" x-data="{
-                        dropdownOpen: false,
-                        toggleDropdown() {
-                            this.dropdownOpen = !this.dropdownOpen;
-                        },
-                        closeDropdown() {
-                            this.dropdownOpen = false;
-                        }
-                    }" @click.away="closeDropdown()">
+                            dropdownOpen: false,
+                            toggleDropdown() {
+                                this.dropdownOpen = !this.dropdownOpen;
+                            },
+                            closeDropdown() {
+                                this.dropdownOpen = false;
+                            }
+                        }" @click.away="closeDropdown()">
         <!-- User Button -->
         <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
             <span class="mr-3 overflow-hidden rounded-lg h-11 w-11">
@@ -120,23 +120,24 @@
             <form method="POST" action="{{ route('logout') }}" class="mt-4">
                 @csrf
                 <a href="{{ route('logout') }}"
-                    class="flex items-center justify-center w-full gap-3 px-3 py-2.5 font-semibold text-white bg-red-500 rounded-xl group text-theme-sm hover:bg-red-600 transition-colors shadow-sm shadow-red-200 dark:shadow-none"
+                    class="flex items-center justify-center w-full gap-3 px-3 py-2.5 font-bold text-white bg-red-500 rounded-xl group text-theme-sm hover:bg-red-600 transition-all shadow-md shadow-red-200 dark:shadow-none active:scale-[0.98]"
                     onclick="event.preventDefault(); this.closest('form').submit();">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                         </path>
                     </svg>
-                    Sair
+                    Sair da Conta
                 </a>
             </form>
 
             <!-- Divider -->
-            <div class="my-5 border-t border-zinc-200 dark:border-zinc-800/50"></div>
+            <div class="my-6 border-t border-zinc-200 dark:border-zinc-800/50"></div>
 
             <!-- Theme Switcher (Flux UI) -->
-            <div class="flex justify-center w-full pb-1">
-                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance" class="w-full justify-center">
+            <div class="flex flex-col items-center gap-3 pb-2">
+                <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aparência</span>
+                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance" class="w-full">
                     <flux:radio value="light" icon="sun" />
                     <flux:radio value="dark" icon="moon" />
                     <flux:radio value="system" icon="computer-desktop" />
