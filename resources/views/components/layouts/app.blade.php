@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" flux-appearance="system">
 
 <head>
     <meta charset="utf-8">
@@ -8,42 +8,13 @@
 
     <title>{{ $title ?? 'Dashboard' }} | MERE APP</title>
 
+    @fluxStyles
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Critical Stores Initialization -->
+    <!-- Stores Initialization -->
     <script>
-        // Theme Pre-check
-        const savedTheme = localStorage.getItem('theme');
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        const theme = savedTheme || systemTheme;
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-            // Ensure body gets the class as soon as it exists (DOMContentLoaded or later)
-            document.addEventListener('DOMContentLoaded', () => {
-                document.body.classList.add('dark', 'bg-zinc-900');
-            });
-        }
-
-        // Define Store Initialization Logic
-        function initMyStores() {
+        function initGlobalStores() {
             if (!window.Alpine) return;
-
-            // Theme Store
-            if (!Alpine.store('theme')) {
-                Alpine.store('theme', {
-                    theme: theme,
-                    toggle() {
-                        this.theme = this.theme === 'light' ? 'dark' : 'light';
-                        localStorage.setItem('theme', this.theme);
-                        if (this.theme === 'dark') {
-                            document.documentElement.classList.add('dark');
-                            if (document.body) document.body.classList.add('dark', 'bg-zinc-900');
-                        } else {
-                            document.documentElement.classList.remove('dark');
-                            if (document.body) document.body.classList.remove('dark', 'bg-zinc-900');
-                        }
-                    }
-                });
-            }
 
             // Sidebar Store
             if (!Alpine.store('sidebar')) {
@@ -80,17 +51,8 @@
             }
         }
 
-        // Attempt initialization on multiple hooks to catch the right moment
-        document.addEventListener('alpine:init', initMyStores);
-        document.addEventListener('livewire:init', initMyStores);
-        document.addEventListener('DOMContentLoaded', initMyStores);
-
-        // Immediate check (if Alpine is already loaded via defer)
-        if (window.Alpine) initMyStores();
+        document.addEventListener('alpine:init', initGlobalStores);
     </script>
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Quill CSS -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
@@ -101,35 +63,19 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- Alpine.js -->
-    {{--
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
-
-
-    <!-- Livewire styles -->
     @livewireStyles
-
-
-
-    <!-- Additional styles -->
     @stack('styles')
-
-
-
 </head>
 
-<body x-data="{ 'loaded': true}">
-
+<body class="min-h-screen bg-white dark:bg-zinc-900 transition-colors duration-300">
     {{-- preloader --}}
     <x-common.preloader />
-    {{-- preloader end --}}
-
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="min-h-screen xl:flex">
         <!-- ===== Sidebar Start ===== -->
         <x-layouts.sidebar.sidebar />
-        <!-- ===== Sidebar End ===== -->
+
         <!-- ===== Content Area Start ===== -->
         <div class="flex-1 transition-all duration-300 ease-in-out xl:ml-[90px]" :class="{
                 'xl:ml-[290px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
@@ -138,15 +84,13 @@
             }">
             <!-- ===== Header Start ===== -->
             <x-layouts.header.app-header />
-            <!-- ===== Header End ===== -->
+
             <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 transition-all duration-300" x-data
                 :style="$store.chatSidebar?.isOpen ? 'margin-right: 400px;' : ''">
                 {{ $slot }}
             </div>
         </div>
-        <!-- ===== Content Area End ===== -->
     </div>
-    <!-- ===== Page Wrapper End ===== -->
 
     <!-- Chat Components -->
     @if(!request()->is('chat*'))
@@ -165,11 +109,12 @@
         </script>
     @endif
 
+    @fluxScripts
+    @livewireScripts
+
     <!-- Quill JS -->
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
-    <!-- Livewire scripts -->
-    @livewireScripts
     @stack('scripts')
 </body>
 
