@@ -10,17 +10,9 @@
         }" @click.away="closeDropdown()">
         <!-- User Button -->
         <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
-            <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
+            <span class="mr-3 overflow-hidden rounded-lg h-11 w-11">
                 <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
             </span>
-
-            <span class="block mr-1 font-medium text-theme-sm">{{ Auth::user()->name }}</span>
-
-            <!-- Chevron Icon -->
-            <svg class="w-5 h-5 transition-transform duration-200" :class="{ 'rotate-180': dropdownOpen }" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
         </button>
 
         <!-- Dropdown Start -->
@@ -31,10 +23,15 @@
             class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-zinc-20 bg-white px-5 py-7 dark:bg-zinc-700 p-3 shadow-theme-lg dark:border-zinc-800 z-50"
             style="display: none;">
             <!-- User Info -->
-            <div>
-                <span
-                    class="block font-medium text-zinc-700 text-theme-sm dark:text-zinc-400">{{ Auth::user()->name }}</span>
-                <span class="mt-0.5 block text-theme-xs text-zinc-500 dark:text-zinc-400">{{ Auth::user()->email }}</span>
+            <div class="flex items-center gap-3">
+                <span class="overflow-hidden rounded-lg h-11 w-11">
+                    <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
+                </span>
+                <div>
+                    <span
+                        class="block font-medium text-zinc-700 text-theme-sm dark:text-zinc-400">{{ Auth::user()->name }}</span>
+                    <span class="mt-0.5 block text-theme-xs text-zinc-500 dark:text-zinc-400">{{ Auth::user()->email }}</span>
+                </div>
             </div>
 
             <!-- Menu Items -->
