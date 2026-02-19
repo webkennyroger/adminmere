@@ -8,7 +8,7 @@ import "flatpickr/dist/flatpickr.min.css";
 import { Calendar } from "@fullcalendar/core";
 
 // Stores
-import { initThemeStore } from "./theme";
+
 import { initSidebarStore } from "./components/sidebar";
 import { initChatStore } from "./components/chat";
 
@@ -22,7 +22,7 @@ document.addEventListener("alpine:init", () => {
     window.Alpine.plugin(intersect);
 
     // Register Stores
-    initThemeStore();
+
     initSidebarStore();
     initChatStore();
 

@@ -137,8 +137,7 @@
             <div class="my-3 border-t border-zinc-200 dark:border-zinc-700"></div>
 
             <!-- Theme Switcher (Flux UI) -->
-            <div class="flex items-center justify-between px-2 mb-1">
-                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300 pl-2">Mode:</span>
+            <div class="flex items-center pt-2">
                 <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
                     <flux:radio value="light" icon="sun" />
                     <flux:radio value="dark" icon="moon" />

@@ -94,10 +94,6 @@
                 </svg>
             </button>
 
-            <!-- Dark Mode Toggle -->
-            <x-common.dark-mode-toggle
-                class="!w-10 !h-10 !rounded-lg !bg-zinc-100/50 hover:!bg-zinc-100 dark:!bg-zinc-800/50 dark:hover:!bg-zinc-800" />
-
             <!-- Chat Icon -->
             <a href="{{ route('chat.index') }}"
                 class="flex items-center justify-center w-10 h-10 rounded-lg transition-all relative {{ request()->routeIs('chat.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'bg-zinc-100/50 text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-800/50 dark:text-zinc-400 dark:hover:bg-zinc-800' }}">
