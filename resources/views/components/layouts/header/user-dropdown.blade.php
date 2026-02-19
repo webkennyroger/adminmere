@@ -1,13 +1,13 @@
 @auth
     <div class="relative" x-data="{
-                            dropdownOpen: false,
-                            toggleDropdown() {
-                                this.dropdownOpen = !this.dropdownOpen;
-                            },
-                            closeDropdown() {
-                                this.dropdownOpen = false;
-                            }
-                        }" @click.away="closeDropdown()">
+                                dropdownOpen: false,
+                                toggleDropdown() {
+                                    this.dropdownOpen = !this.dropdownOpen;
+                                },
+                                closeDropdown() {
+                                    this.dropdownOpen = false;
+                                }
+                            }" @click.away="closeDropdown()">
         <!-- User Button -->
         <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
             <span class="mr-3 overflow-hidden rounded-lg h-11 w-11">
@@ -137,7 +137,7 @@
             <!-- Theme Switcher (Flux UI) -->
             <div class="flex flex-col items-center gap-3 pb-2">
                 <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aparência</span>
-                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance" class="w-full">
+                <flux:radio.group variant="segmented" x-model="$flux.appearance" class="w-full">
                     <flux:radio value="light" icon="sun" />
                     <flux:radio value="dark" icon="moon" />
                     <flux:radio value="system" icon="computer-desktop" />
