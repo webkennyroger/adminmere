@@ -7,7 +7,7 @@ class MenuHelper
     public static function getMainNavItems()
     {
         $items = [];
-        
+
         // Regular users see their profile as main page
         if (auth()->check() && !auth()->user()->isAdmin() && !auth()->user()->isManager()) {
             $items[] = [
@@ -17,11 +17,19 @@ class MenuHelper
             ];
 
             $items[] = [
+                'icon' => 'chat',
+                'name' => 'Chat',
+                'path' => '/chat',
+                // Using a closure or direct count if performant enough. For now direct.
+                'badge' => \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count(),
+            ];
+
+            $items[] = [
                 'icon' => 'user-profile',
                 'name' => 'Meu Perfil',
                 'path' => '/profile',
             ];
-            
+
             $items[] = [
                 'icon' => 'pages',
                 'name' => 'Desafios',
@@ -39,14 +47,14 @@ class MenuHelper
                 'name' => 'Comunidade',
                 'path' => '#',
             ];
-            
+
             $items[] = [
                 'icon' => 'ecommerce', // Using existing icon key for now, or add 'credit-card'
                 'name' => 'Minha Assinatura',
                 'path' => '/billing',
             ];
         }
-        
+
         // Only show admin pages to admins and managers
         if (auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isManager())) {
             $items[] = [
@@ -62,17 +70,25 @@ class MenuHelper
             ];
 
             $items[] = [
+                'icon' => 'chat',
+                'name' => 'Chat',
+                'path' => '/chat',
+                // Using a closure or direct count if performant enough. For now direct.
+                'badge' => \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count(),
+            ];
+
+            $items[] = [
                 'icon' => 'forms', // Or another suitable icon
                 'name' => 'Atividades',
                 'path' => '/activities',
             ];
-            
+
             $items[] = [
                 'name' => 'Desafios',
                 'icon' => 'pages',
                 'path' => '/admin/challenges',
             ];
-            
+
             $items[] = [
                 'icon' => 'calendar',
                 'name' => 'Calendários',
