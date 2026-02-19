@@ -1,13 +1,13 @@
 @auth
     <div class="relative" x-data="{
-            dropdownOpen: false,
-            toggleDropdown() {
-                this.dropdownOpen = !this.dropdownOpen;
-            },
-            closeDropdown() {
-                this.dropdownOpen = false;
-            }
-        }" @click.away="closeDropdown()">
+                    dropdownOpen: false,
+                    toggleDropdown() {
+                        this.dropdownOpen = !this.dropdownOpen;
+                    },
+                    closeDropdown() {
+                        this.dropdownOpen = false;
+                    }
+                }" @click.away="closeDropdown()">
         <!-- User Button -->
         <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
             <span class="mr-3 overflow-hidden rounded-lg h-11 w-11">
@@ -30,7 +30,8 @@
                 <div>
                     <span
                         class="block font-medium text-zinc-700 text-theme-sm dark:text-zinc-400">{{ Auth::user()->name }}</span>
-                    <span class="mt-0.5 block text-theme-xs text-zinc-500 dark:text-zinc-400">{{ Auth::user()->email }}</span>
+                    <span
+                        class="mt-0.5 block text-theme-xs text-zinc-500 dark:text-zinc-400">{{ Auth::user()->email }}</span>
                 </div>
             </div>
 
@@ -131,6 +132,19 @@
                     Sair
                 </a>
             </form>
+
+            <!-- Divider -->
+            <div class="my-3 border-t border-zinc-200 dark:border-zinc-700"></div>
+
+            <!-- Theme Switcher (Flux UI) -->
+            <div class="flex items-center justify-between px-2 mb-1">
+                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300 pl-2">Mode:</span>
+                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
+                    <flux:radio value="light" icon="sun" />
+                    <flux:radio value="dark" icon="moon" />
+                    <flux:radio value="system" icon="computer-desktop" />
+                </flux:radio.group>
+            </div>
         </div>
         <!-- Dropdown End -->
     </div>
