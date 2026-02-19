@@ -20,7 +20,7 @@
             x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100"
             x-transition:leave-end="transform opacity-0 scale-95"
-            class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-zinc-20 bg-white px-5 py-7 dark:bg-zinc-700 p-3 shadow-theme-lg dark:border-zinc-800 z-50"
+            class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-zinc-20 bg-white px-5 py-7 dark:bg-zinc-700 shadow-theme-lg dark:border-zinc-800 z-50"
             style="display: none;">
             <!-- User Info -->
             <div class="flex items-center gap-3">
@@ -134,14 +134,38 @@
             <!-- Divider -->
             <div class="my-6 border-t border-zinc-200 dark:border-zinc-800/50"></div>
 
-            <!-- Theme Switcher (Flux UI) -->
-            <div class="flex flex-col items-center gap-3 pb-2">
+            <!-- Theme Switcher (Manual + Flux Sync) -->
+            <div class="flex flex-col items-center gap-3 pb-2" x-data="{ 
+                    theme: localStorage.getItem('theme') || 'system',
+                    applyTheme(val) {
+                        this.theme = val;
+                        localStorage.setItem('theme', val);
+                        if (val === 'dark' || (val === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                        if (window.$flux) window.$flux.appearance = val;
+                    }
+                }">
                 <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aparência</span>
-                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance" class="w-full">
-                    <flux:radio value="light" icon="sun" />
-                    <flux:radio value="dark" icon="moon" />
-                    <flux:radio value="system" icon="computer-desktop" />
-                </flux:radio.group>
+                <div class="flex w-full p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                    <button @click="applyTheme('light')"
+                        :class="theme === 'light' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
+                        class="flex-1 flex justify-center py-1.5 rounded-lg transition-all">
+                        <flux:icon.sun class="w-5 h-5" />
+                    </button>
+                    <button @click="applyTheme('dark')"
+                        :class="theme === 'dark' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
+                        class="flex-1 flex justify-center py-1.5 rounded-lg transition-all">
+                        <flux:icon.moon class="w-5 h-5" />
+                    </button>
+                    <button @click="applyTheme('system')"
+                        :class="theme === 'system' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
+                        class="flex-1 flex justify-center py-1.5 rounded-lg transition-all">
+                        <flux:icon.computer-desktop class="w-5 h-5" />
+                    </button>
+                </div>
             </div>
         </div>
         <!-- Dropdown End -->
