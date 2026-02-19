@@ -253,6 +253,16 @@ class ChatSidebar extends Component
         // For now, let's just dispatch.
     }
 
+    public function markAllAsRead()
+    {
+        Message::where('receiver_id', Auth::id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        $this->loadUsers();
+        $this->dispatch('refresh-chat-sidebar');
+    }
+
     public function render()
     {
         return view('livewire.chat.chat-sidebar');
