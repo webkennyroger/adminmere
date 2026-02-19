@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" flux-appearance="system">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -51,7 +51,10 @@
             }
         }
 
+        // Initialize stores on multiple hooks
         document.addEventListener('alpine:init', initGlobalStores);
+        document.addEventListener('livewire:init', initGlobalStores);
+        document.addEventListener('DOMContentLoaded', initGlobalStores);
     </script>
 
     <!-- Quill CSS -->
@@ -67,7 +70,7 @@
     @stack('styles')
 </head>
 
-<body class="min-h-screen bg-white dark:bg-zinc-900 transition-colors duration-300">
+<body x-data="{ loaded: true }" class="min-h-screen bg-zinc-50 dark:bg-zinc-900 transition-colors duration-300">
     {{-- preloader --}}
     <x-common.preloader />
 
@@ -85,10 +88,10 @@
             <!-- ===== Header Start ===== -->
             <x-layouts.header.app-header />
 
-            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 transition-all duration-300" x-data
+            <main class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 transition-all duration-300" x-data
                 :style="$store.chatSidebar?.isOpen ? 'margin-right: 400px;' : ''">
                 {{ $slot }}
-            </div>
+            </main>
         </div>
     </div>
 

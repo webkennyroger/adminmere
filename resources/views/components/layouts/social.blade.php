@@ -8,37 +8,24 @@
 
     <title>{{ $title ?? 'Home' }} | MERE APP</title>
 
-    <!-- Theme initialization -->
-    <script>
-        const savedTheme = localStorage.getItem('theme');
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        const theme = savedTheme || systemTheme;
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        }
-    </script>
-
-    <!-- Scripts -->
+    @fluxStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Alpine.js Stores (Theme only, no sidebar needed) -->
-
-
     @livewireStyles
+    @stack('styles')
 </head>
 
-<body x-data="{ 'loaded': true}" class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen">
+<body x-data="{ loaded: true }"
+    class="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen transition-colors duration-300">
 
-    {{-- preloader
     <x-common.preloader />
-    --}}
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="flex flex-col min-h-screen">
 
         <!-- ===== Header Start ===== -->
         <header
-            class="sticky top-0 z-50 w-full p-10 bg-white border-b border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 h-16">
+            class="sticky top-0 z-50 w-full bg-white border-b border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 h-16">
             <div class="px-4 h-full flex items-center justify-between gap-4 relative">
 
                 <!-- Left: Logo & Search -->
@@ -92,7 +79,7 @@
                         <!-- Messages -->
                         <li>
                             <a href="{{ route('chat.index') }}"
-                                class="flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors relative">
+                                class="flex items-center justify-center w-12 h-12 rounded-xl transition-colors relative {{ request()->routeIs('chat.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700' }}">
                                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                     stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -113,7 +100,7 @@
                 <!-- Right: Actions -->
                 <div class="flex items-center justify-end shrink-0 gap-3 sm:gap-4" x-data="{ mobileMenuOpen: false }">
 
-                    <!-- Hamburger Menu (Mobile - First Item) -->
+                    <!-- Hamburger Menu (Mobile) -->
                     <button @click="mobileMenuOpen = !mobileMenuOpen"
                         class="flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100/50 hover:bg-zinc-100 dark:bg-zinc-800/50 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 focus:outline-none md:hidden transition-all">
                         <svg x-show="!mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor"
@@ -176,21 +163,18 @@
                 </div>
             </div>
         </header>
-        <!-- ===== Header End ===== -->
 
         <!-- ===== Content Area Start ===== -->
         <main>
             {{ $slot }}
         </main>
-        <!-- ===== Content Area End ===== -->
     </div>
-    <!-- ===== Page Wrapper End ===== -->
 
-    <!-- Chat Sidebar & Overlay -->
-    <livewire:chat.chat-sidebar />
-    <livewire:chat.chat-box />
+    @if(!request()->is('chat*'))
+        <livewire:chat.chat-sidebar />
+        <livewire:chat.chat-box />
+    @endif
 
-    <!-- Toast Container -->
     <x-toast.container />
 
     @if(session('message'))
@@ -201,11 +185,10 @@
         </script>
     @endif
 
+    @fluxScripts
     @livewireScripts
 
-
-
-
+    @stack('scripts')
 </body>
 
 </html>
