@@ -74,14 +74,18 @@
 
                 <li>
                     <a href="{{ route('chat.index') }}"
-                        class="flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors relative">
+                        class="flex items-center justify-center w-12 h-12 rounded-xl transition-colors relative {{ request()->routeIs('chat.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'bg-zinc-50 text-zinc-400 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700' }}">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                         </svg>
-                        <!-- Static Badge -->
-                        <span
-                            class="absolute top-2 right-2 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white dark:border-zinc-900">6</span>
+                        <!-- Unread Badge -->
+                        @if(auth()->check() && auth()->user()->messagesReceived()->whereNull('read_at')->count() > 0)
+                            <span
+                                class="absolute top-2 right-2 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white dark:border-zinc-900">
+                                {{ auth()->user()->messagesReceived()->whereNull('read_at')->count() }}
+                            </span>
+                        @endif
                     </a>
                 </li>
             </ul>
