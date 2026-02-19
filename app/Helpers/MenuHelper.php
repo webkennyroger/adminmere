@@ -21,7 +21,7 @@ class MenuHelper
                 'name' => 'Chat',
                 'path' => '/chat',
                 // Using a closure or direct count if performant enough. For now direct.
-                'badge' => \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count(),
+                'badge' => auth()->check() ? \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count() : 0,
             ];
 
             $items[] = [
@@ -74,7 +74,7 @@ class MenuHelper
                 'name' => 'Chat',
                 'path' => '/chat',
                 // Using a closure or direct count if performant enough. For now direct.
-                'badge' => \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count(),
+                'badge' => auth()->check() ? \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count() : 0,
             ];
 
             $items[] = [
