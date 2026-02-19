@@ -20,7 +20,7 @@
         x-transition:leave="transform transition ease-in-out duration-300"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="fixed top-0 right-0 z-99999 h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col">
+        class="fixed top-0 right-0 z-99999 h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden">
 
         <!-- Header -->
         <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">
@@ -230,15 +230,15 @@
         </div>
 
         <!-- Archived Chats Toggle -->
-        <div class="shrink-0 p-2 border-t border-zinc-100 dark:border-zinc-800 w-full justify-between px-2">
+        <div class="shrink-0 w-full justify-between bg-yellow-50 dark:bg-yellow-900/10 border-t border-yellow-100 dark:border-yellow-800/20">
             <button wire:click="toggleArchived" 
-                class="flex items-center text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors w-full justify-between px-2"
+                class="flex items-center text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors w-full justify-between p-3"
                 title="Conversas Arquivadas">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                     </svg>
-                    <span class="text-sm">
+                    <span class="text-sm font-bold">
                         {{ $showArchived ? 'Caixa de Entrada' : 'Arquivadas' }}
                     </span>
                 </span>
