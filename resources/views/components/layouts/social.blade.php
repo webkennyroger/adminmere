@@ -8,7 +8,7 @@
 
     <title>{{ $title ?? 'Home' }} | MERE APP</title>
 
-
+    @fluxStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @stack('styles')
