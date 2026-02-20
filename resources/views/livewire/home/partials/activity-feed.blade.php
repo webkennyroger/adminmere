@@ -92,25 +92,15 @@
                         </button>
                     </div>
                     <div class="p-6 space-y-4">
-                        {{-- Title Field --}}
-                        <div class="mb-4">
-                            <input type="text" wire:model="title" placeholder="Título (opcional)"
-                                class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Título</label>
+                            <input type="text" wire:model="title" placeholder="Dê um título para sua publicação (opcional)"
+                                class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                         </div>
-
-                        {{-- Avatar + textarea --}}
-                        <div class="flex items-start gap-3">
-                            @if(auth()->user()->image_url)
-                                <img src="{{ auth()->user()->image_url }}" class="w-10 h-10 rounded-full object-cover shrink-0">
-                            @else
-                                <div
-                                    class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold shrink-0">
-                                    {{ substr(auth()->user()->name, 0, 1) }}
-                                </div>
-                            @endif
-                            <textarea wire:model="content" rows="3"
-                                class="w-full bg-transparent border-none resize-none text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:ring-0 text-base"
-                                placeholder="Compartilhe seus pensamentos..."></textarea>
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Conteúdo</label>
+                            <textarea wire:model="content" rows="3" placeholder="Compartilhe seus pensamentos..."
+                                class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
                         </div>
                         {{-- Upload --}}
                         <div>
@@ -178,23 +168,16 @@
                     </div>
                     <div class="p-6 space-y-4">
                         {{-- Title Field --}}
-                        <div class="mb-4">
-                            <input type="text" wire:model="title" placeholder="Título (opcional)"
-                                class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Título</label>
+                            <input type="text" wire:model="title" placeholder="Dê um título para sua publicação (opcional)"
+                                class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                         </div>
 
-                        <div class="flex items-start gap-3">
-                            @if(auth()->user()->image_url)
-                                <img src="{{ auth()->user()->image_url }}" class="w-10 h-10 rounded-full object-cover shrink-0">
-                            @else
-                                <div
-                                    class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold shrink-0">
-                                    {{ substr(auth()->user()->name, 0, 1) }}
-                                </div>
-                            @endif
-                            <textarea wire:model="content" rows="3"
-                                class="w-full bg-transparent border-none resize-none text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:ring-0 text-base"
-                                placeholder="Compartilhe seus pensamentos..."></textarea>
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Conteúdo</label>
+                            <textarea wire:model="content" rows="3" placeholder="Compartilhe seus pensamentos..."
+                                class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
                         </div>
                         <div>
                             <p class="text-sm text-zinc-500 mb-2">Enviar arquivo</p>
@@ -391,25 +374,17 @@
                         </div>
                         <div class="p-6 space-y-4">
                             {{-- Title Field --}}
-                            <div class="mb-4">
-                                <input type="text" wire:model="title" placeholder="Título da enquete (opcional)"
-                                    class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <div>
+                                <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Título</label>
+                                <input type="text" wire:model="title" placeholder="Dê um título para sua enquete (opcional)"
+                                    class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                             </div>
 
-                            {{-- Avatar + pergunta --}}
-                            <div class="flex items-start gap-3">
-                                @if(auth()->user()->image_url)
-                                    <img src="{{ auth()->user()->image_url }}"
-                                        class="w-10 h-10 rounded-full object-cover shrink-0">
-                                @else
-                                    <div
-                                        class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold shrink-0">
-                                        {{ substr(auth()->user()->name, 0, 1) }}
-                                    </div>
-                                @endif
-                                <textarea wire:model="content" rows="2"
-                                    class="w-full bg-transparent border-none resize-none text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:ring-0 text-base"
-                                    placeholder="Faça uma pergunta..."></textarea>
+                            {{-- Pergunta --}}
+                            <div>
+                                <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Pergunta</label>
+                                <textarea wire:model="content" rows="2" placeholder="Qual a sua pergunta?"
+                                    class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
                             </div>
                             {{-- Opções --}}
                             <div
