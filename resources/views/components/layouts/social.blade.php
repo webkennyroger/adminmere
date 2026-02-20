@@ -133,48 +133,72 @@
                 @mouseleave="$store.sidebar.setHovered(false)">
 
                 @auth
-                    <!-- Expanded state: cover + profile + floating arrow -->
-                    <div class="relative border-b border-zinc-200/80 dark:border-zinc-800"
+                    <!-- Expanded state: centered profile card -->
+                    <div class="border-b border-zinc-200/80 dark:border-zinc-800"
                         x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered" x-transition.opacity.duration.200ms>
-                        <!-- Cover Banner -->
-                        <div
-                            class="h-16 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 overflow-hidden relative">
-                            @if(auth()->user()->cover_url)
-                                <img src="{{ auth()->user()->cover_url }}" class="w-full h-full object-cover opacity-60" alt="">
-                            @endif
+
+                        <!-- Avatar centered -->
+                        <div class="flex flex-col items-center pt-6 pb-3 px-4">
+                            <a href="{{ profile_url(auth()->user()) }}" class="relative mb-3">
+                                <img src="{{ auth()->user()->image_url }}"
+                                    class="w-16 h-16 rounded-full object-cover shadow-md hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer"
+                                    alt="{{ auth()->user()->name }}">
+                                @if(auth()->user()->isManager() || auth()->user()->isAdmin())
+                                    <svg class="w-5 h-5 text-blue-500 absolute -bottom-0.5 -right-0.5 bg-white dark:bg-zinc-900 rounded-full p-0.5"
+                                        viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                    </svg>
+                                @endif
+                            </a>
+
+                            <!-- Name centered -->
+                            <a href="{{ profile_url(auth()->user()) }}" class="hover:text-brand-600 transition-colors">
+                                <h4 class="text-[15px] font-bold text-zinc-900 dark:text-white text-center leading-tight">
+                                    {{ auth()->user()->name }}
+                                </h4>
+                            </a>
+
+                            <!-- Handle centered -->
+                            <span
+                                class="text-[13px] text-zinc-500 dark:text-zinc-400 mt-0.5">{{ '@' . (auth()->user()->handle ?? auth()->user()->id) }}</span>
                         </div>
 
-                        <!-- User Info -->
-                        <div class="px-5 pt-3 pb-4">
-                            <div class="flex items-start gap-3">
-                                <a href="{{ profile_url(auth()->user()) }}" class="-mt-8 relative shrink-0">
-                                    <img src="{{ auth()->user()->image_url }}"
-                                        class="w-14 h-14 rounded-full object-cover border-3 border-white dark:border-zinc-900 shadow-md hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer"
-                                        alt="{{ auth()->user()->name }}">
-                                </a>
-                                <div class="min-w-0 flex-1 pt-1">
-                                    <a href="{{ profile_url(auth()->user()) }}"
-                                        class="hover:text-brand-600 transition-colors">
-                                        <h4
-                                            class="text-[15px] font-bold text-zinc-900 dark:text-white truncate leading-tight">
-                                            {{ auth()->user()->name }}
-                                        </h4>
-                                    </a>
-                                    <div class="flex items-center gap-1.5 mt-0.5">
-                                        @if(auth()->user()->isManager() || auth()->user()->isAdmin())
-                                            <svg class="w-4 h-4 text-blue-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                                <path
-                                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                                            </svg>
-                                        @endif
-                                        <span
-                                            class="text-[13px] text-zinc-500 dark:text-zinc-400 truncate">{{ '@' . (auth()->user()->handle ?? auth()->user()->id) }}</span>
-                                    </div>
-                                </div>
+                        <!-- Divider -->
+                        <div class="mx-4 border-t border-zinc-200/80 dark:border-zinc-700"></div>
+
+                        <!-- Stats row -->
+                        <div class="flex items-center justify-center py-3 px-2">
+                            <div class="flex-1 text-center">
+                                <div class="text-[15px] font-bold text-brand-600 dark:text-brand-400">
+                                    {{ auth()->user()->following()->count() }}</div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Seguindo</div>
+                            </div>
+                            <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700"></div>
+                            <div class="flex-1 text-center">
+                                <div class="text-[15px] font-bold text-brand-600 dark:text-brand-400">
+                                    {{ auth()->user()->followers()->count() }}</div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Seguidores</div>
+                            </div>
+                            <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700"></div>
+                            <div class="flex-1 text-center">
+                                <div class="text-[15px] font-bold text-brand-600 dark:text-brand-400">
+                                    {{ auth()->user()->activities()->count() }}</div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Atividades</div>
                             </div>
                         </div>
 
-
+                        <!-- Meu perfil button -->
+                        <div class="px-4 pb-4 pt-1">
+                            <a href="{{ profile_url(auth()->user()) }}"
+                                class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Meu perfil
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Collapsed state: just avatar -->
