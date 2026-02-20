@@ -137,11 +137,19 @@
                     <div class="border-b border-zinc-200/80 dark:border-zinc-800"
                         x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered" x-transition.opacity.duration.200ms>
 
-                        <!-- Avatar centered -->
-                        <div class="flex flex-col items-center pt-6 pb-3 px-4">
+                        <!-- Cover Banner -->
+                        <div
+                            class="h-20 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 overflow-hidden">
+                            @if(auth()->user()->cover_url)
+                                <img src="{{ auth()->user()->cover_url }}" class="w-full h-full object-cover" alt="">
+                            @endif
+                        </div>
+
+                        <!-- Avatar centered (overlaps banner) -->
+                        <div class="flex flex-col items-center -mt-8 pb-3 px-4">
                             <a href="{{ profile_url(auth()->user()) }}" class="relative mb-3">
                                 <img src="{{ auth()->user()->image_url }}"
-                                    class="w-16 h-16 rounded-full object-cover shadow-md hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer"
+                                    class="w-16 h-16 rounded-full object-cover border-3 border-white dark:border-zinc-900 shadow-md hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer"
                                     alt="{{ auth()->user()->name }}">
                                 @if(auth()->user()->isManager() || auth()->user()->isAdmin())
                                     <svg class="w-5 h-5 text-blue-500 absolute -bottom-0.5 -right-0.5 bg-white dark:bg-zinc-900 rounded-full p-0.5"
@@ -171,19 +179,22 @@
                         <div class="flex items-center justify-center py-3 px-2">
                             <div class="flex-1 text-center">
                                 <div class="text-[15px] font-bold text-brand-600 dark:text-brand-400">
-                                    {{ auth()->user()->following()->count() }}</div>
+                                    {{ auth()->user()->following()->count() }}
+                                </div>
                                 <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Seguindo</div>
                             </div>
                             <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700"></div>
                             <div class="flex-1 text-center">
                                 <div class="text-[15px] font-bold text-brand-600 dark:text-brand-400">
-                                    {{ auth()->user()->followers()->count() }}</div>
+                                    {{ auth()->user()->followers()->count() }}
+                                </div>
                                 <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Seguidores</div>
                             </div>
                             <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700"></div>
                             <div class="flex-1 text-center">
                                 <div class="text-[15px] font-bold text-brand-600 dark:text-brand-400">
-                                    {{ auth()->user()->activities()->count() }}</div>
+                                    {{ auth()->user()->activities()->count() }}
+                                </div>
                                 <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Atividades</div>
                             </div>
                         </div>
