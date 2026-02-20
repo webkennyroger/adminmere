@@ -36,7 +36,7 @@
 
         <!-- ===== Header Start ===== -->
         <header
-            class="sticky top-0 z-50 w-full bg-white border-b border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 h-16">
+            class="sticky top-0 z-50 w-full bg-white border-b border-zinc-200 dark:border-zinc-800 dark:bg-zinc-950 h-16">
             <div class="px-4 h-full flex items-center justify-between gap-4 relative">
 
                 <!-- Left: Logo & Search -->

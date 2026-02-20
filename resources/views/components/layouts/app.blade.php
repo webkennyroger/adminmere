@@ -19,9 +19,7 @@
             }
         })();
     </script>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <!-- Stores Initialization -->
     <script>
         function initGlobalStores() {
@@ -113,7 +111,7 @@
 
         <!-- Floating Chat Toggle Button -->
         <button @click="$store.chatSidebar.toggle()"
-            class="fixed bottom-8 right-8 z-[99998] flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500 hover:bg-green-600 shadow-xl shadow-green-500/30 transition-all duration-200 hover:scale-105 active:scale-95 border-2 border-green-400/40">
+            class="fixed bottom-8 right-8 z-99999 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500 hover:bg-green-600 shadow-xl shadow-green-500/30 transition-all duration-200 hover:scale-105 active:scale-95 border-2 border-green-400/40">
             <svg class="w-7 h-7 text-yellow-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">

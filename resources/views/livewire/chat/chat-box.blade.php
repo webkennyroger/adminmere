@@ -56,7 +56,7 @@
             }" 
             x-init="init()"
             x-cloak
-            class="fixed bottom-0 z-50 w-[calc(100%-2rem)] md:w-96 bg-white dark:bg-zinc-900 shadow-2xl rounded-t-2xl border-x border-t border-zinc-200 dark:border-white/10 flex flex-col transition-all duration-300 overflow-hidden"
+            class="fixed bottom-0 z-50 w-[calc(100%-2rem)] md:w-96 bg-white dark:bg-zinc-950 shadow-2xl rounded-t-2xl border-x border-t border-zinc-200 dark:border-white/10 flex flex-col transition-all duration-300 overflow-hidden"
             :class="{
                 'right-4 md:right-[26rem]': $store.chatSidebar?.isOpen,
                 'right-4': !$store.chatSidebar?.isOpen,
@@ -65,7 +65,7 @@
             }">
 
             <!-- Header -->
-            <div class="px-4 py-3 border-b border-zinc-100 dark:border-white/5 flex items-center justify-between bg-white dark:bg-zinc-900 shrink-0 h-14 z-20"
+            <div class="px-4 py-3 border-b border-zinc-100 dark:border-white/5 flex items-center justify-between bg-white dark:bg-zinc-950 shrink-0 h-14 z-20"
                  @click="if(isMinimized) isMinimized = false">
                 <div class="flex items-center gap-3 overflow-hidden">
                     <!-- Internal Back Button -->
@@ -156,7 +156,7 @@
                                                 @if(Str::startsWith($at['mime_type'], 'image/'))
                                                     <img src="{{ asset('storage/' . $at['path']) }}" class="max-h-32 w-full object-cover">
                                                 @else
-                                                    <div class="flex items-center gap-2 p-2 bg-zinc-50 dark:bg-zinc-900/50">
+                                                    <div class="flex items-center gap-2 p-2 bg-zinc-50 dark:bg-zinc-950/50">
                                                         <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                                         <span class="text-[10px] truncate max-w-[100px]">{{ $at['name'] }}</span>
                                                     </div>
@@ -192,7 +192,7 @@
             </div>
 
             <!-- Footer / Input -->
-            <div class="p-3 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-white/5 transition-all"
+            <div class="p-3 bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-white/5 transition-all"
                  :class="isMinimized ? 'hidden' : 'block'">
                 
                 <form wire:submit.prevent="sendMessage" class="flex items-center gap-2"

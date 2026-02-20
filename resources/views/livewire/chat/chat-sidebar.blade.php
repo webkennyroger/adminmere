@@ -20,10 +20,10 @@
         x-transition:leave="transform transition ease-in-out duration-300"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="fixed top-0 right-0 z-99999 h-full w-80 md:w-96 bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden">
+        class="fixed top-0 right-0 z-99999 h-full w-80 md:w-96 bg-white dark:bg-zinc-950 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden">
 
         <!-- Header -->
-        <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">
+        <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-950 shrink-0">
             <h2 class="text-lg font-bold text-zinc-900 dark:text-white">Mensagens</h2>
             <div class="flex items-center gap-1">
                 <!-- New Chat / Edit -->
@@ -45,7 +45,7 @@
                          x-transition:leave="transition ease-in duration-75"
                          x-transition:leave-start="transform opacity-100 scale-100"
                          x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-zinc-100 dark:border-zinc-800 z-50 py-2 overflow-hidden ring-1 ring-black/5"
+                         class="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-zinc-950 rounded-xl shadow-2xl border border-zinc-100 dark:border-zinc-800 z-50 py-2 overflow-hidden ring-1 ring-black/5"
                          style="display: none;">
                         
                         <!-- Mark all as read -->
@@ -109,7 +109,7 @@
         </div>
 
         <!-- Search Section -->
-        <div class="p-3 bg-white dark:bg-zinc-900 shrink-0">
+        <div class="p-3 bg-white dark:bg-zinc-950 shrink-0">
             <div class="relative bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,7 +318,7 @@
         <!-- Modals (Outside the layout flow but inside the component) -->
         @if($showNewChatModal)
             <div class="fixed inset-0 z-80 flex items-center justify-center bg-black/50 p-4">
-                <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div class="bg-white dark:bg-zinc-950 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                     <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                         <h3 class="font-bold text-lg dark:text-white">Nova Conversa</h3>
                         <button wire:click="$set('showNewChatModal', false)" class="text-zinc-400 hover:text-zinc-600">
@@ -345,7 +345,7 @@
         @endif
         @if($showCreateGroupModal)
             <div class="fixed inset-0 z-80 flex items-center justify-center bg-black/50 p-4">
-                <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div class="bg-white dark:bg-zinc-950 w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                     <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                         <h3 class="font-bold text-lg dark:text-white">Criar Novo Grupo</h3>
                         <button wire:click="$set('showCreateGroupModal', false)" class="text-zinc-400 hover:text-zinc-600">
@@ -388,7 +388,7 @@
         {{-- Blocked Users Modal --}}
         @if($showBlockedUsersModal)
             <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-                <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[80vh]">
+                <div class="bg-white dark:bg-zinc-950 w-full max-w-md rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[80vh]">
                     <!-- Header -->
                     <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/30">
                         <h3 class="font-bold text-lg text-zinc-800 dark:text-zinc-100">Contatos Bloqueados</h3>
