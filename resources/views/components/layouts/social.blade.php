@@ -124,8 +124,8 @@
 
         <!-- ══════════ LEFT SIDEBAR — SocialV Style ══════════ -->
         <aside
-            class="flex flex-col shrink-0 bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 sticky top-[70px] h-[calc(100vh-70px)] overflow-y-auto no-scrollbar transition-all duration-300 ease-in-out z-40"
-            :class="{
+            class="flex flex-col shrink-0 bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 sticky top-[70px] h-[calc(100vh-70px)] no-scrollbar transition-all duration-300 ease-in-out z-40"
+            style="overflow-y: auto; overflow-x: visible;" :class="{
                 'w-[260px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
                 'w-[80px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
                 'translate-x-0': $store.sidebar.isMobileOpen || true,
@@ -134,46 +134,71 @@
             }" @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
             @mouseleave="$store.sidebar.setHovered(false)">
 
-            <!-- User Profile Card -->
             @auth
-                <div class="border-b border-zinc-200/80 dark:border-zinc-800"
-                    :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'p-4' : 'py-4 px-2'">
-                    <div class="flex items-center"
-                        :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'gap-3' : 'flex-col gap-2'">
-                        <a href="{{ profile_url(auth()->user()) }}">
-                            <img src="{{ auth()->user()->image_url }}"
-                                class="rounded-full object-cover ring-2 ring-brand-500/30 hover:ring-brand-500 transition-all cursor-pointer"
-                                :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'w-12 h-12' : 'w-10 h-10'"
-                                alt="{{ auth()->user()->name }}">
-                        </a>
-                        <div class="min-w-0 flex-1" x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
-                            x-transition.opacity.duration.200ms>
-                            <a href="{{ profile_url(auth()->user()) }}" class="hover:text-brand-600 transition-colors">
-                                <h4 class="text-sm font-bold text-zinc-900 dark:text-white truncate">
-                                    {{ auth()->user()->name }}
-                                </h4>
+                <!-- Expanded state: cover + profile + floating arrow -->
+                <div class="relative border-b border-zinc-200/80 dark:border-zinc-800"
+                    x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered" x-transition.opacity.duration.200ms>
+                    <!-- Cover Banner -->
+                    <div
+                        class="h-16 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 overflow-hidden relative">
+                        @if(auth()->user()->cover_url)
+                            <img src="{{ auth()->user()->cover_url }}" class="w-full h-full object-cover opacity-60" alt="">
+                        @endif
+                    </div>
+
+                    <!-- User Info -->
+                    <div class="px-5 pt-3 pb-4">
+                        <div class="flex items-start gap-3">
+                            <a href="{{ profile_url(auth()->user()) }}" class="-mt-8 relative shrink-0">
+                                <img src="{{ auth()->user()->image_url }}"
+                                    class="w-14 h-14 rounded-full object-cover border-3 border-white dark:border-zinc-900 shadow-md hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer"
+                                    alt="{{ auth()->user()->name }}">
                             </a>
-                            <div class="flex items-center gap-1">
-                                @if(auth()->user()->isManager() || auth()->user()->isAdmin())
-                                    <svg class="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                                    </svg>
-                                @endif
-                                <span
-                                    class="text-xs text-zinc-500 dark:text-zinc-400 truncate">{{ '@' . (auth()->user()->handle ?? auth()->user()->id) }}</span>
+                            <div class="min-w-0 flex-1 pt-1">
+                                <a href="{{ profile_url(auth()->user()) }}" class="hover:text-brand-600 transition-colors">
+                                    <h4 class="text-[15px] font-bold text-zinc-900 dark:text-white truncate leading-tight">
+                                        {{ auth()->user()->name }}
+                                    </h4>
+                                </a>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    @if(auth()->user()->isManager() || auth()->user()->isAdmin())
+                                        <svg class="w-4 h-4 text-blue-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                            <path
+                                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                        </svg>
+                                    @endif
+                                    <span
+                                        class="text-[13px] text-zinc-500 dark:text-zinc-400 truncate">{{ '@' . (auth()->user()->handle ?? auth()->user()->id) }}</span>
+                                </div>
                             </div>
                         </div>
-                        <!-- Sidebar Collapse/Expand Toggle -->
-                        <button @click="$store.sidebar.toggleExpanded()"
-                            class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all"
-                            :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'ml-auto' : ''">
-                            <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" :class="$store.sidebar.isExpanded ? '' : 'rotate-180'">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
                     </div>
+
+                    <!-- Floating collapse arrow at sidebar edge -->
+                    <button @click="$store.sidebar.toggleExpanded()"
+                        class="absolute top-1/2 -translate-y-1/2 -right-3.5 w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all z-10"
+                        title="Fechar sidebar">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Collapsed state: just avatar + expand arrow -->
+                <div class="py-4 px-2 border-b border-zinc-200/80 dark:border-zinc-800 flex flex-col items-center gap-3 relative"
+                    x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered" x-transition.opacity.duration.200ms>
+                    <a href="{{ profile_url(auth()->user()) }}">
+                        <img src="{{ auth()->user()->image_url }}"
+                            class="w-10 h-10 rounded-full object-cover ring-2 ring-brand-500/30 hover:ring-brand-500 transition-all cursor-pointer"
+                            alt="{{ auth()->user()->name }}">
+                    </a>
+                    <button @click="$store.sidebar.toggleExpanded()"
+                        class="absolute top-1/2 -translate-y-1/2 -right-3.5 w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all z-10"
+                        title="Abrir sidebar">
+                        <svg class="w-3.5 h-3.5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
                 </div>
             @endauth
 
