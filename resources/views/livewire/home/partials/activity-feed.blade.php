@@ -353,102 +353,99 @@
             </div>
 
             {{-- ═══════════════════ MODAL ENQUETE ═════════════════════ --}}
-            <form wire:submit.prevent="savePost">
-                <div x-show="modalEnquete" x-cloak class="fixed inset-0 z-50 flex items-center justify-center"
-                    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
-                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-                    <div class="absolute inset-0 bg-black/50" @click="modalEnquete = false"></div>
+            <div x-show="modalEnquete" x-cloak class="fixed inset-0 z-50 flex items-center justify-center"
+                x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                <div class="absolute inset-0 bg-black/50" @click="modalEnquete = false"></div>
+                <div
+                    class="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto">
                     <div
-                        class="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto">
-                        <div
-                            class="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900 z-10">
-                            <h3 class="font-bold text-lg text-zinc-900 dark:text-white">Criar enquete</h3>
-                            <button type="button" @click="modalEnquete = false"
-                                class="text-zinc-400 hover:text-zinc-600 p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                        class="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                        <h3 class="font-bold text-lg text-zinc-900 dark:text-white">Criar enquete</h3>
+                        <button type="button" @click="modalEnquete = false"
+                            class="text-zinc-400 hover:text-zinc-600 p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        {{-- Title Field --}}
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Título</label>
+                            <input type="text" wire:model="title" placeholder="Dê um título para sua enquete (opcional)"
+                                class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                         </div>
-                        <div class="p-6 space-y-4">
-                            {{-- Title Field --}}
-                            <div>
-                                <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Título</label>
-                                <input type="text" wire:model="title" placeholder="Dê um título para sua enquete (opcional)"
-                                    class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
-                            </div>
 
-                            {{-- Pergunta --}}
-                            <div>
-                                <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Pergunta</label>
-                                <textarea wire:model="content" rows="2" placeholder="Qual a sua pergunta?"
-                                    class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
-                            </div>
-                            {{-- Opções --}}
-                            <div
-                                class="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2.5">
-                                <h4 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                    Opções da Enquete
-                                </h4>
-                                @foreach($pollOptions as $index => $option)
-                                    <div class="flex items-center gap-2">
-                                        <input type="text" wire:model="pollOptions.{{ $index }}"
-                                            class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm px-3 py-2 focus:ring-purple-500 focus:border-purple-500 dark:text-white"
-                                            placeholder="Opção {{ $index + 1 }}">
-                                        @if($index > 1)
-                                            <button type="button" wire:click="removePollOption({{ $index }})"
-                                                class="text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        @endif
-                                    </div>
-                                    @error('pollOptions.' . $index) <span class="text-red-500 text-xs">{{ $message }}</span>
-                                    @enderror
-                                @endforeach
-                                @if(count($pollOptions) < 5)
-                                    <button type="button" wire:click="addPollOption"
-                                        class="text-xs font-medium text-purple-600 dark:text-purple-400 flex items-center gap-1 mt-1">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 4v16m8-8H4" />
-                                        </svg>
-                                        Adicionar opção
-                                    </button>
-                                @endif
-                            </div>
-                            {{-- Duração --}}
-                            <div class="flex items-center gap-3">
-                                <span class="text-sm text-zinc-500">Duração:</span>
-                                <select wire:model="pollDuration"
-                                    class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-sm rounded-lg py-1.5 px-3">
-                                    <option value="1">1 Dia</option>
-                                    <option value="3">3 Dias</option>
-                                    <option value="7">1 Semana</option>
-                                    <option value="30">1 Mês</option>
-                                </select>
-                            </div>
+                        {{-- Pergunta --}}
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Pergunta</label>
+                            <textarea wire:model="content" rows="2" placeholder="Qual a sua pergunta?"
+                                class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
                         </div>
+                        {{-- Opções --}}
                         <div
-                            class="flex justify-end gap-3 px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 sticky bottom-0 bg-white dark:bg-zinc-900">
-                            <button type="button" @click="modalEnquete = false"
-                                class="px-5 py-2 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 transition-colors">Cancelar</button>
-                            <button type="submit" @click="modalEnquete = false"
-                                class="px-5 py-2 rounded-xl text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 transition-colors">Publicar
-                                enquete</button>
+                            class="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2.5">
+                            <h4 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Opções da Enquete
+                            </h4>
+                            @foreach($pollOptions as $index => $option)
+                                <div class="flex items-center gap-2">
+                                    <input type="text" wire:model="pollOptions.{{ $index }}"
+                                        class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm px-3 py-2 focus:ring-purple-500 focus:border-purple-500 dark:text-white"
+                                        placeholder="Opção {{ $index + 1 }}">
+                                    @if($index > 1)
+                                        <button type="button" wire:click="removePollOption({{ $index }})"
+                                            class="text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    @endif
+                                </div>
+                                @error('pollOptions.' . $index) <span class="text-red-500 text-xs">{{ $message }}</span>
+                                @enderror
+                            @endforeach
+                            @if(count($pollOptions) < 5)
+                                <button type="button" wire:click="addPollOption"
+                                    class="text-xs font-medium text-purple-600 dark:text-purple-400 flex items-center gap-1 mt-1">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Adicionar opção
+                                </button>
+                            @endif
+                        </div>
+                        {{-- Duração --}}
+                        <div>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Duração</label>
+                            <select wire:model="pollDuration"
+                                class="w-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm rounded-xl py-2.5 px-4 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                <option value="1">1 Dia</option>
+                                <option value="3">3 Dias</option>
+                                <option value="7">1 Semana</option>
+                                <option value="30">1 Mês</option>
+                            </select>
                         </div>
                     </div>
+                    <div
+                        class="flex justify-end gap-3 px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 sticky bottom-0 bg-white dark:bg-zinc-900">
+                        <button type="button" @click="modalEnquete = false"
+                            class="px-5 py-2 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 transition-colors">Cancelar</button>
+                        <button type="button" wire:click="savePoll" @click="modalEnquete = false"
+                            class="px-5 py-2 rounded-xl text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 transition-colors">Publicar
+                            enquete</button>
+                    </div>
                 </div>
-            </form>
+            </div>
 
         </div>
     @endif

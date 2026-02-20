@@ -80,6 +80,13 @@ class ActivityFeed extends Component
         $this->isPoll = true;
     }
 
+    // Método dedicado para salvar enquete
+    public function savePoll()
+    {
+        $this->isPoll = true;
+        $this->savePost();
+    }
+
     public function addPollOption()
     {
         if (count($this->pollOptions) < 5) {
