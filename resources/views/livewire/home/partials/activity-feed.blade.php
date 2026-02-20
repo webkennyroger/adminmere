@@ -1,6 +1,6 @@
 <div class="space-y-6">
-    <!-- Novo Post Card -->
-    @if(isset($feed) && $feed !== 'timeline')
+    <!-- Novo Post Card: aparece somente no feed=timeline, abaixo do stories -->
+    @if(isset($feed) && $feed === 'timeline')
         <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 transition-all hover:shadow-md">
             <form wire:submit.prevent="savePost">
                 <div class="flex gap-4">
@@ -190,7 +190,7 @@
                 </div>
             </form>
         </div>
-    @endif
+    @endif {{-- end moved block --}}
 
     <!-- Feed Items -->
     @forelse($items as $item)
