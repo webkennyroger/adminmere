@@ -74,6 +74,12 @@ class ActivityFeed extends Component
         }
     }
 
+    // Chamado ao publicar enquete via modal
+    public function activatePoll()
+    {
+        $this->isPoll = true;
+    }
+
     public function addPollOption()
     {
         if (count($this->pollOptions) < 5) {
