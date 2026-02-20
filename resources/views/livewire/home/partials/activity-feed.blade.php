@@ -104,7 +104,7 @@
                         </div>
                         {{-- Upload --}}
                         <div>
-                            <p class="text-sm text-zinc-500 mb-2">Enviar arquivo</p>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Enviar foto</label>
                             <label class="cursor-pointer block">
                                 <div
                                     class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-10 flex flex-col items-center gap-3 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors">
@@ -180,7 +180,7 @@
                                 class="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
                         </div>
                         <div>
-                            <p class="text-sm text-zinc-500 mb-2">Enviar arquivo</p>
+                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Enviar vídeo</label>
                             <label class="cursor-pointer block">
                                 <div
                                     class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-10 flex flex-col items-center gap-3 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
@@ -425,10 +425,10 @@
                             @endif
                         </div>
                         {{-- Duração --}}
-                        <div>
-                            <label class="block text-sm text-zinc-600 dark:text-zinc-400 mb-1">Duração</label>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-zinc-500">Duração:</span>
                             <select wire:model="pollDuration"
-                                class="w-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm rounded-xl py-2.5 px-4 text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-sm rounded-lg py-1.5 px-3">
                                 <option value="1">1 Dia</option>
                                 <option value="3">3 Dias</option>
                                 <option value="7">1 Semana</option>
@@ -440,7 +440,8 @@
                         class="flex justify-end gap-3 px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 sticky bottom-0 bg-white dark:bg-zinc-900">
                         <button type="button" @click="modalEnquete = false"
                             class="px-5 py-2 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 transition-colors">Cancelar</button>
-                        <button type="button" wire:click="savePoll" @click="modalEnquete = false"
+                        <button type="button" wire:click="activatePoll"
+                            x-on:click="setTimeout(() => { $wire.savePost(); modalEnquete = false; }, 100)"
                             class="px-5 py-2 rounded-xl text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 transition-colors">Publicar
                             enquete</button>
                     </div>
