@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+<div class="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
     <!-- Cover -->
     <div class="h-24 bg-linear-to-r from-brand-500 to-brand-600 relative">
         <div class="absolute inset-0 opacity-20 pattern-grid-lg"></div>
@@ -140,7 +140,7 @@
 
         <!-- Action -->
         <a href="{{ route('profile') }}"
-            class="block w-full py-2 px-4 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700">
+            class="block w-full py-2 px-4 bg-green-300 dark:bg-green-300 hover:bg-green-400 dark:hover:bg-green-400 text-zinc-700 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700">
             Meu Perfil Completo
         </a>
     </div>

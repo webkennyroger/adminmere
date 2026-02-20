@@ -1,6 +1,6 @@
 <div class="space-y-6">
     <div
-        class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden hidden lg:block">
+        class="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden hidden lg:block">
         <nav class="flex flex-col p-2 space-y-1">
             <!-- Página Inicial -->
             <a href="{{ route('home') }}"
