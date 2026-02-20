@@ -15,7 +15,7 @@
     </style>
 </head>
 
-<body x-data="{ loaded: true, sidebarOpen: true }"
+<body x-data="{ loaded: true }"
     class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen font-sans">
 
     <x-common.preloader />
@@ -28,7 +28,7 @@
             <!-- LEFT: Logo + Brand -->
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sidebar Toggle (mobile) -->
-                <button @click="sidebarOpen = !sidebarOpen"
+                <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
                     class="lg:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -124,18 +124,30 @@
 
         <!-- ══════════ LEFT SIDEBAR — SocialV Style ══════════ -->
         <aside
-            class="hidden lg:flex flex-col w-[260px] shrink-0 bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 sticky top-[70px] h-[calc(100vh-70px)] overflow-y-auto no-scrollbar">
+            class="flex flex-col shrink-0 bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 sticky top-[70px] h-[calc(100vh-70px)] overflow-y-auto no-scrollbar transition-all duration-300 ease-in-out z-40"
+            :class="{
+                'w-[260px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
+                'w-[80px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
+                'translate-x-0': $store.sidebar.isMobileOpen || true,
+                '-translate-x-full lg:translate-x-0': !$store.sidebar.isMobileOpen,
+                'hidden lg:flex': true
+            }" @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
+            @mouseleave="$store.sidebar.setHovered(false)">
 
             <!-- User Profile Card -->
             @auth
-                <div class="p-5 border-b border-zinc-200/80 dark:border-zinc-800">
-                    <div class="flex items-center gap-3">
+                <div class="border-b border-zinc-200/80 dark:border-zinc-800"
+                    :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'p-4' : 'py-4 px-2'">
+                    <div class="flex items-center"
+                        :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'gap-3' : 'flex-col gap-2'">
                         <a href="{{ profile_url(auth()->user()) }}">
                             <img src="{{ auth()->user()->image_url }}"
-                                class="w-12 h-12 rounded-full object-cover ring-2 ring-brand-500/30 hover:ring-brand-500 transition-all cursor-pointer"
+                                class="rounded-full object-cover ring-2 ring-brand-500/30 hover:ring-brand-500 transition-all cursor-pointer"
+                                :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'w-12 h-12' : 'w-10 h-10'"
                                 alt="{{ auth()->user()->name }}">
                         </a>
-                        <div class="min-w-0">
+                        <div class="min-w-0 flex-1" x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                            x-transition.opacity.duration.200ms>
                             <a href="{{ profile_url(auth()->user()) }}" class="hover:text-brand-600 transition-colors">
                                 <h4 class="text-sm font-bold text-zinc-900 dark:text-white truncate">
                                     {{ auth()->user()->name }}
@@ -152,10 +164,12 @@
                                     class="text-xs text-zinc-500 dark:text-zinc-400 truncate">{{ '@' . (auth()->user()->handle ?? auth()->user()->id) }}</span>
                             </div>
                         </div>
-                        <!-- Sidebar Collapse Toggle -->
-                        <button @click="sidebarOpen = !sidebarOpen"
-                            class="ml-auto p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hidden xl:block">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- Sidebar Collapse/Expand Toggle -->
+                        <button @click="$store.sidebar.toggleExpanded()"
+                            class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all"
+                            :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'ml-auto' : ''">
+                            <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" :class="$store.sidebar.isExpanded ? '' : 'rotate-180'">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
@@ -164,102 +178,120 @@
             @endauth
 
             <!-- Menu Section -->
-            <nav class="p-3 flex-1">
-                <h5
-                    class="px-3 mb-2 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            <nav class="flex-1" :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'p-3' : 'p-2'">
+                <h5 class="px-3 mb-2 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
+                    x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered" x-transition.opacity.duration.200ms>
                     Menu</h5>
                 <ul class="space-y-0.5">
                     <li>
                         <a href="{{ route('home', ['feed' => 'timeline']) }}"
-                            class="sidebar-link {{ request()->get('feed', 'timeline') === 'timeline' && request()->routeIs('home') ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->get('feed', 'timeline') === 'timeline' && request()->routeIs('home') ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                 </path>
                             </svg>
-                            <span>Atividade</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Atividade</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('users.find') }}"
-                            class="sidebar-link {{ request()->routeIs('users.find') ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->routeIs('users.find') ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z">
                                 </path>
                             </svg>
-                            <span>Membros</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Membros</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('challenges.index') }}"
-                            class="sidebar-link {{ request()->routeIs('challenges.*') ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->routeIs('challenges.*') ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
-                            <span>Desafios</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Desafios</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('chat.index') }}"
-                            class="sidebar-link {{ request()->routeIs('chat.*') ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->routeIs('chat.*') ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
                                 </path>
                             </svg>
-                            <span>Mensagens</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Mensagens</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('billing.index') }}"
-                            class="sidebar-link {{ request()->routeIs('billing.*') ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->routeIs('billing.*') ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
                                 </path>
                             </svg>
-                            <span>Assinatura</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Assinatura</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('home', ['feed' => 'personal']) }}"
-                            class="sidebar-link {{ request()->get('feed') === 'personal' ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->get('feed') === 'personal' ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
                                 </path>
                             </svg>
-                            <span>Estatísticas</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Estatísticas</span>
                         </a>
                     </li>
                 </ul>
 
                 <!-- Support Section -->
-                <h5
-                    class="px-3 mt-6 mb-2 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                <h5 class="px-3 mt-6 mb-2 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
+                    x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered" x-transition.opacity.duration.200ms>
                     Suporte</h5>
+                <div x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered"
+                    class="my-4 border-t border-zinc-200/80 dark:border-zinc-800 mx-2"></div>
                 <ul class="space-y-0.5">
                     <li>
                         <a href="{{ route('support.index') }}"
-                            class="sidebar-link {{ request()->routeIs('support.*') ? 'sidebar-link-active' : '' }}">
+                            class="sidebar-link {{ request()->routeIs('support.*') ? 'sidebar-link-active' : '' }}"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                                 </path>
                             </svg>
-                            <span>Ajuda</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>Ajuda</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebar-link">
+                        <a href="#" class="sidebar-link"
+                            :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered) ? 'justify-center' : ''">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                 </path>
                             </svg>
-                            <span>FAQ</span>
+                            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                                x-transition.opacity.duration.200ms>FAQ</span>
                         </a>
                     </li>
                 </ul>
@@ -303,7 +335,7 @@
         </aside>
 
         <!-- ══════════ CONTENT AREA ══════════ -->
-        <main class="flex-1 min-w-0">
+        <main class="flex-1 min-w-0 transition-all duration-300">
             {{ $slot }}
         </main>
     </div>
