@@ -140,15 +140,34 @@
 
 
         <!-- Action -->
-        <x-ui.button href="{{ route('profile') }}" size="medium" icon-position="left" color="green" :full="true">
-            <x-slot:icon>
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-                    style="width:100%;height:100%;">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-            </x-slot:icon>
+        <a href="{{ route('profile') }}" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                height: 40px;
+                padding: 0 16px 0 20px;
+                background-color: #16B83E;
+                border-radius: 8px;
+                border: 2px solid rgba(22, 184, 62, 0.4);
+                box-shadow: 0 4px 15px rgba(22, 184, 62, 0.3);
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                cursor: pointer;
+                transition: transform 0.15s ease, background-color 0.15s ease;
+            " onmouseover="this.style.backgroundColor='#12a034'; this.style.transform='scale(1.03)';"
+            onmouseout="this.style.backgroundColor='#16B83E'; this.style.transform='scale(1)';">
+            <svg width="18" height="18" fill="none" stroke="#FFE11F" stroke-width="2" viewBox="0 0 24 24"
+                style="flex-shrink:0;">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
             Meu perfil completo
-        </x-ui.button>
+        </a>
     </div>
 </div>
