@@ -1098,3 +1098,179 @@ pre[class*="language-"] {
 .dark .fc-theme-standard th {
     border-color: #3f3f46;
 }
+
+/* ============================================================
+   MERE APP — Brand Colors (matched from Flutter app palette)
+   ============================================================ */
+:root {
+    --mere-green: #16b83e;
+    --mere-yellow: #ffe11f;
+    --mere-blue: #1651b8;
+    --mere-red: #ff0000;
+    --mere-orange: #ffa600;
+    --mere-white: #ffffff;
+    --mere-black: #000000;
+}
+
+/* ============================================================
+   MERE UI — Button Component (.btn-mere)
+   Sizes: large | medium | small
+   Colors: green | blue | red | orange | zinc
+   ============================================================ */
+
+/* ── Base ────────────────────────────────────────────────── */
+.btn-mere {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        transform 0.15s ease,
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+.btn-mere:hover {
+    transform: scale(1.03);
+}
+.btn-mere:active {
+    transform: scale(0.97);
+}
+.btn-mere:disabled,
+.btn-mere[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+.btn-mere.full-width {
+    width: 100%;
+}
+
+/* Icon position */
+.btn-mere.icon-right {
+    flex-direction: row-reverse;
+}
+
+.btn-mere .btn-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* ── Sizes ───────────────────────────────────────────────── */
+.btn-mere.btn-large {
+    height: 48px;
+    padding: 0 16px 0 24px;
+    font-size: 15px;
+    gap: 10px;
+    border-radius: 10px;
+}
+.btn-mere.btn-large .btn-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-mere.btn-medium {
+    height: 40px;
+    padding: 0 16px 0 20px;
+    font-size: 14px;
+    gap: 8px;
+    border-radius: 8px;
+}
+.btn-mere.btn-medium .btn-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-mere.btn-small {
+    height: 32px;
+    padding: 0 14px 0 18px;
+    font-size: 12px;
+    gap: 6px;
+    border-radius: 6px;
+}
+.btn-mere.btn-small .btn-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ── Colors ──────────────────────────────────────────────── */
+/* Green */
+.btn-mere.btn-green {
+    background-color: var(--mere-green);
+    border-color: rgba(22, 184, 62, 0.4);
+    box-shadow: 0 4px 15px rgba(22, 184, 62, 0.3);
+    color: var(--mere-white);
+}
+.btn-mere.btn-green .btn-icon {
+    color: var(--mere-yellow);
+}
+.btn-mere.btn-green:hover {
+    background-color: #12a034;
+    box-shadow: 0 6px 20px rgba(22, 184, 62, 0.4);
+}
+
+/* Blue */
+.btn-mere.btn-blue {
+    background-color: var(--mere-blue);
+    border-color: rgba(22, 81, 184, 0.4);
+    box-shadow: 0 4px 15px rgba(22, 81, 184, 0.3);
+    color: var(--mere-white);
+}
+.btn-mere.btn-blue .btn-icon {
+    color: var(--mere-yellow);
+}
+.btn-mere.btn-blue:hover {
+    background-color: #1242a0;
+    box-shadow: 0 6px 20px rgba(22, 81, 184, 0.4);
+}
+
+/* Red */
+.btn-mere.btn-red {
+    background-color: var(--mere-red);
+    border-color: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.25);
+    color: var(--mere-white);
+}
+.btn-mere.btn-red .btn-icon {
+    color: var(--mere-yellow);
+}
+.btn-mere.btn-red:hover {
+    background-color: #d40000;
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.35);
+}
+
+/* Orange */
+.btn-mere.btn-orange {
+    background-color: var(--mere-orange);
+    border-color: rgba(255, 166, 0, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 166, 0, 0.3);
+    color: var(--mere-white);
+}
+.btn-mere.btn-orange .btn-icon {
+    color: var(--mere-white);
+}
+.btn-mere.btn-orange:hover {
+    background-color: #e09500;
+    box-shadow: 0 6px 20px rgba(255, 166, 0, 0.4);
+}
+
+/* Zinc (neutral) */
+.btn-mere.btn-zinc {
+    background-color: #3f3f46;
+    border-color: rgba(161, 161, 170, 0.3);
+    box-shadow: 0 4px 15px rgba(63, 63, 70, 0.2);
+    color: var(--mere-white);
+}
+.btn-mere.btn-zinc .btn-icon {
+    color: #d4d4d8;
+}
+.btn-mere.btn-zinc:hover {
+    background-color: #27272a;
+    box-shadow: 0 6px 20px rgba(63, 63, 70, 0.3);
+}
