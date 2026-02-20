@@ -39,8 +39,10 @@ Refining the SocialV theme implementation for the Mere App, focusing on the side
 ## Recent Fixes (Feb 20, 2026)
 
 - **Header Cleanup:** Removed main navigation menus from the top header to focus navigation on the sidebar.
-- **Sidebar Toggle Fix:** Corrected the position and stickiness of the toggle arrow. It is now part of the sticky container, ensuring it stays visible and fixed while scrolling.
 - **Tailwind v4 Upgrade:** Migrated all `bg-gradient-*` utilities to the modern `bg-linear-*` standard throughout the views.
+- **Sidebar Header Toggle:** Added a desktop sidebar toggle icon (matching the admin layout) next to the search bar in the header.
+- **Sidebar Arrow Removed:** Removed the floating toggle arrow from the sidebar boundary.
+- **Icon-Only Sidebar:** Removed text from the sidebar menu navigation, leaving only centered icons for a cleaner look when both collapsed and expanded.
 
 ## Next Steps for Continuation
 
