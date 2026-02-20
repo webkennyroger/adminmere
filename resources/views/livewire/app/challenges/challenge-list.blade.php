@@ -4,7 +4,7 @@
         <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl bg-brand-600">
             <!-- Background Pattern/Graphic -->
             <div class="absolute inset-0">
-                <div class="absolute inset-0 bg-gradient-to-r from-brand-700 to-brand-500"></div>
+                <div class="absolute inset-0 bg-linear-to-r from-brand-700 to-brand-500"></div>
                 <!-- Abstract Shapes representing the reference design -->
                 <div class="absolute top-0 right-0 w-2/3 h-full bg-brand-600 opacity-50 transform skew-x-12 translate-x-20">
                 </div>

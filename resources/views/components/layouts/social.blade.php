@@ -42,25 +42,7 @@
                 </a>
             </div>
 
-            <!-- CENTER: Navigation Links -->
-            <nav class="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <a href="{{ route('home', ['feed' => 'timeline']) }}"
-                    class="nav-link {{ request()->get('feed', 'timeline') === 'timeline' ? 'nav-link-active' : '' }}">
-                    INÍCIO
-                </a>
-                <a href="{{ route('home', ['feed' => 'personal']) }}"
-                    class="nav-link {{ request()->get('feed') === 'personal' ? 'nav-link-active' : '' }}">
-                    ATIVIDADES
-                </a>
-                <a href="{{ route('users.find') }}"
-                    class="nav-link {{ request()->routeIs('users.find') ? 'nav-link-active' : '' }}">
-                    COMUNIDADE
-                </a>
-                <a href="{{ route('chat.index') }}"
-                    class="nav-link {{ request()->routeIs('chat.*') ? 'nav-link-active' : '' }}">
-                    MENSAGENS
-                </a>
-            </nav>
+
 
             <!-- RIGHT: Search + Icons + Profile -->
             <div class="flex items-center gap-3 shrink-0">
@@ -123,12 +105,13 @@
     <div class="flex min-h-[calc(100vh-70px)] max-w-[1920px] mx-auto">
 
         <!-- ══════════ LEFT SIDEBAR — SocialV Style ══════════ -->
-        <div class="relative shrink-0 hidden lg:block transition-all duration-300 ease-in-out" :class="{
+        <div class="relative shrink-0 hidden lg:block transition-all duration-300 ease-in-out sticky top-[70px] h-[calc(100vh-70px)] z-40"
+            :class="{
                 'w-[260px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
                 'w-[80px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
             }">
             <aside
-                class="flex flex-col w-full bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 sticky top-[70px] h-[calc(100vh-70px)] overflow-y-auto no-scrollbar z-40"
+                class="flex flex-col w-full bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 h-full overflow-y-auto no-scrollbar"
                 @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
                 @mouseleave="$store.sidebar.setHovered(false)">
 
@@ -139,7 +122,7 @@
 
                         <!-- Cover Banner -->
                         <div
-                            class="h-20 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 overflow-hidden">
+                            class="h-20 bg-linear-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 overflow-hidden">
                             @if(auth()->user()->cover_url)
                                 <img src="{{ auth()->user()->cover_url }}" class="w-full h-full object-cover" alt="">
                             @endif
@@ -385,7 +368,7 @@
 
             <!-- Toggle Arrow — outside aside, on the border -->
             <button @click="$store.sidebar.toggleExpanded()"
-                class="absolute top-28 -right-3.5 w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all z-50 cursor-pointer"
+                class="absolute top-10 -right-3.5 w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all z-55 cursor-pointer"
                 :title="$store.sidebar.isExpanded ? 'Fechar sidebar' : 'Abrir sidebar'">
                 <svg class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24" :class="$store.sidebar.isExpanded ? '' : 'rotate-180'">

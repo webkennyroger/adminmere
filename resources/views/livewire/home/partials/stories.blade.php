@@ -106,8 +106,7 @@
                     </div>
 
                     <!-- Footer -->
-                    <div
-                        class="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                    <div class="absolute bottom-0 left-0 right-0 z-20 p-4 bg-linear-to-t from-black/80 to-transparent">
                         <div class="flex items-center gap-3">
                             <div
                                 class="flex-1 h-12 rounded-full border border-white/30 bg-white/10 flex items-center px-4 text-white/70 text-sm backdrop-blur-md">

@@ -1,7 +1,7 @@
 <div
     class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200/80 dark:border-zinc-800 overflow-hidden shadow-sm">
     <!-- Cover -->
-    <div class="h-20 bg-gradient-to-r from-brand-500 via-brand-400 to-emerald-500 relative">
+    <div class="h-20 bg-linear-to-r from-brand-500 via-brand-400 to-emerald-500 relative">
         <div class="absolute inset-0 opacity-10"
             style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg=='); background-repeat: repeat;">
         </div>
