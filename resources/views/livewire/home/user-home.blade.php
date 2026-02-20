@@ -1,25 +1,19 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="py-6 px-4 lg:px-6 max-w-[1200px] mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Left Sidebar -->
-        <aside class="lg:col-span-3 space-y-6">
-            <livewire:home.partials.user-profile-card />
 
-            <livewire:home.partials.left-sidebar />
-        </aside>
-
-        <!-- Main Feed -->
-        <main class="lg:col-span-6 space-y-6">
+        <!-- Main Feed — Center Column -->
+        <main class="lg:col-span-8 space-y-5">
             @if($feed === 'timeline')
                 <livewire:home.partials.stories />
             @endif
+
             <livewire:home.partials.activity-feed :feed="$feed" />
         </main>
 
         <!-- Right Sidebar -->
-        <aside class="lg:col-span-3 space-y-6">
+        <aside class="lg:col-span-4 space-y-5 hidden lg:block">
+            <livewire:home.partials.user-profile-card />
             <livewire:home.partials.right-sidebar />
         </aside>
     </div>
-
-
 </div>
