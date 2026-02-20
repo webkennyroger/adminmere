@@ -1162,19 +1162,36 @@ pre[class*="language-"] {
     flex-shrink: 0;
 }
 
-/* ── Sizes ───────────────────────────────────────────────── */
-.btn-mere.btn-large {
-    height: 48px;
-    padding: 0 16px 0 24px;
-    font-size: 15px;
-    gap: 10px;
-    border-radius: 10px;
+/* ── Sizes (5 tamanhos estilo Tailwind UI) ───────────────── */
+/*   xs | small | medium | large | xl                       */
+
+/* XS — Extra Small */
+.btn-mere.btn-xs {
+    height: 26px;
+    padding: 0 10px 0 12px;
+    font-size: 11px;
+    gap: 4px;
+    border-radius: 5px;
 }
-.btn-mere.btn-large .btn-icon {
-    width: 20px;
-    height: 20px;
+.btn-mere.btn-xs .btn-icon {
+    width: 13px;
+    height: 13px;
 }
 
+/* Small */
+.btn-mere.btn-small {
+    height: 32px;
+    padding: 0 14px 0 18px;
+    font-size: 12px;
+    gap: 6px;
+    border-radius: 6px;
+}
+.btn-mere.btn-small .btn-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Medium (default) */
 .btn-mere.btn-medium {
     height: 40px;
     padding: 0 16px 0 20px;
@@ -1187,17 +1204,32 @@ pre[class*="language-"] {
     height: 18px;
 }
 
-.btn-mere.btn-small {
-    height: 32px;
-    padding: 0 14px 0 18px;
-    font-size: 12px;
-    gap: 6px;
-    border-radius: 6px;
+/* Large */
+.btn-mere.btn-large {
+    height: 48px;
+    padding: 0 18px 0 24px;
+    font-size: 15px;
+    gap: 10px;
+    border-radius: 10px;
 }
-.btn-mere.btn-small .btn-icon {
-    width: 16px;
-    height: 16px;
+.btn-mere.btn-large .btn-icon {
+    width: 20px;
+    height: 20px;
 }
+
+/* XL — Extra Large */
+.btn-mere.btn-xl {
+    height: 56px;
+    padding: 0 24px 0 28px;
+    font-size: 16px;
+    gap: 12px;
+    border-radius: 12px;
+}
+.btn-mere.btn-xl .btn-icon {
+    width: 22px;
+    height: 22px;
+}
+
 
 /* ── Colors ──────────────────────────────────────────────── */
 /* Green */
@@ -1274,195 +1306,3 @@ pre[class*="language-"] {
     background-color: #27272a;
     box-shadow: 0 6px 20px rgba(63, 63, 70, 0.3);
 }
-
-/* ============================================================
-   MERE UI — Button Variants (5 modos estilo Tailwind UI)
-   Variant: primary | secondary | soft | outline | ghost
-   ============================================================ */
-
-/* ── 1. PRIMARY (default — fundo sólido, texto branco) ────── */
-/* Já é o comportamento padrão das classes de cor acima */
-/* .btn-mere.btn-primary = comportamento já definido */
-
-/* ── 2. SECONDARY (fundo cinza neutro, texto escuro) ─────── */
-.btn-mere.btn-secondary {
-    background-color: #f4f4f5;
-    border-color: #e4e4e7;
-    box-shadow: none;
-    color: #18181b;
-}
-.btn-mere.btn-secondary .btn-icon { color: #71717a; }
-.btn-mere.btn-secondary:hover { background-color: #e4e4e7; border-color: #d4d4d8; }
-
-/* Secondary dark mode */
-.dark .btn-mere.btn-secondary {
-    background-color: #27272a;
-    border-color: #3f3f46;
-    color: #f4f4f5;
-}
-.dark .btn-mere.btn-secondary .btn-icon { color: #a1a1aa; }
-.dark .btn-mere.btn-secondary:hover { background-color: #3f3f46; }
-
-/* ── 3. SOFT (fundo levemente colorido, texto colorido) ───── */
-/* Green Soft */
-.btn-mere.btn-soft.btn-green {
-    background-color: rgba(22, 184, 62, 0.12);
-    border-color: rgba(22, 184, 62, 0.2);
-    box-shadow: none;
-    color: #12a034;
-}
-.btn-mere.btn-soft.btn-green .btn-icon { color: var(--mere-green); }
-.btn-mere.btn-soft.btn-green:hover { background-color: rgba(22, 184, 62, 0.2); }
-
-/* Blue Soft */
-.btn-mere.btn-soft.btn-blue {
-    background-color: rgba(22, 81, 184, 0.1);
-    border-color: rgba(22, 81, 184, 0.2);
-    box-shadow: none;
-    color: var(--mere-blue);
-}
-.btn-mere.btn-soft.btn-blue .btn-icon { color: var(--mere-blue); }
-.btn-mere.btn-soft.btn-blue:hover { background-color: rgba(22, 81, 184, 0.18); }
-
-/* Red Soft */
-.btn-mere.btn-soft.btn-red {
-    background-color: rgba(255, 0, 0, 0.08);
-    border-color: rgba(255, 0, 0, 0.15);
-    box-shadow: none;
-    color: #dc0000;
-}
-.btn-mere.btn-soft.btn-red .btn-icon { color: var(--mere-red); }
-.btn-mere.btn-soft.btn-red:hover { background-color: rgba(255, 0, 0, 0.15); }
-
-/* Orange Soft */
-.btn-mere.btn-soft.btn-orange {
-    background-color: rgba(255, 166, 0, 0.1);
-    border-color: rgba(255, 166, 0, 0.2);
-    box-shadow: none;
-    color: #c07a00;
-}
-.btn-mere.btn-soft.btn-orange .btn-icon { color: var(--mere-orange); }
-.btn-mere.btn-soft.btn-orange:hover { background-color: rgba(255, 166, 0, 0.18); }
-
-/* Zinc Soft */
-.btn-mere.btn-soft.btn-zinc {
-    background-color: #f4f4f5;
-    border-color: #e4e4e7;
-    box-shadow: none;
-    color: #3f3f46;
-}
-.btn-mere.btn-soft.btn-zinc .btn-icon { color: #71717a; }
-.btn-mere.btn-soft.btn-zinc:hover { background-color: #e4e4e7; }
-.dark .btn-mere.btn-soft.btn-zinc {
-    background-color: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.1);
-    color: #d4d4d8;
-}
-
-/* ── 4. OUTLINE (sem fundo, só borda colorida) ────────────── */
-/* Green Outline */
-.btn-mere.btn-outline.btn-green {
-    background-color: transparent;
-    border-color: var(--mere-green);
-    box-shadow: none;
-    color: var(--mere-green);
-}
-.btn-mere.btn-outline.btn-green .btn-icon { color: var(--mere-green); }
-.btn-mere.btn-outline.btn-green:hover {
-    background-color: rgba(22, 184, 62, 0.08);
-}
-
-/* Blue Outline */
-.btn-mere.btn-outline.btn-blue {
-    background-color: transparent;
-    border-color: var(--mere-blue);
-    box-shadow: none;
-    color: var(--mere-blue);
-}
-.btn-mere.btn-outline.btn-blue .btn-icon { color: var(--mere-blue); }
-.btn-mere.btn-outline.btn-blue:hover { background-color: rgba(22, 81, 184, 0.08); }
-
-/* Red Outline */
-.btn-mere.btn-outline.btn-red {
-    background-color: transparent;
-    border-color: var(--mere-red);
-    box-shadow: none;
-    color: var(--mere-red);
-}
-.btn-mere.btn-outline.btn-red .btn-icon { color: var(--mere-red); }
-.btn-mere.btn-outline.btn-red:hover { background-color: rgba(255, 0, 0, 0.06); }
-
-/* Orange Outline */
-.btn-mere.btn-outline.btn-orange {
-    background-color: transparent;
-    border-color: var(--mere-orange);
-    box-shadow: none;
-    color: var(--mere-orange);
-}
-.btn-mere.btn-outline.btn-orange .btn-icon { color: var(--mere-orange); }
-.btn-mere.btn-outline.btn-orange:hover { background-color: rgba(255, 166, 0, 0.08); }
-
-/* Zinc Outline */
-.btn-mere.btn-outline.btn-zinc {
-    background-color: transparent;
-    border-color: #71717a;
-    box-shadow: none;
-    color: #3f3f46;
-}
-.btn-mere.btn-outline.btn-zinc .btn-icon { color: #71717a; }
-.btn-mere.btn-outline.btn-zinc:hover { background-color: #f4f4f5; }
-.dark .btn-mere.btn-outline.btn-zinc { border-color: #52525b; color: #d4d4d8; }
-.dark .btn-mere.btn-outline.btn-zinc:hover { background-color: rgba(255,255,255,0.05); }
-
-/* ── 5. GHOST (sem borda, sem fundo — texto apenas) ────────── */
-/* Green Ghost */
-.btn-mere.btn-ghost.btn-green {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    color: var(--mere-green);
-}
-.btn-mere.btn-ghost.btn-green .btn-icon { color: var(--mere-green); }
-.btn-mere.btn-ghost.btn-green:hover { background-color: rgba(22, 184, 62, 0.08); border-color: transparent; }
-
-/* Blue Ghost */
-.btn-mere.btn-ghost.btn-blue {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    color: var(--mere-blue);
-}
-.btn-mere.btn-ghost.btn-blue .btn-icon { color: var(--mere-blue); }
-.btn-mere.btn-ghost.btn-blue:hover { background-color: rgba(22, 81, 184, 0.08); border-color: transparent; }
-
-/* Red Ghost */
-.btn-mere.btn-ghost.btn-red {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    color: var(--mere-red);
-}
-.btn-mere.btn-ghost.btn-red .btn-icon { color: var(--mere-red); }
-.btn-mere.btn-ghost.btn-red:hover { background-color: rgba(255, 0, 0, 0.06); border-color: transparent; }
-
-/* Orange Ghost */
-.btn-mere.btn-ghost.btn-orange {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    color: var(--mere-orange);
-}
-.btn-mere.btn-ghost.btn-orange .btn-icon { color: var(--mere-orange); }
-.btn-mere.btn-ghost.btn-orange:hover { background-color: rgba(255, 166, 0, 0.08); border-color: transparent; }
-
-/* Zinc Ghost */
-.btn-mere.btn-ghost.btn-zinc {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    color: #3f3f46;
-}
-.btn-mere.btn-ghost.btn-zinc .btn-icon { color: #71717a; }
-.btn-mere.btn-ghost.btn-zinc:hover { background-color: #f4f4f5; border-color: transparent; }
-.dark .btn-mere.btn-ghost.btn-zinc { color: #d4d4d8; }
-.dark .btn-mere.btn-ghost.btn-zinc:hover { background-color: rgba(255,255,255,0.05); }
