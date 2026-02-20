@@ -2,7 +2,7 @@
     @if(!$isPremium)
         <!-- Premium Promo Card -->
         <div
-            class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm relative">
+            class="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm relative">
             <div class="p-5 relative z-10">
                 <div class="flex justify-between items-start mb-4">
                     <h3 class="text-lg font-bold text-zinc-900 dark:text-white leading-tight">
@@ -23,7 +23,7 @@
 
     <!-- Challenges Section -->
     <div
-        class="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
+        class="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
         <section>
             <h2 class="text-xl font-extrabold text-zinc-900 dark:text-white mb-5">Seus desafios</h2>
 
@@ -67,7 +67,7 @@
     </div>
     <!-- Clubs Section -->
     <div
-        class="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
+        class="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
         <section class="flex gap-4 items-start">
             <div
                 class="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center flex-shrink-0">

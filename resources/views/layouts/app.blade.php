@@ -1,3 +1,9 @@
+{{--
+Este arquivo existe apenas para compatibilidade.
+O layout principal e unico fica em: resources/views/components/layouts/app.blade.php
+
+NUNCA adicione codigo aqui. Edite apenas o arquivo acima.
+--}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" flux-appearance="system">
 

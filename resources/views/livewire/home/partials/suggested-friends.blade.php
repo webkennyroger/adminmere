@@ -1,5 +1,5 @@
 <div wire:poll.10s>
-    <div class="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
+    <div class="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
         <section>
             <h2 class="text-xl font-extrabold text-zinc-900 dark:text-white mb-5">Amigos sugeridos</h2>
 
