@@ -20,8 +20,19 @@ class ActivityFeed extends Component
     public $title = '';
     public $content = '';
     public $photos = [];  // Multiple photos
+    public $videos = []; // Video upload
     public $feedType = 'personal';
     public $location = '';
+
+    // Propriedades do Evento
+    public $eventTitle = '';
+    public $eventDescription = '';
+    public $eventDate = '';
+    public $eventTime = '';
+    public $eventDuration = '';
+    public $eventLocation = '';
+    public $eventGuestEmail = '';
+    public $eventAttachment = null;
 
     // Poll Properties
     public $isPoll = false;
@@ -154,6 +165,37 @@ class ActivityFeed extends Component
             Log::error('Stack trace: ' . $e->getTraceAsString());
             session()->flash('error', 'Erro ao publicar: ' . $e->getMessage());
         }
+    }
+
+    public function saveEvent()
+    {
+        $this->validate([
+            'eventTitle'       => 'required|string|max:200',
+            'eventDescription' => 'nullable|string|max:2000',
+            'eventDate'        => 'required|date',
+            'eventTime'        => 'nullable|string',
+            'eventLocation'    => 'nullable|string|max:200',
+        ]);
+
+        // Salva como post do tipo 'event'
+        Post::create([
+            'user_id'    => auth()->id(),
+            'title'      => $this->eventTitle,
+            'content'    => $this->eventDescription ?? '',
+            'type'       => 'event',
+            'feed_type'  => $this->feedType,
+            'privacy'    => 'public',
+            'meta'       => json_encode([
+                'date'     => $this->eventDate,
+                'time'     => $this->eventTime,
+                'duration' => $this->eventDuration,
+                'location' => $this->eventLocation,
+            ]),
+        ]);
+
+        $this->reset(['eventTitle', 'eventDescription', 'eventDate', 'eventTime', 'eventDuration', 'eventLocation', 'eventGuestEmail']);
+        session()->flash('message', 'Evento criado com sucesso! 🎉');
+        $this->js('window.location.reload()');
     }
 
     #[On('post-deleted')]
