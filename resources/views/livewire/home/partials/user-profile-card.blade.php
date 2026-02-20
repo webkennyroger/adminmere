@@ -138,31 +138,17 @@
 
         <div class="border-t border-zinc-200 dark:border-zinc-800 mb-4"></div>
 
+
         <!-- Action -->
-        <a href="{{ route('profile') }}" style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-                width: 100%;
-                padding: 0.625rem 1rem;
-                background-color: #16a34a;
-                border-radius: 0.75rem;
-                border: 2px solid rgba(74, 222, 128, 0.4);
-                box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
-                color: #ffffff;
-                font-size: 0.875rem;
-                font-weight: 600;
-                text-decoration: none;
-                transition: transform 0.15s ease, background-color 0.15s ease;
-            " onmouseover="this.style.backgroundColor='#15803d'; this.style.transform='scale(1.02)';"
-            onmouseout="this.style.backgroundColor='#16a34a'; this.style.transform='scale(1)';">
-            <svg style="width: 1rem; height: 1rem; color: #fde047;" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            Meu Perfil Completo
-        </a>
+        <x-ui.button href="{{ route('profile') }}" size="medium" icon-position="left" color="green" :full="true">
+            <x-slot:icon>
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                    style="width:100%;height:100%;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </x-slot:icon>
+            Meu perfil completo
+        </x-ui.button>
     </div>
 </div>
