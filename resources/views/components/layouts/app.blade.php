@@ -122,4 +122,4 @@
     @stack('scripts')
 </body>
 
-</html>
+</html>// Forced change to fix potential sync issues
