@@ -19,7 +19,9 @@
             }
         })();
     </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <!-- Stores Initialization -->
     <script>
         function initGlobalStores() {
@@ -47,34 +49,10 @@
                     setHovered(val) { if (window.innerWidth >= 1280 && !this.isExpanded) this.isHovered = val; }
                 });
             }
-
-            // Chat Sidebar Store
-            if (!Alpine.store('chatSidebar')) {
-                Alpine.store('chatSidebar', {
-                    isOpen: false,
-                    activeChat: null,
-                    toggle() { this.isOpen = !this.isOpen; },
-                    openChat(chat) { this.activeChat = chat; this.isOpen = true; },
-                    close() { this.isOpen = false; }
-                });
-            }
         }
 
-        // Initialize stores on multiple hooks
         document.addEventListener('alpine:init', initGlobalStores);
-        document.addEventListener('livewire:init', initGlobalStores);
-        document.addEventListener('DOMContentLoaded', initGlobalStores);
     </script>
-
-    <!-- Quill CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
-
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     @livewireStyles
     @stack('styles')
 </head>
