@@ -108,6 +108,8 @@ class ActivityFeed extends Component
             'content' => 'required|min:3',
             'photos.*' => 'nullable|image|max:20480', // 20MB per photo
             'photos' => 'nullable|array|max:5', // Max 5 photos
+            'videos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:102400', // 100MB per video
+            'videos' => 'nullable|array|max:1', // Max 1 video
         ];
 
         if ($this->isPoll) {
@@ -130,6 +132,20 @@ class ActivityFeed extends Component
                     Log::info("Photo {$index} stored: {$path} -> {$fullUrl}");
                 } catch (\Exception $e) {
                     Log::error("Failed to store photo {$index}: " . $e->getMessage());
+                }
+            }
+        }
+
+        if ($this->videos && count($this->videos) > 0) {
+            Log::info('Processing ' . count($this->videos) . ' videos');
+            foreach ($this->videos as $index => $video) {
+                try {
+                    $path = $video->store('posts/' . auth()->id() . '/videos', 'public');
+                    $fullUrl = url('storage/' . $path);
+                    $media[] = $fullUrl;
+                    Log::info("Video {$index} stored: {$path} -> {$fullUrl}");
+                } catch (\Exception $e) {
+                    Log::error("Failed to store video {$index}: " . $e->getMessage());
                 }
             }
         }
@@ -161,7 +177,7 @@ class ActivityFeed extends Component
                 }
             }
 
-            $this->reset(['title', 'content', 'photos', 'location', 'isPoll', 'pollOptions']);
+            $this->reset(['title', 'content', 'photos', 'videos', 'location', 'isPoll', 'pollOptions']);
             $this->pollOptions = ['', ''];
             session()->flash('message', 'Publicado com sucesso! 🎉');
             Log::info('=== SAVE POST COMPLETED ===');
@@ -181,7 +197,14 @@ class ActivityFeed extends Component
             'eventDate'        => 'required|date',
             'eventTime'        => 'nullable|string',
             'eventLocation'    => 'nullable|string|max:200',
+            'eventAttachment'  => 'nullable|file|max:51200', // 50MB max
         ]);
+
+        $attachmentUrl = null;
+        if ($this->eventAttachment) {
+            $path = $this->eventAttachment->store('events/attachments', 'public');
+            $attachmentUrl = url('storage/' . $path);
+        }
 
         // Salva como post do tipo 'event'
         Post::create([
@@ -192,14 +215,15 @@ class ActivityFeed extends Component
             'feed_type'  => $this->feedType,
             'privacy'    => 'public',
             'meta'       => json_encode([
-                'date'     => $this->eventDate,
-                'time'     => $this->eventTime,
-                'duration' => $this->eventDuration,
-                'location' => $this->eventLocation,
+                'date'           => $this->eventDate,
+                'time'           => $this->eventTime,
+                'duration'       => $this->eventDuration,
+                'location'       => $this->eventLocation,
+                'attachment_url' => $attachmentUrl,
             ]),
         ]);
 
-        $this->reset(['eventTitle', 'eventDescription', 'eventDate', 'eventTime', 'eventDuration', 'eventLocation', 'eventGuestEmail']);
+        $this->reset(['eventTitle', 'eventDescription', 'eventDate', 'eventTime', 'eventDuration', 'eventLocation', 'eventGuestEmail', 'eventAttachment']);
         session()->flash('message', 'Evento criado com sucesso! 🎉');
         $this->js('window.location.reload()');
     }

@@ -99,11 +99,17 @@
                             @else
                                 <div
                                     class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold shrink-0">
-                                    {{ substr(auth()->user()->name, 0, 1) }}</div>
+                                    {{ substr(auth()->user()->name, 0, 1) }}
+                                </div>
                             @endif
                             <textarea wire:model="content" rows="3"
                                 class="w-full bg-transparent border-none resize-none text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:ring-0 text-base"
                                 placeholder="Compartilhe seus pensamentos..."></textarea>
+                        </div>
+                        {{-- Title Field --}}
+                        <div>
+                            <input type="text" wire:model="title" placeholder="Título (opcional)"
+                                class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                         </div>
                         {{-- Upload --}}
                         <div>
@@ -176,11 +182,17 @@
                             @else
                                 <div
                                     class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold shrink-0">
-                                    {{ substr(auth()->user()->name, 0, 1) }}</div>
+                                    {{ substr(auth()->user()->name, 0, 1) }}
+                                </div>
                             @endif
                             <textarea wire:model="content" rows="3"
                                 class="w-full bg-transparent border-none resize-none text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:ring-0 text-base"
                                 placeholder="Compartilhe seus pensamentos..."></textarea>
+                        </div>
+                        {{-- Title Field --}}
+                        <div>
+                            <input type="text" wire:model="title" placeholder="Título (opcional)"
+                                class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                         </div>
                         <div>
                             <p class="text-sm text-zinc-500 mb-2">Enviar arquivo</p>
@@ -194,8 +206,30 @@
                                     </svg>
                                     <span class="text-sm text-zinc-400">Arraste aqui ou clique para enviar vídeo.</span>
                                 </div>
-                                <input type="file" wire:model="photos" class="hidden" accept="video/*">
+                                <input type="file" wire:model="videos" class="hidden" accept="video/*">
                             </label>
+                        </div>
+                        {{-- Video Preview --}}
+                        @if ($videos && count($videos) > 0)
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach($videos as $video)
+                                    @if(method_exists($video, 'temporaryUrl'))
+                                        <div
+                                            class="aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-black">
+                                            <video src="{{ $video->temporaryUrl() }}" class="w-full h-full object-cover"
+                                                controls></video>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                        <div wire:loading wire:target="videos" class="text-xs text-blue-500 flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            Carregando vídeo...
                         </div>
                     </div>
                     <div class="flex justify-between items-center px-6 py-4 border-t border-zinc-100 dark:border-zinc-800">
@@ -289,8 +323,37 @@
                                     <span class="text-xs text-zinc-400">Arraste apresentação ou documento aqui ou clique
                                         para enviar.</span>
                                 </div>
-                                <input type="file" class="hidden" accept=".pdf,.ppt,.pptx,.doc,.docx">
+                                <input type="file" wire:model="eventAttachment" class="hidden"
+                                    accept=".pdf,.ppt,.pptx,.doc,.docx">
                             </label>
+                        </div>
+                        {{-- Attachment Preview --}}
+                        @if ($eventAttachment)
+                            <div
+                                class="flex items-center gap-2 p-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                <svg class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span
+                                    class="text-sm text-zinc-600 dark:text-zinc-300 truncate">{{ $eventAttachment->getClientOriginalName() }}</span>
+                                <button type="button" wire:click="$set('eventAttachment', null)"
+                                    class="ml-auto text-red-500 hover:text-red-700">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+                        <div wire:loading wire:target="eventAttachment"
+                            class="text-xs text-blue-500 flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            Carregando arquivo...
                         </div>
                     </div>
                     <div
@@ -333,11 +396,17 @@
                                 @else
                                     <div
                                         class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold shrink-0">
-                                        {{ substr(auth()->user()->name, 0, 1) }}</div>
+                                        {{ substr(auth()->user()->name, 0, 1) }}
+                                    </div>
                                 @endif
                                 <textarea wire:model="content" rows="2"
                                     class="w-full bg-transparent border-none resize-none text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:ring-0 text-base"
                                     placeholder="Faça uma pergunta..."></textarea>
+                            </div>
+                            {{-- Title Field --}}
+                            <div>
+                                <input type="text" wire:model="title" placeholder="Título da enquete (opcional)"
+                                    class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent">
                             </div>
                             {{-- Opções --}}
                             <div
