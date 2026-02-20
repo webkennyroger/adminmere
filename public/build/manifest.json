@@ -1,0 +1,53 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-BC8kYR38.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-C5bvxkHy.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/components/goals-chart.js",
+      "resources/js/components/user-growth-chart.js",
+      "resources/js/components/calendar-init.js",
+      "resources/js/components/quill-editor.js"
+    ],
+    "css": [
+      "assets/app-CksuuEqD.css"
+    ]
+  },
+  "resources/js/components/calendar-init.js": {
+    "file": "assets/calendar-init-BgoQpF0Q.js",
+    "name": "calendar-init",
+    "src": "resources/js/components/calendar-init.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/components/goals-chart.js": {
+    "file": "assets/goals-chart-D0Y0GDq7.js",
+    "name": "goals-chart",
+    "src": "resources/js/components/goals-chart.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/quill-editor.js": {
+    "file": "assets/quill-editor-CXM9C2Sb.js",
+    "name": "quill-editor",
+    "src": "resources/js/components/quill-editor.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/user-growth-chart.js": {
+    "file": "assets/user-growth-chart-CMi3GOIp.js",
+    "name": "user-growth-chart",
+    "src": "resources/js/components/user-growth-chart.js",
+    "isDynamicEntry": true
+  }
+}
