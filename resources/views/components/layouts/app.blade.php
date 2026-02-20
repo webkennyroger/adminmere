@@ -20,7 +20,6 @@
         })();
     </script>
 
-    @fluxStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Stores Initialization -->
@@ -120,10 +119,10 @@
                     d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
                 </path>
             </svg>
-            @if(auth()->check() && auth()->user()->unread_messages_count > 0)
+            @if(auth()->check() && auth()->user()->messagesReceived()->whereNull('read_at')->count() > 0)
                 <span
                     class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-zinc-900">
-                    {{ auth()->user()->unread_messages_count }}
+                    {{ auth()->user()->messagesReceived()->whereNull('read_at')->count() }}
                 </span>
             @endif
         </button>
