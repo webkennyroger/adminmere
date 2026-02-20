@@ -111,6 +111,23 @@
     @if(!request()->is('chat*'))
         <livewire:chat.chat-sidebar />
         <livewire:chat.chat-box />
+
+        <!-- Floating Chat Toggle Button -->
+        <button @click="$store.chatSidebar.toggle()"
+            class="fixed bottom-6 right-6 z-99999 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-2xl transition-all hover:scale-110 active:scale-95 group">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                </path>
+            </svg>
+            <!-- Unread Badge on FAB -->
+            @if(auth()->check() && auth()->user()->messagesReceived()->whereNull('read_at')->count() > 0)
+                <span
+                    class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-[11px] font-bold text-white border-2 border-white dark:border-zinc-900">
+                    {{ auth()->user()->messagesReceived()->whereNull('read_at')->count() }}
+                </span>
+            @endif
+        </button>
     @endif
 
     <!-- Toast Container -->
