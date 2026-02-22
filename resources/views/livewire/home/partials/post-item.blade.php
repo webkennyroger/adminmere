@@ -414,151 +414,167 @@
     </div>
 
     <!-- Delete Comment Modal -->
-    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
-        <div class="sm:flex sm:items-start gap-4">
-            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">
+    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-md'" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
+        <div class="px-4 py-8 sm:px-14 text-center">
+            <div class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
                 <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
-                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mt-1">Apagar Comentário</h3>
-                <div class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                    <p>Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita.</p>
-                </div>
-            </div>
+            
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200">
+                Apagar Comentário
+            </h3>
+            <p class="text-gray-500 dark:text-neutral-400">
+                Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita.
+            </p>
         </div>
-        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
+
+        <div class="flex items-center">
             <button type="button" wire:click="cancelDelete"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-400 dark:bg-yellow-500 text-white hover:bg-yellow-500 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-colors">
                 Cancelar
             </button>
             <button type="button" wire:click="deleteComment"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-red-600 dark:bg-red-500 border border-transparent text-white hover:bg-red-700 dark:hover:bg-red-600 focus:outline-hidden disabled:opacity-50 transition-colors">
                 Apagar Comentário
             </button>
         </div>
     </x-ui.modal>
 
     <!-- Edit Post Modal -->
-    <x-ui.modal wire:model="editingPost" :showCloseButton="true" wire:key="edit-post-modal-{{ $post->id }}">
-        <div>
-            <h3 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">Editar Publicação</h3>
+    <x-ui.modal wire:model="editingPost" :showCloseButton="true" wire:key="edit-post-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
+        <div class="p-4 sm:p-6 pb-2 sm:pb-4">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-neutral-200 mb-6">Editar Publicação</h3>
 
             <div class="space-y-4">
                 <!-- Title Input -->
-                <div class="space-y-1.5 focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-white rounded-xl bg-zinc-50 dark:bg-zinc-800/50 p-1 border border-zinc-200 dark:border-zinc-700 transition-all">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 px-3 pt-2">Título (opcional)</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Título (opcional)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none px-3 pb-2 text-sm text-zinc-900 dark:text-white focus:ring-0 placeholder-zinc-400" placeholder="Insira o título...">
+                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400" placeholder="Insira o título...">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                 <!-- Content Input -->
-                <div class="space-y-1.5 focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-white rounded-xl bg-zinc-50 dark:bg-zinc-800/50 p-1 border border-zinc-200 dark:border-zinc-700 transition-all">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 px-3 pt-2">Conteúdo</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Conteúdo</label>
                     <textarea wire:model="editContent" rows="4"
-                        class="w-full bg-transparent border-none px-3 pb-2 text-sm text-zinc-900 dark:text-white focus:ring-0 placeholder-zinc-400 resize-none" placeholder="O que você deseja compartilhar?"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none" placeholder="O que você deseja compartilhar?"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
-        </div>
-        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-            <button type="button" wire:click="cancelEditingPost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-all">
-                Cancelar
-            </button>
-            <button type="button" wire:click="updatePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-green-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 transition-all">
-                Salvar Alterações
-            </button>
+            
+            <div class="mt-8 flex items-center justify-start gap-3">
+                <button type="button" wire:click="cancelEditingPost"
+                    class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                    Cancelar
+                </button>
+                <button type="button" wire:click="updatePost"
+                    class="inline-flex justify-center items-center rounded-lg bg-green-600 dark:bg-green-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 dark:hover:bg-green-600 transition-all">
+                    Salvar Alterações
+                </button>
+            </div>
         </div>
     </x-ui.modal>
 
     <!-- Delete Post Modal -->
-    <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
-        <div class="sm:flex sm:items-start gap-4">
-            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">
-                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
-                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mt-1">Apagar Publicação</h3>
-                <div class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                    <p>Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos.</p>
+    <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-[700px]'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
+        <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+                    <svg class="h-5 w-5 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-neutral-200">Apagar Publicação</h3>
                 </div>
             </div>
-        </div>
-        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-            <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
-                Cancelar
-            </button>
-            <button type="button" wire:click="deletePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
-                {{ $post->type === 'poll' ? 'Apagar Enquete' : 'Apagar Publicação' }}
-            </button>
+            
+            <p class="text-sm text-gray-500 dark:text-neutral-400 pl-14">
+                Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos.
+            </p>
+
+            <div class="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
+                <div class="flex items-center justify-start gap-3 pl-14">
+                    <button type="button" @click="open = false; $wire.cancelDeletePost()"
+                        class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                        Cancelar
+                    </button>
+                    <button type="button" wire:click="deletePost"
+                        class="inline-flex justify-center items-center rounded-lg bg-red-600 dark:bg-red-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-red-700 dark:hover:bg-red-600 transition-all">
+                        {{ $post->type === 'poll' ? 'Apagar Enquete' : 'Apagar Publicação' }}
+                    </button>
+                </div>
+            </div>
         </div>
     </x-ui.modal>
 
     <!-- Delete Poll Modal -->
-    <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
-        <div class="sm:flex sm:items-start gap-4">
-            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">
-                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
-                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mt-1">Apagar Enquete</h3>
-                <div class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                    <p>Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos.</p>
+    <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-[700px]'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
+        <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+                    <svg class="h-5 w-5 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-neutral-200">Apagar Enquete</h3>
                 </div>
             </div>
-        </div>
-        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-            <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
-                Cancelar
-            </button>
-            <button type="button" wire:click="deletePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
-                Apagar Enquete
-            </button>
+            
+            <p class="text-sm text-gray-500 dark:text-neutral-400 pl-14">
+                Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos.
+            </p>
+
+            <div class="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
+                <div class="flex items-center justify-start gap-3 pl-14">
+                    <button type="button" @click="open = false; $wire.cancelDeletePost()"
+                        class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                        Cancelar
+                    </button>
+                    <button type="button" wire:click="deletePost"
+                        class="inline-flex justify-center items-center rounded-lg bg-red-600 dark:bg-red-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-red-700 dark:hover:bg-red-600 transition-all">
+                        Apagar Enquete
+                    </button>
+                </div>
+            </div>
         </div>
     </x-ui.modal>
 
     <!-- Edit Poll Modal -->
-    <x-ui.modal wire:model="editingPoll" :showCloseButton="true" wire:key="edit-poll-modal-{{ $post->id }}">
-        <div>
-            <h3 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">Editar Enquete</h3>
+    <x-ui.modal wire:model="editingPoll" :showCloseButton="true" wire:key="edit-poll-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
+        <div class="p-4 sm:p-6 pb-2 sm:pb-4">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-neutral-200 mb-6">Editar Enquete</h3>
 
             <div class="space-y-4">
-                <div class="space-y-1.5 focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-white rounded-xl bg-zinc-50 dark:bg-zinc-800/50 p-1 border border-zinc-200 dark:border-zinc-700 transition-all">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 px-3 pt-2">Título (Opcional)</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Título (Opcional)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none px-3 pb-2 text-sm text-zinc-900 dark:text-white focus:ring-0 placeholder-zinc-400">
+                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
-                <div class="space-y-1.5 focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-white rounded-xl bg-zinc-50 dark:bg-zinc-800/50 p-1 border border-zinc-200 dark:border-zinc-700 transition-all">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 px-3 pt-2">Pergunta da Enquete</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Pergunta da Enquete</label>
                     <textarea wire:model="editContent" rows="3"
-                        class="w-full bg-transparent border-none px-3 pb-2 text-sm text-zinc-900 dark:text-white focus:ring-0 placeholder-zinc-400 resize-none"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
-        </div>
-        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-            <button type="button" wire:click="cancelEditingPost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-all">
-                Cancelar
-            </button>
-            <button type="button" wire:click="updatePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-green-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 transition-all">
-                Salvar Enquete
-            </button>
+            
+            <div class="mt-8 flex items-center justify-start gap-3">
+                <button type="button" wire:click="cancelEditingPost"
+                    class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                    Cancelar
+                </button>
+                <button type="button" wire:click="updatePost"
+                    class="inline-flex justify-center items-center rounded-lg bg-green-600 dark:bg-green-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 dark:hover:bg-green-600 transition-all">
+                    Salvar Enquete
+                </button>
+            </div>
         </div>
     </x-ui.modal>
 </div>
