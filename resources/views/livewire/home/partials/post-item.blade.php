@@ -414,7 +414,7 @@
     </div>
 
     <!-- Delete Comment Modal -->
-    <x-ui.modal :isOpen="!!$confirmingCommentDeletion" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
+    <x-ui.modal wire:model="confirmingCommentDeletion" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <x-ui.alert variant="error" title="Apagar comentário"
@@ -434,7 +434,7 @@
     </x-ui.modal>
 
     <!-- Edit Post Modal -->
-    <x-ui.modal :isOpen="$editingPost" :showCloseButton="false" wire:key="edit-post-modal-{{ $post->id }}">
+    <x-ui.modal wire:model="editingPost" :showCloseButton="false" wire:key="edit-post-modal-{{ $post->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Publicação</h3>
@@ -472,7 +472,7 @@
     </x-ui.modal>
 
     <!-- Delete Post Modal -->
-    <x-ui.modal :isOpen="$confirmingPostDeletion" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
+    <x-ui.modal wire:model="confirmingPostDeletion" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <x-ui.alert variant="error" title="Apagar publicação"
@@ -492,7 +492,7 @@
     </x-ui.modal>
 
     <!-- Delete Poll Modal -->
-    <x-ui.modal :isOpen="$confirmingPollDeletion" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
+    <x-ui.modal wire:model="confirmingPollDeletion" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <x-ui.alert variant="error" title="Apagar Enquete"
@@ -512,7 +512,7 @@
     </x-ui.modal>
 
     <!-- Edit Poll Modal -->
-    <x-ui.modal :isOpen="$editingPoll" :showCloseButton="false" wire:key="edit-poll-modal-{{ $post->id }}">
+    <x-ui.modal wire:model="editingPoll" :showCloseButton="false" wire:key="edit-poll-modal-{{ $post->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Enquete</h3>

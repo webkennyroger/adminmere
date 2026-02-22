@@ -3,8 +3,13 @@
     'showCloseButton' => true,
 ])
 
+@php
+    $wireModel = $attributes->wire('model');
+    $entangle = $wireModel->value() ? "\$wire.entangle('".$wireModel->value()."')" : null;
+@endphp
+
 <div x-data="{
-    open: @js($isOpen),
+    open: {{ $entangle ?? '@js($isOpen)' }},
     init() {
         this.$watch('open', value => {
             if (value) {
@@ -14,9 +19,9 @@
             }
         });
     }
-}" x-effect="open = @js($isOpen)" x-show="open" x-cloak @keydown.escape.window="open = false"
+}" {{ $entangle ? '' : 'x-effect=open=' . ($isOpen ? 'true' : 'false') }} x-show="open" x-cloak @keydown.escape.window="open = false"
     class="modal fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5"
-    {{ $attributes->except('class') }}>
+    {{ $attributes->whereDoesntStartWith('wire:model')->except('class') }}>
 
     <!-- Backdrop -->
     <div @click="open = false" class="fixed inset-0 h-full w-full bg-zinc-400/50 backdrop-blur-[32px]"

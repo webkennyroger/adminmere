@@ -409,7 +409,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <x-ui.modal :isOpen="!!$confirmingCommentDeletion" :showCloseButton="false"
+    <x-ui.modal wire:model="confirmingCommentDeletion" :showCloseButton="false"
         wire:key="delete-comment-modal-activity-{{ $activity->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
@@ -430,7 +430,8 @@
     </x-ui.modal>
 
     <!-- Edit Activity Modal -->
-    <x-ui.modal :isOpen="$editingActivity" :showCloseButton="false" wire:key="edit-activity-modal-{{ $activity->id }}">
+    <x-ui.modal wire:model="editingActivity" :showCloseButton="false"
+        wire:key="edit-activity-modal-{{ $activity->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Atividade</h3>
@@ -467,7 +468,7 @@
     </x-ui.modal>
 
     <!-- Delete Activity Confirmation Modal -->
-    <x-ui.modal :isOpen="$confirmingActivityDeletion" :showCloseButton="false"
+    <x-ui.modal wire:model="confirmingActivityDeletion" :showCloseButton="false"
         wire:key="delete-activity-modal-{{ $activity->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
