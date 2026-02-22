@@ -62,19 +62,19 @@
                         class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                         Salvar post
                     </button>
-                    @if(auth()->id() === $activity->user_id || auth()->user()->isAdmin())
-                        <button wire:click="startEditingPost"
+                    @if(auth()->id() == $activity->user_id || auth()->user()->isAdmin())
+                        <button wire:click="startEditingActivity"
                             class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Editar post
+                            Editar atividade
                         </button>
-                        <button wire:click="confirmDeletePost"
+                        <button wire:click="confirmDeleteActivity"
                             class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Excluir post
+                            Excluir atividade
                         </button>
                     @else
                         <button
                             class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Denunciar post
+                            Denunciar atividade
                         </button>
                     @endif
                 </div>
@@ -424,11 +424,11 @@
         </div>
     </x-ui.modal>
 
-    <!-- Edit Post Modal -->
-    <x-ui.modal :isOpen="$editingPost" :showCloseButton="false">
+    <!-- Edit Activity Modal -->
+    <x-ui.modal :isOpen="$editingActivity" :showCloseButton="false">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
-                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Publicação</h3>
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Atividade</h3>
 
                 <div class="space-y-3">
                     <!-- Title Input -->
@@ -450,31 +450,31 @@
             </div>
         </div>
         <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
-            <button type="button" wire:click="updatePost"
+            <button type="button" wire:click="updateActivity"
                 class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 sm:w-auto">
                 Salvar
             </button>
-            <button type="button" wire:click="cancelEditingPost"
+            <button type="button" wire:click="cancelEditingActivity"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
                 Cancelar
             </button>
         </div>
     </x-ui.modal>
 
-    <!-- Delete Post Confirmation Modal -->
-    <x-ui.modal :isOpen="$confirmingPostDeletion" :showCloseButton="false">
+    <!-- Delete Activity Confirmation Modal -->
+    <x-ui.modal :isOpen="$confirmingActivityDeletion" :showCloseButton="false">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
-                <x-ui.alert variant="error" title="Apagar publicação"
-                    message="Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos." />
+                <x-ui.alert variant="error" title="Apagar atividade"
+                    message="Tem certeza que deseja remover esta atividade? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos." />
             </div>
         </div>
         <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
-            <button type="button" wire:click="deletePost"
+            <button type="button" wire:click="deleteActivity"
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
-                Apagar Publicação
+                Apagar Atividade
             </button>
-            <button type="button" wire:click="cancelDeletePost"
+            <button type="button" wire:click="cancelDeleteActivity"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
                 Cancelar
             </button>

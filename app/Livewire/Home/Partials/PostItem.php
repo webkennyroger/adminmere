@@ -25,11 +25,16 @@ class PostItem extends Component
     // Edit/Delete Post
     public $editingPost = false;
 
+    public $confirmingPostDeletion = false;
+
+    // Edit/Delete Poll
+    public $editingPoll = false;
+
+    public $confirmingPollDeletion = false;
+
     public $editTitle = '';
 
     public $editContent = '';
-
-    public $confirmingPostDeletion = false;
 
     public function mount(Post $post)
     {
@@ -48,12 +53,18 @@ class PostItem extends Component
         }
         $this->editTitle = $this->post->title ?? '';
         $this->editContent = $this->post->content ?? '';
-        $this->editingPost = true;
+
+        if ($this->post->type === 'poll') {
+            $this->editingPoll = true;
+        } else {
+            $this->editingPost = true;
+        }
     }
 
     public function cancelEditingPost()
     {
         $this->editingPost = false;
+        $this->editingPoll = false;
         $this->editTitle = $this->post->title ?? '';
         $this->editContent = $this->post->content ?? '';
     }
@@ -69,7 +80,7 @@ class PostItem extends Component
 
         $this->validate([
             'editTitle' => 'nullable|string|max:100',
-            'editContent' => 'required|string',
+            'editContent' => 'nullable|string',
         ]);
 
         $this->post->update([
@@ -78,8 +89,10 @@ class PostItem extends Component
         ]);
 
         $this->editingPost = false;
+        $this->editingPoll = false;
         $this->post->refresh();
-        session()->flash('message', 'Post atualizado com sucesso!');
+        $message = $this->post->type === 'poll' ? 'Enquete atualizada!' : 'Post atualizado!';
+        session()->flash('message', $message);
     }
 
     public function confirmDeletePost()
@@ -90,12 +103,18 @@ class PostItem extends Component
 
             return;
         }
-        $this->confirmingPostDeletion = true;
+
+        if ($this->post->type === 'poll') {
+            $this->confirmingPollDeletion = true;
+        } else {
+            $this->confirmingPostDeletion = true;
+        }
     }
 
     public function cancelDeletePost()
     {
         $this->confirmingPostDeletion = false;
+        $this->confirmingPollDeletion = false;
     }
 
     public function deletePost()
@@ -109,8 +128,10 @@ class PostItem extends Component
 
         $this->post->delete();
         $this->confirmingPostDeletion = false;
+        $this->confirmingPollDeletion = false;
         $this->dispatch('post-deleted');
-        session()->flash('message', 'Post deletado com sucesso!');
+        $message = $this->post->type === 'poll' ? 'Enquete excluída!' : 'Post excluído!';
+        session()->flash('message', $message);
     }
 
     public function confirmDelete($commentId)
@@ -181,8 +202,8 @@ class PostItem extends Component
         $comment = Comment::find($commentId);
 
         if ($comment) {
-            $isCommentOwner = $comment->user_id === $user->id;
-            $isPostOwner = $this->post->user_id === $user->id;
+            $isCommentOwner = $comment->user_id == $user->id;
+            $isPostOwner = $this->post->user_id == $user->id;
 
             if ($isCommentOwner || $isPostOwner || auth()->user()->isAdmin()) {
                 $comment->delete();

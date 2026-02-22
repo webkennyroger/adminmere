@@ -1,4 +1,14 @@
 <div class="space-y-6">
+    @if (session()->has('error'))
+        <div class="p-4 bg-red-100 border border-red-200 text-red-700 rounded-2xl shadow-sm mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if (session()->has('message'))
+        <div class="p-4 bg-green-100 border border-green-200 text-green-700 rounded-2xl shadow-sm mb-4">
+            {{ session('message') }}
+        </div>
+    @endif
     {{-- ─── Card de criar publicação (apenas em feed=timeline) ─────────── --}}
     @if(isset($feed) && $feed === 'timeline')
         <div x-data="{ modalFoto: false, modalVideo: false, modalEvento: false, modalEnquete: false }"

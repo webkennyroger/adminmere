@@ -22,14 +22,14 @@ class ActivityItem extends Component
 
     public $filteredUsers = []; // For mentions
 
-    // Edit/Delete Post
-    public $editingPost = false;
+    // Edit/Delete Activity
+    public $editingActivity = false;
 
     public $editTitle = '';
 
     public $editContent = '';
 
-    public $confirmingPostDeletion = false;
+    public $confirmingActivityDeletion = false;
 
     public function mount(Activity $activity)
     {
@@ -38,7 +38,7 @@ class ActivityItem extends Component
         $this->editContent = $activity->description ?? '';
     }
 
-    public function startEditingPost()
+    public function startEditingActivity()
     {
         $user = auth()->user();
         if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
@@ -46,17 +46,19 @@ class ActivityItem extends Component
 
             return;
         }
-        $this->editingPost = true;
+        $this->editTitle = $this->activity->title ?? '';
+        $this->editContent = $this->activity->description ?? '';
+        $this->editingActivity = true;
     }
 
-    public function cancelEditingPost()
+    public function cancelEditingActivity()
     {
-        $this->editingPost = false;
+        $this->editingActivity = false;
         $this->editTitle = $this->activity->title ?? '';
         $this->editContent = $this->activity->description ?? '';
     }
 
-    public function updatePost()
+    public function updateActivity()
     {
         $user = auth()->user();
         if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
@@ -75,12 +77,12 @@ class ActivityItem extends Component
             'description' => $this->editContent,
         ]);
 
-        $this->editingPost = false;
+        $this->editingActivity = false;
         $this->activity->refresh();
-        session()->flash('message', 'Post atualizado com sucesso!');
+        session()->flash('message', 'Atividade atualizada com sucesso!');
     }
 
-    public function confirmDeletePost()
+    public function confirmDeleteActivity()
     {
         $user = auth()->user();
         if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
@@ -88,15 +90,15 @@ class ActivityItem extends Component
 
             return;
         }
-        $this->confirmingPostDeletion = true;
+        $this->confirmingActivityDeletion = true;
     }
 
-    public function cancelDeletePost()
+    public function cancelDeleteActivity()
     {
-        $this->confirmingPostDeletion = false;
+        $this->confirmingActivityDeletion = false;
     }
 
-    public function deletePost()
+    public function deleteActivity()
     {
         $user = auth()->user();
         if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
@@ -106,9 +108,9 @@ class ActivityItem extends Component
         }
 
         $this->activity->delete();
-        $this->confirmingPostDeletion = false;
+        $this->confirmingActivityDeletion = false;
         $this->dispatch('activity-deleted');
-        session()->flash('message', 'Post deletado com sucesso!');
+        session()->flash('message', 'Atividade deletada com sucesso!');
     }
 
     public function confirmDelete($commentId)
@@ -177,8 +179,8 @@ class ActivityItem extends Component
         $comment = Comment::find($commentId);
 
         if ($comment) {
-            $isCommentOwner = $comment->user_id === $user->id;
-            $isActivityOwner = $this->activity->user_id === $user->id; // Logic simplified since we have context
+            $isCommentOwner = $comment->user_id == $user->id;
+            $isActivityOwner = $this->activity->user_id == $user->id; // Logic simplified since we have context
 
             if ($isCommentOwner || $isActivityOwner || auth()->user()->isAdmin()) {
                 $comment->delete();

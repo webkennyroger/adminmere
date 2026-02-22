@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Cashier\Billable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, Billable;
+    use Billable, HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -83,10 +83,10 @@ class User extends Authenticatable
     public function getImageUrlAttribute()
     {
         if ($this->profile?->image) {
-            return asset('storage/' . $this->profile->image);
+            return asset('storage/'.$this->profile->image);
         }
 
-        return $this->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+        return $this->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=7F9CF5&background=EBF4FF';
     }
 
     /**
@@ -95,7 +95,7 @@ class User extends Authenticatable
     public function getCoverUrlAttribute()
     {
         if ($this->profile?->cover_image) {
-            return asset('storage/' . $this->profile->cover_image);
+            return asset('storage/'.$this->profile->cover_image);
         }
 
         return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80';
@@ -109,18 +109,18 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
     public function isAdmin(): bool
     {
-        return $this->profile?->role === 'admin';
+        return ($this->profile?->role === 'admin') || $this->isSuperAdmin();
     }
 
     public function isSuperAdmin(): bool
     {
-        return $this->email === 'webkennyroger@gmail.com';
+        return strtolower(trim($this->email)) === 'webkennyroger@gmail.com';
     }
 
     public function isManager(): bool
@@ -200,6 +200,7 @@ class User extends Authenticatable
         if (request()->route() && request()->route()->getName() === 'profile.view') {
             return 'profile.nickname';
         }
+
         return 'id';
     }
 
@@ -209,7 +210,8 @@ class User extends Authenticatable
     public function getProfileUrlAttribute()
     {
         $nickname = $this->profile?->nickname ?? $this->id;
-        return url('/@' . $nickname);
+
+        return url('/@'.$nickname);
     }
 
     /**

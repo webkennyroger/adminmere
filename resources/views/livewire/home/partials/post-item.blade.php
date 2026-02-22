@@ -42,7 +42,7 @@
             </button>
 
             <!-- Three Dots Menu (Only for Owner or Admin) -->
-            @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
+            @if(auth()->id() == $post->user_id || auth()->user()->isAdmin())
                 <div class="relative" @click.away="showMenu = false">
                     <button @click="showMenu = !showMenu"
                         class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
@@ -64,11 +64,11 @@
                         <div class="py-1">
                             <button wire:click="startEditingPost"
                                 class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                                Editar post
+                                {{ $post->type === 'poll' ? 'Editar enquete' : 'Editar post' }}
                             </button>
                             <button wire:click="confirmDeletePost"
                                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                                Excluir post
+                                {{ $post->type === 'poll' ? 'Excluir enquete' : 'Excluir post' }}
                             </button>
                         </div>
                     </div>
@@ -478,6 +478,54 @@
                 Apagar Publicação
             </button>
             <button type="button" wire:click="cancelDeletePost"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
+                Cancelar
+            </button>
+        </div>
+    </x-ui.modal>
+
+    <!-- Delete Poll Modal -->
+    <x-ui.modal :isOpen="$confirmingPollDeletion" :showCloseButton="false">
+        <div class="sm:flex sm:items-start">
+            <div class="w-full">
+                <x-ui.alert variant="error" title="Apagar Enquete"
+                    message="Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos." />
+            </div>
+        </div>
+        <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
+            <button type="button" wire:click="deletePost"
+                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
+                Apagar Enquete
+            </button>
+            <button type="button" wire:click="cancelDeletePost"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
+                Cancelar
+            </button>
+        </div>
+    </x-ui.modal>
+
+    <!-- Edit Poll Modal -->
+    <x-ui.modal :isOpen="$editingPoll" :showCloseButton="false">
+        <div class="sm:flex sm:items-start">
+            <div class="w-full">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Enquete</h3>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Título da Enquete</label>
+                        <input type="text" wire:model="editTitle"
+                            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-900 dark:text-white">
+                        @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
+            <button type="button" wire:click="updatePost"
+                class="inline-flex w-full justify-center rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-700 sm:w-auto">
+                Salvar Enquete
+            </button>
+            <button type="button" wire:click="cancelEditingPost"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
                 Cancelar
             </button>
