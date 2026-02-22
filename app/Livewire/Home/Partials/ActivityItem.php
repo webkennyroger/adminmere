@@ -40,8 +40,11 @@ class ActivityItem extends Component
 
     public function startEditingPost()
     {
-        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can edit
+        $user = auth()->user();
+        if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para editar.');
+
+            return;
         }
         $this->editingPost = true;
     }
@@ -55,8 +58,11 @@ class ActivityItem extends Component
 
     public function updatePost()
     {
-        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can edit
+        $user = auth()->user();
+        if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para editar.');
+
+            return;
         }
 
         $this->validate([
@@ -76,8 +82,11 @@ class ActivityItem extends Component
 
     public function confirmDeletePost()
     {
-        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can delete
+        $user = auth()->user();
+        if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para excluir.');
+
+            return;
         }
         $this->confirmingPostDeletion = true;
     }
@@ -89,8 +98,11 @@ class ActivityItem extends Component
 
     public function deletePost()
     {
-        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can delete
+        $user = auth()->user();
+        if ($this->activity->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para excluir.');
+
+            return;
         }
 
         $this->activity->delete();

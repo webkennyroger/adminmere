@@ -40,9 +40,14 @@ class PostItem extends Component
 
     public function startEditingPost()
     {
-        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can edit
+        $user = auth()->user();
+        if ($this->post->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para editar.');
+
+            return;
         }
+        $this->editTitle = $this->post->title ?? '';
+        $this->editContent = $this->post->content ?? '';
         $this->editingPost = true;
     }
 
@@ -55,13 +60,16 @@ class PostItem extends Component
 
     public function updatePost()
     {
-        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can edit
+        $user = auth()->user();
+        if ($this->post->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para editar.');
+
+            return;
         }
 
         $this->validate([
             'editTitle' => 'nullable|string|max:100',
-            'editContent' => 'nullable|string',
+            'editContent' => 'required|string',
         ]);
 
         $this->post->update([
@@ -76,8 +84,11 @@ class PostItem extends Component
 
     public function confirmDeletePost()
     {
-        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can delete
+        $user = auth()->user();
+        if ($this->post->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para excluir.');
+
+            return;
         }
         $this->confirmingPostDeletion = true;
     }
@@ -89,8 +100,11 @@ class PostItem extends Component
 
     public function deletePost()
     {
-        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            return; // Only owner or admin can delete
+        $user = auth()->user();
+        if ($this->post->user_id != $user->id && ! $user->isAdmin()) {
+            session()->flash('error', 'Sem permissão para excluir.');
+
+            return;
         }
 
         $this->post->delete();
@@ -130,7 +144,7 @@ class PostItem extends Component
 
         // Use the relationship directly instead of getting a stdClass/Model instance first
         $existingLikeQuery = $this->post->allLikes()->where('user_id', $user->id);
-        
+
         if ($existingLikeQuery->exists()) {
             $existingLikeQuery->delete();
         } else {
@@ -241,13 +255,15 @@ class PostItem extends Component
 
     public function vote($optionId)
     {
-        if (!$this->post->is_poll) return;
+        if (! $this->post->is_poll) {
+            return;
+        }
 
         $user = auth()->user();
-        $isMultiple = (bool)(is_array($this->post->meta) && ($this->post->meta['isMultiple'] ?? false));
-        
+        $isMultiple = (bool) (is_array($this->post->meta) && ($this->post->meta['isMultiple'] ?? false));
+
         // Single choice check
-        if (!$isMultiple && $this->post->hasVoted($user)) {
+        if (! $isMultiple && $this->post->hasVoted($user)) {
             return;
         }
 
@@ -257,7 +273,9 @@ class PostItem extends Component
         }
 
         $option = \App\Models\PollOption::find($optionId);
-        if (!$option || $option->post_id !== $this->post->id) return;
+        if (! $option || $option->post_id !== $this->post->id) {
+            return;
+        }
 
         \App\Models\PollVote::create([
             'user_id' => $user->id,
@@ -266,7 +284,7 @@ class PostItem extends Component
         ]);
 
         $option->increment('votes_count');
-        
+
         $this->post->refresh();
     }
 

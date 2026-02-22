@@ -1,5 +1,17 @@
 <div x-data="{ showMenu: false }"
     class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+    @if (session()->has('error'))
+        <div class="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm font-medium flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+            {{ session('error') }}
+        </div>
+    @endif
+    @if (session()->has('message'))
+        <div class="p-4 bg-green-50 border-b border-green-100 text-green-600 text-sm font-medium flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            {{ session('message') }}
+        </div>
+    @endif
     <!-- Post Header -->
     <div class="flex justify-between items-start p-4 pb-3">
         <div class="flex items-center gap-3 flex-1">
@@ -50,11 +62,11 @@
                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
                         style="display: none;">
                         <div class="py-1">
-                            <button wire:click="startEditingPost" @click="showMenu = false"
+                            <button wire:click="startEditingPost"
                                 class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                                 Editar post
                             </button>
-                            <button wire:click="confirmDeletePost" @click="showMenu = false"
+                            <button wire:click="confirmDeletePost"
                                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                                 Excluir post
                             </button>
