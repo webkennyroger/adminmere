@@ -519,10 +519,17 @@
 
                 <div class="space-y-3">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Título da Enquete</label>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Título da Enquete (opcional)</label>
                         <input type="text" wire:model="editTitle"
                             class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-900 dark:text-white">
                         @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Pergunta</label>
+                        <textarea wire:model="editContent" rows="3"
+                            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-900 dark:text-white resize-none"></textarea>
+                        @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>
