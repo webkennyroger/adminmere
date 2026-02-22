@@ -1,5 +1,9 @@
-<div x-data="{ showMenu: false }"
-    class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+<div x-data="{ 
+    showMenu: false,
+    editingActivity: @entangle('editingActivity'),
+    confirmingActivityDeletion: @entangle('confirmingActivityDeletion'),
+    confirmingCommentDeletion: @entangle('confirmingCommentDeletion')
+}" class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
     @if (session()->has('error'))
         <div class="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm font-medium flex items-center gap-2">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -60,14 +64,14 @@
                 <div class="py-1">
                     <button
                         class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                        Salvar post
+                        Salvar atividade
                     </button>
                     @if(auth()->id() == $activity->user_id || auth()->user()->isAdmin())
-                        <button wire:click="startEditingActivity"
+                        <button @click="showMenu = false; $wire.startEditingActivity()"
                             class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Editar atividade
                         </button>
-                        <button wire:click="confirmDeleteActivity"
+                        <button @click="showMenu = false; $wire.confirmDeleteActivity()"
                             class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Excluir atividade
                         </button>
@@ -405,7 +409,8 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <x-ui.modal :isOpen="!!$confirmingCommentDeletion" :showCloseButton="false">
+    <x-ui.modal :isOpen="!!$confirmingCommentDeletion" :showCloseButton="false"
+        wire:key="delete-comment-modal-activity-{{ $activity->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <x-ui.alert variant="error" title="Apagar comentário"
@@ -425,7 +430,7 @@
     </x-ui.modal>
 
     <!-- Edit Activity Modal -->
-    <x-ui.modal :isOpen="$editingActivity" :showCloseButton="false">
+    <x-ui.modal :isOpen="$editingActivity" :showCloseButton="false" wire:key="edit-activity-modal-{{ $activity->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Editar Atividade</h3>
@@ -462,7 +467,8 @@
     </x-ui.modal>
 
     <!-- Delete Activity Confirmation Modal -->
-    <x-ui.modal :isOpen="$confirmingActivityDeletion" :showCloseButton="false">
+    <x-ui.modal :isOpen="$confirmingActivityDeletion" :showCloseButton="false"
+        wire:key="delete-activity-modal-{{ $activity->id }}">
         <div class="sm:flex sm:items-start">
             <div class="w-full">
                 <x-ui.alert variant="error" title="Apagar atividade"
@@ -474,7 +480,7 @@
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
                 Apagar Atividade
             </button>
-            <button type="button" wire:click="cancelDeleteActivity"
+            <button type="button" @click="showMenu = false; $wire.cancelDeleteActivity()"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 sm:mt-0 sm:w-auto dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700">
                 Cancelar
             </button>

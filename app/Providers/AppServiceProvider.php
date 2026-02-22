@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\App;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        App::setLocale('pt_BR');
+        Carbon::setLocale('pt_BR');
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'portuguese');
+
         if($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
