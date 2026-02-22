@@ -414,18 +414,27 @@
     </div>
 
     <!-- Delete Comment Modal -->
-    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-md'" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
-        <div class="flex flex-col gap-4">
-            <x-ui.alert variant="error" title="Apagar comentário"
-                message="Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita." />
+    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
+        <div class="sm:flex sm:items-start gap-4">
+            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
+                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mt-1">Apagar Comentário</h3>
+                <div class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                    <p>Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita.</p>
+                </div>
+            </div>
         </div>
-        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" wire:click="cancelDelete"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-white dark:bg-zinc-800 px-5 py-2.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="deleteComment"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-500 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
                 Apagar Comentário
             </button>
         </div>
@@ -454,49 +463,67 @@
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
         </div>
-        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" wire:click="cancelEditingPost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-white dark:bg-zinc-800 px-6 py-2.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-zinc-900 dark:bg-white px-6 py-2.5 text-sm font-bold text-white dark:text-zinc-900 shadow-xl shadow-zinc-900/10 hover:scale-105 active:scale-95 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-green-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 transition-all">
                 Salvar Alterações
             </button>
         </div>
     </x-ui.modal>
 
     <!-- Delete Post Modal -->
-    <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-md'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
-        <div class="flex flex-col gap-4">
-            <x-ui.alert variant="error" title="Apagar publicação"
-                message="Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos." />
+    <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
+        <div class="sm:flex sm:items-start gap-4">
+            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
+                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mt-1">Apagar Publicação</h3>
+                <div class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                    <p>Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos.</p>
+                </div>
+            </div>
         </div>
-        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-white dark:bg-zinc-800 px-5 py-2.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-500 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
                 {{ $post->type === 'poll' ? 'Apagar Enquete' : 'Apagar Publicação' }}
             </button>
         </div>
     </x-ui.modal>
 
     <!-- Delete Poll Modal -->
-    <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-md'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
-        <div class="flex flex-col gap-4">
-            <x-ui.alert variant="error" title="Apagar Enquete"
-                message="Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos." />
+    <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
+        <div class="sm:flex sm:items-start gap-4">
+            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
+                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mt-1">Apagar Enquete</h3>
+                <div class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                    <p>Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos.</p>
+                </div>
+            </div>
         </div>
-        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-white dark:bg-zinc-800 px-5 py-2.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-500 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
                 Apagar Enquete
             </button>
         </div>
@@ -523,13 +550,13 @@
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
         </div>
-        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" wire:click="cancelEditingPost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-white dark:bg-zinc-800 px-6 py-2.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-zinc-900 dark:bg-white px-6 py-2.5 text-sm font-bold text-white dark:text-zinc-900 shadow-xl shadow-zinc-900/10 hover:scale-105 active:scale-95 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-green-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 transition-all">
                 Salvar Enquete
             </button>
         </div>

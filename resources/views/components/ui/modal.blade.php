@@ -1,8 +1,7 @@
 @props([
     'isOpen' => false,
     'showCloseButton' => true,
-    'maxWidth' => 'sm:max-w-xl',
-    'padding' => 'p-6 sm:p-8',
+    'maxWidth' => 'sm:max-w-lg',
 ])
 
 @php
@@ -22,7 +21,7 @@
         });
     }
 }" {{ $entangle ? '' : 'x-effect=open=' . ($isOpen ? 'true' : 'false') }} x-show="open" x-cloak @keydown.escape.window="open = false"
-    class="relative z-[99999]" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+    class="fixed inset-0 z-[100] w-full h-full overflow-x-hidden overflow-y-auto pointer-events-none" aria-labelledby="modal-title" role="dialog" aria-modal="true"
     {{ $attributes->whereDoesntStartWith('wire:model')->except('class') }}>
 
     <!-- Backdrop -->
@@ -33,39 +32,36 @@
         x-transition:leave="ease-in duration-200"
         x-transition:leave-start="opacity-100" 
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-zinc-900/50 backdrop-blur-sm dark:bg-black/60 transition-opacity">
+        @click="open = false"
+        class="fixed inset-0 bg-zinc-900/50 backdrop-blur-sm dark:bg-black/60 pointer-events-auto transition-opacity">
     </div>
 
-    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <!-- Modal Content -->
-            <div x-show="open" @click.away="open = false"
-                x-transition:enter="ease-out duration-300" 
-                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
-                x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                class="relative w-full {{ $maxWidth }} transform overflow-hidden rounded-[2rem] bg-white dark:bg-zinc-900 text-left shadow-2xl ring-1 ring-zinc-200/50 dark:ring-zinc-800 transition-all sm:my-8 {{ $padding }} {{ $attributes->get('class') }}">
-
-                <!-- Close Button -->
-                @if ($showCloseButton)
-                    <div class="absolute right-0 top-0 pr-5 pt-5 sm:pr-6 sm:pt-6 z-10">
-                        <button @click="open = false" type="button"
-                            class="rounded-full bg-zinc-50 dark:bg-zinc-800 p-2.5 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 transition-all focus:outline-none focus:ring-2 focus:ring-zinc-200">
-                            <span class="sr-only">Fechar</span>
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
-                @endif
-
-                <!-- Modal Body -->
-                <div class="relative">
-                    {{ $slot }}
+    <!-- Modal Content Centering Wrapper -->
+    <div class="mt-0 {{ $maxWidth }} w-full m-3 sm:mx-auto min-h-[calc(100%-1.5rem)] flex items-center justify-center pointer-events-none">
+        
+        <div x-show="open" 
+            x-transition:enter="ease-out duration-300" 
+            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            class="relative w-full max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl pointer-events-auto shadow-xl {{ $attributes->get('class') }}" @click.stop>
+            
+            <!-- Close Button -->
+            @if ($showCloseButton)
+                <div class="absolute top-2 right-2 md:top-3 md:right-3 z-10">
+                    <button @click="open = false" type="button"
+                        class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 focus:outline-none disabled:opacity-50 disabled:pointer-events-none transition-colors">
+                        <span class="sr-only">Fechar</span>
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
                 </div>
+            @endif
+
+            <!-- Modal Body -->
+            <div class="p-5 sm:p-6 overflow-y-auto">
+                {{ $slot }}
             </div>
         </div>
     </div>
