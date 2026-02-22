@@ -35,7 +35,8 @@ class Post extends Model
     protected static function booted()
     {
         static::deleting(function ($post) {
-            $post->comments()->delete();
+            // Use each->delete() to trigger Comment's own deleting event (for replies/likes)
+            $post->allComments()->get()->each->delete();
             $post->likes()->delete();
         });
     }
@@ -50,6 +51,14 @@ class Post extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable')->whereNull('parent_id')->latest();
+    }
+
+    /**
+     * Relation for all comments (including replies) used for deletion
+     */
+    public function allComments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     public function likes(): MorphMany

@@ -599,6 +599,7 @@ class ActivityController extends Controller
             'userAvatarUrl' => $comment->user->image_url,
             'text' => $comment->body,
             'timestamp' => $comment->created_at->toIso8601String(),
+            'parent_id' => (string) $comment->parent_id,
             'replies' => [],
             'isArchived' => false,
             'likes' => $comment->likes->count(),

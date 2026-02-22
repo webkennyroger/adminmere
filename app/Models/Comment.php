@@ -11,6 +11,16 @@ class Comment extends Model
 
     protected $fillable = ['user_id', 'body', 'commentable_id', 'commentable_type', 'parent_id'];
 
+    protected static function booted()
+    {
+        static::deleting(function ($comment) {
+            // Delete likes associated with this comment
+            $comment->likes()->delete();
+            // Delete replies (recursive)
+            $comment->replies()->get()->each->delete();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

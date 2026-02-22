@@ -38,7 +38,8 @@ class Activity extends Model
     protected static function booted()
     {
         static::deleting(function ($activity) {
-            $activity->comments()->delete();
+            // Use each->delete() to trigger Comment's own deleting event (for replies/likes)
+            $activity->comments()->get()->each->delete();
             $activity->likes()->delete();
         });
     }
