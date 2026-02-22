@@ -31,7 +31,7 @@ class PostController extends Controller
         $post = Post::create([
             'user_id' => $user->id,
             'title' => $request->title ?? '',
-            'content' => $request->content ?? '',
+            'content' => $request->input('content') ?? '',
             'type' => 'post', // Explicitly set type to post
             'media' => $request->mediaPaths ?? [],
             'privacy' => $request->privacy ?? 'public',
@@ -68,31 +68,7 @@ class PostController extends Controller
         ]);
     }
 
-    /**
-     * Toggle like on post.
-     */
-    public function toggleLike(Request $request, $id)
-    {
-        $cleanId = str_replace(['post_', 'poll_'], '', $id);
-        $post = Post::findOrFail($cleanId);
-        $user = $request->user();
 
-        $existingLike = $post->likes()->where('user_id', $user->id)->first();
-
-        if ($existingLike) {
-            $existingLike->delete();
-            $isLiked = false;
-        } else {
-            $post->likes()->create(['user_id' => $user->id]);
-            $isLiked = true;
-        }
-
-        return response()->json([
-            'success' => true,
-            'is_liked' => $isLiked,
-            'likes_count' => $post->likes()->count(),
-        ]);
-    }
 
     private function formatPost($post, $user)
     {

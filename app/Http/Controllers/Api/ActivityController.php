@@ -7,9 +7,11 @@ use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ResolvesActivityItems;
 
 class ActivityController extends Controller
 {
+    use ResolvesActivityItems;
     /**
      * Get list of user activities and posts with feed filtering.
      */
@@ -351,63 +353,7 @@ class ActivityController extends Controller
         ]);
     }
 
-    /**
-     * Toggle like on activity.
-     */
-    public function toggleLike(Request $request, $id)
-    {
-        $item = $this->resolveItem($id);
-        $user = $request->user();
 
-        $existingLike = $item->likes()->where('user_id', $user->id)->first();
-
-        if ($existingLike) {
-            $existingLike->delete();
-            $isLiked = false;
-        } else {
-            $item->likes()->create(['user_id' => $user->id]);
-            $isLiked = true;
-        }
-
-        return response()->json([
-            'success' => true,
-            'is_liked' => $isLiked,
-            'likes_count' => $item->likes()->count(),
-        ]);
-    }
-
-    /**
-     * Vote on a poll.
-     */
-    public function vote(Request $request, $id)
-    {
-        return response()->json(['success' => false, 'message' => 'Please use the Polls API for voting.'], 400);
-    }
-
-    /**
-     * Store comment on activity.
-     */
-    public function comment(Request $request, $id)
-    {
-        $request->validate([
-            'body' => 'required|string',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
-
-        $item = $this->resolveItem($id);
-        $user = $request->user();
-
-        $comment = $item->comments()->create([
-            'user_id' => $user->id,
-            'body' => $request->body,
-            'parent_id' => $request->parent_id,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'data' => $this->formatComment($comment->load('user'), $user->id),
-        ]);
-    }
 
     /**
      * Sync multiple activities from mobile app.
@@ -633,51 +579,7 @@ class ActivityController extends Controller
         ];
     }
 
-    /**
-     * Resolve item by prefixed ID.
-     */
-    private function resolveItem($id)
-    {
-        if (is_string($id) && (str_starts_with($id, 'post_') || str_starts_with($id, 'poll_'))) {
-            $realId = str_replace(['post_', 'poll_'], '', $id);
 
-            return \App\Models\Post::findOrFail($realId);
-        } elseif (is_string($id) && str_starts_with($id, 'activity_')) {
-            $realId = str_replace('activity_', '', $id);
-
-            return Activity::findOrFail($realId);
-        }
-
-        // Fallback for legacy numeric IDs (assume Activity)
-        return Activity::findOrFail($id);
-    }
-
-    /**
-     * Toggle like on comment.
-     */
-    public function toggleCommentLike(Request $request, $id)
-    {
-        $comment = \App\Models\Comment::findOrFail($id);
-        $user = $request->user();
-
-        $existingLike = $comment->likes()->where('user_id', $user->id)->first();
-
-        if ($existingLike) {
-            $existingLike->delete();
-            $isLiked = false;
-        } else {
-            $comment->likes()->create([
-                'user_id' => $user->id,
-            ]);
-            $isLiked = true;
-        }
-
-        return response()->json([
-            'success' => true,
-            'is_liked' => $isLiked,
-            'likes_count' => $comment->likes()->count(),
-        ]);
-    }
 
     /**
      * Format comment for JSON string (app requirement)

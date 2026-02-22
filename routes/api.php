@@ -54,12 +54,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/polls', [\App\Http\Controllers\Api\PollController::class, 'store']);
     Route::delete('/polls/{id}', [\App\Http\Controllers\Api\PollController::class, 'destroy']);
     Route::post('/polls/{id}/vote', [\App\Http\Controllers\Api\PollController::class, 'vote']);
-    Route::post('/polls/{id}/like', [\App\Http\Controllers\Api\PollController::class, 'toggleLike']);
+    Route::post('/polls/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleItemLike']);
 
     // Posts API
     Route::post('/posts', [\App\Http\Controllers\Api\PostController::class, 'store']);
     Route::delete('/posts/{id}', [\App\Http\Controllers\Api\PostController::class, 'destroy']);
-    Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\PostController::class, 'toggleLike']);
+    Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleItemLike']);
 
     // Activities API
     Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
@@ -70,10 +70,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'show']);
     Route::put('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'update']);
     Route::delete('/activities/{id}', [\App\Http\Controllers\Api\ActivityController::class, 'destroy']);
-    Route::post('/activities/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleLike']);
+    Route::post('/activities/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleItemLike']);
     Route::post('/activities/{id}/vote', [\App\Http\Controllers\Api\ActivityController::class, 'vote']);
-    Route::post('/activities/{id}/comment', [\App\Http\Controllers\Api\ActivityController::class, 'comment']);
-    Route::post('/comments/{id}/like', [\App\Http\Controllers\Api\ActivityController::class, 'toggleCommentLike']);
+    Route::post('/activities/{id}/comment', [\App\Http\Controllers\Api\CommentController::class, 'store']);
+    Route::post('/comments/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleCommentLike']);
+    Route::delete('/comments/{id}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']);
 
     // User/Social API
     Route::get('/users/suggested', [\App\Http\Controllers\Api\UserController::class, 'suggested']);

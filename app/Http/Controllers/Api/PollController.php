@@ -119,31 +119,7 @@ class PollController extends Controller
         ]);
     }
 
-    /**
-     * Toggle like on poll.
-     */
-    public function toggleLike(Request $request, $id)
-    {
-        $cleanId = str_replace(['post_', 'poll_'], '', $id);
-        $poll = Post::findOrFail($cleanId);
-        $user = $request->user();
 
-        $existingLike = $poll->likes()->where('user_id', $user->id)->first();
-
-        if ($existingLike) {
-            $existingLike->delete();
-            $isLiked = false;
-        } else {
-            $poll->likes()->create(['user_id' => $user->id]);
-            $isLiked = true;
-        }
-
-        return response()->json([
-            'success' => true,
-            'is_liked' => $isLiked,
-            'likes_count' => $poll->likes()->count(),
-        ]);
-    }
 
     private function formatPoll($post, $user)
     {
