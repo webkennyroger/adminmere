@@ -430,11 +430,11 @@
         <div
             class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" wire:click="cancelDelete"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="deleteComment"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
                 Apagar
             </button>
         </div>
@@ -472,11 +472,11 @@
         <div
             class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" wire:click="cancelEditingActivity"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="updateActivity"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-green-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-green-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 transition-all">
                 Salvar Alterações
             </button>
         </div>
@@ -505,11 +505,11 @@
         <div
             class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
             <button type="button" @click="showMenu = false; $wire.cancelDeleteActivity()"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-yellow-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-inset ring-yellow-500 hover:bg-yellow-600 transition-all">
                 Cancelar
             </button>
             <button type="button" wire:click="deleteActivity"
-                class="inline-flex w-full sm:w-auto justify-center items-center rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
+                class="inline-flex w-full sm:w-auto justify-center items-center rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-all">
                 Apagar Atividade
             </button>
         </div>
