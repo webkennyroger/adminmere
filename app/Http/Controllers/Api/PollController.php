@@ -23,6 +23,7 @@ class PollController extends Controller
             'privacy' => 'nullable|in:public,friends,private',
             'feedType' => 'nullable|string',
             'isMandatory' => 'nullable|boolean',
+            'description' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -35,7 +36,7 @@ class PollController extends Controller
         $poll = Post::create([
             'user_id' => $user->id,
             'title' => $request->question,
-            'content' => '',
+            'content' => $request->description ?? '',
             'type' => 'poll',
             'privacy' => $request->privacy ?? 'public',
             'feed_type' => $request->feedType ?? 'personal',
@@ -149,7 +150,7 @@ class PollController extends Controller
 
         $pollData = [
             'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
-            'isMandatory' => (bool)$post->is_mandatory,
+            'isMandatory' => (bool) $post->is_mandatory,
             'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
             'hasVoted' => $hasVoted,
             'totalVotes' => $totalVotes,
@@ -169,6 +170,7 @@ class PollController extends Controller
             'id' => 'poll_' . $post->id,
             'type' => 'poll',
             'title' => $post->title,
+            'description' => $post->content,
             'user_id' => (string) $post->user_id,
             'userName' => $post->user->name,
             'userAvatarUrl' => $post->user->image_url,
