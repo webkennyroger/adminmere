@@ -63,8 +63,8 @@ class CommentController extends Controller
      */
     protected function formatComment($comment, $userId)
     {
-        if (!$comment->relationLoaded('likes') || !$comment->relationLoaded('user')) {
-            $comment->load(['user', 'likes']);
+        if (!$comment->relationLoaded('likes') || !$comment->relationLoaded('user') || !$comment->relationLoaded('replies')) {
+            $comment->load(['user', 'likes', 'replies.user', 'replies.likes']);
         }
 
         return [
@@ -74,7 +74,10 @@ class CommentController extends Controller
             'userAvatarUrl' => $comment->user->image_url,
             'text' => $comment->body,
             'timestamp' => $comment->created_at->toIso8601String(),
-            'replies' => [], // In a full implementation, you could load replies here.
+            'parent_id' => (string) $comment->parent_id,
+            'replies' => $comment->replies->map(function ($reply) use ($userId) {
+                return $this->formatComment($reply, $userId);
+            })->toArray(),
             'isArchived' => false,
             'likes' => $comment->likes->count(),
             'isLiked' => $comment->likes->contains('user_id', $userId),

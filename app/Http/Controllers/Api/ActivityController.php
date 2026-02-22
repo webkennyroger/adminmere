@@ -30,6 +30,8 @@ class ActivityController extends Controller
             },
             'comments.user',
             'comments.likes',
+            'comments.replies.user',
+            'comments.replies.likes',
             'likes',
         ]);
 
@@ -41,6 +43,8 @@ class ActivityController extends Controller
             },
             'comments.user',
             'comments.likes',
+            'comments.replies.user',
+            'comments.replies.likes',
             'likes',
             'pollOptions',
             'pollVotes.user'
@@ -588,8 +592,8 @@ class ActivityController extends Controller
     private function formatComment($comment, $userId)
     {
         // Ensure relations are loaded
-        if (!$comment->relationLoaded('likes') || !$comment->relationLoaded('user')) {
-            $comment->load(['user', 'likes']);
+        if (!$comment->relationLoaded('likes') || !$comment->relationLoaded('user') || !$comment->relationLoaded('replies')) {
+            $comment->load(['user', 'likes', 'replies.user', 'replies.likes']);
         }
 
         return [
@@ -600,7 +604,9 @@ class ActivityController extends Controller
             'text' => $comment->body,
             'timestamp' => $comment->created_at->toIso8601String(),
             'parent_id' => (string) $comment->parent_id,
-            'replies' => [],
+            'replies' => $comment->replies->map(function ($reply) use ($userId) {
+                return $this->formatComment($reply, $userId);
+            })->toArray(),
             'isArchived' => false,
             'likes' => $comment->likes->count(),
             'isLiked' => $comment->likes->contains('user_id', $userId),
