@@ -530,9 +530,9 @@ class ActivityController extends Controller
                         })->values()->toArray();
 
                     return [
-                        'id' => $opt->id,
+                        'id' => (int) $opt->id,
                         'text' => $opt->option_text,
-                        'votes' => $opt->votes_count,
+                        'votes' => (int) $opt->votes_count,
                         'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
                         'isUserVote' => $isUserVote,
                         'voterAvatars' => $voterAvatars
@@ -542,13 +542,14 @@ class ActivityController extends Controller
         }
 
         return [
-            'id' => 'post_' . $post->id,
+            'id' => ($post->type === 'poll' ? 'poll_' : 'post_') . $post->id,
             'app_id' => null,
             'user_id' => (string) $post->user_id,
+            'userId' => (string) $post->user_id,
             'userName' => $post->user->name,
             'userAvatarUrl' => $post->user->image_url,
-            'activityTitle' => $post->title ?? 'Publicação',
-            'sport' => 'Post',
+            'activityTitle' => $post->title ?? ($post->type === 'poll' ? 'Enquete' : 'Publicação'),
+            'sport' => $post->type === 'poll' ? 'Poll' : 'Post',
             'type' => $post->type, // 'post' or 'poll'
             'pollData' => $pollData,
             'title' => $post->title,

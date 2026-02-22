@@ -60,6 +60,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts', [\App\Http\Controllers\Api\PostController::class, 'store']);
     Route::delete('/posts/{id}', [\App\Http\Controllers\Api\PostController::class, 'destroy']);
     Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleItemLike']);
+    Route::post('/posts/{id}/comment', [\App\Http\Controllers\Api\CommentController::class, 'store']); // Para compatibilidade
+    Route::post('/posts/{id}/comments', [\App\Http\Controllers\Api\CommentController::class, 'store']); // Para compatibilidade
+    Route::post('/polls/{id}/comments', [\App\Http\Controllers\Api\CommentController::class, 'store']); // Para compatibilidade
+    Route::post('/post-comments/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleCommentLike']); // Para compatibilidade
+    Route::delete('/post-comments/{id}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']); // Para compatibilidade
 
     // Activities API
     Route::get('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'index']);

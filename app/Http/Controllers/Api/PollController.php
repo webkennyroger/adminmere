@@ -94,9 +94,15 @@ class PollController extends Controller
 
         $poll = Post::where('id', $cleanId)->where('type', 'poll')->firstOrFail();
         $user = $request->user();
+        $isMultiple = (bool)(is_array($poll->meta) && ($poll->meta['isMultiple'] ?? false));
 
-        if ($poll->hasVoted($user)) {
+        if (!$isMultiple && $poll->hasVoted($user)) {
             return response()->json(['success' => false, 'message' => 'Você já votou nesta enquete'], 400);
+        }
+
+        // Check if already voted for THIS specific option
+        if ($poll->pollVotes()->where('user_id', $user->id)->where('poll_option_id', $request->option_id)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Você já votou nesta opção'], 400);
         }
 
         if ($poll->poll_expires_at && $poll->poll_expires_at->isPast()) {
@@ -135,9 +141,9 @@ class PollController extends Controller
             'totalVotes' => $totalVotes,
             'options' => $post->pollOptions->map(function ($opt) use ($user, $post, $totalVotes) {
                 return [
-                    'id' => (string) $opt->id,
+                    'id' => (int) $opt->id,
                     'text' => $opt->option_text,
-                    'votes' => $opt->votes_count,
+                    'votes' => (int) $opt->votes_count,
                     'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
                     'isUserVote' => $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty(),
                     'voterAvatars' => []
@@ -148,9 +154,12 @@ class PollController extends Controller
         return [
             'id' => 'poll_' . $post->id,
             'type' => 'poll',
+            'sport' => 'Poll',
             'title' => $post->title,
+            'activityTitle' => $post->title,
             'description' => $post->content,
             'user_id' => (string) $post->user_id,
+            'userId' => (string) $post->user_id,
             'userName' => $post->user->name,
             'userAvatarUrl' => $post->user->image_url,
             'createdAt' => $post->created_at->toIso8601String(),
