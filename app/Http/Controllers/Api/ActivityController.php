@@ -564,10 +564,12 @@ class ActivityController extends Controller
         if ($post->type === 'poll') {
             $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
             $totalVotes = $post->total_votes;
+            $meta = json_decode($post->meta, true) ?? [];
 
             $pollData = [
                 'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
                 'isMandatory' => (bool)$post->is_mandatory,
+                'isMultiple' => (bool)($meta['isMultiple'] ?? false),
                 'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
                 'hasVoted' => $hasVoted,
                 'totalVotes' => $totalVotes,

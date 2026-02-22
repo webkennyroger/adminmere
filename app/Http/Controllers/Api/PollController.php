@@ -24,6 +24,7 @@ class PollController extends Controller
             'feedType' => 'nullable|string',
             'isMandatory' => 'nullable|boolean',
             'description' => 'nullable|string',
+            'isMultiple' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -42,6 +43,7 @@ class PollController extends Controller
             'feed_type' => $request->feedType ?? 'personal',
             'poll_expires_at' => $request->expiresAt ? Carbon::parse($request->expiresAt) : null,
             'is_mandatory' => $request->isMandatory ?? false,
+            'meta' => json_encode(['isMultiple' => $request->isMultiple ?? false]),
         ]);
 
         foreach ($request->options as $optionText) {
@@ -148,9 +150,11 @@ class PollController extends Controller
         $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
         $totalVotes = $post->pollVotes->count();
 
+        $meta = json_decode($post->meta, true) ?? [];
         $pollData = [
             'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
             'isMandatory' => (bool) $post->is_mandatory,
+            'isMultiple' => (bool) ($meta['isMultiple'] ?? false),
             'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
             'hasVoted' => $hasVoted,
             'totalVotes' => $totalVotes,

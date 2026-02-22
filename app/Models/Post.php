@@ -23,6 +23,7 @@ class Post extends Model
         'location',
         'is_mandatory',
         'privacy',
+        'meta',
     ];
 
     protected $casts = [
