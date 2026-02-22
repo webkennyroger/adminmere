@@ -1,6 +1,8 @@
 @props([
     'isOpen' => false,
     'showCloseButton' => true,
+    'maxWidth' => 'sm:max-w-xl',
+    'padding' => 'p-6 sm:p-8',
 ])
 
 @php
@@ -20,39 +22,51 @@
         });
     }
 }" {{ $entangle ? '' : 'x-effect=open=' . ($isOpen ? 'true' : 'false') }} x-show="open" x-cloak @keydown.escape.window="open = false"
-    class="modal fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5"
+    class="relative z-[99999]" aria-labelledby="modal-title" role="dialog" aria-modal="true"
     {{ $attributes->whereDoesntStartWith('wire:model')->except('class') }}>
 
     <!-- Backdrop -->
-    <div @click="open = false" class="fixed inset-0 h-full w-full bg-zinc-400/50 backdrop-blur-[32px]"
-        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+    <div x-show="open"
+        x-transition:enter="ease-out duration-300" 
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" 
+        x-transition:leave="ease-in duration-200"
+        x-transition:leave-start="opacity-100" 
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-zinc-900/50 backdrop-blur-sm dark:bg-black/60 transition-opacity">
     </div>
 
-    <!-- Modal Content -->
-    <div @click.stop class="relative w-full rounded-3xl bg-white dark:bg-zinc-900 {{ $attributes->get('class') }}"
-        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95"
-        x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform scale-100"
-        x-transition:leave-end="opacity-0 transform scale-95">
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <!-- Modal Content -->
+            <div x-show="open" @click.away="open = false"
+                x-transition:enter="ease-out duration-300" 
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                class="relative w-full {{ $maxWidth }} transform overflow-hidden rounded-[2rem] bg-white dark:bg-zinc-900 text-left shadow-2xl ring-1 ring-zinc-200/50 dark:ring-zinc-800 transition-all sm:my-8 {{ $padding }} {{ $attributes->get('class') }}">
 
-        <!-- Close Button -->
-        @if ($showCloseButton)
-            <button @click="open = false"
-                class="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 transition-colors hover:bg-zinc-200 hover:text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" clipRule="evenodd"
-                        d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z"
-                        fill="currentColor" />
-                </svg>
-            </button>
-        @endif
+                <!-- Close Button -->
+                @if ($showCloseButton)
+                    <div class="absolute right-0 top-0 pr-5 pt-5 sm:pr-6 sm:pt-6 z-10">
+                        <button @click="open = false" type="button"
+                            class="rounded-full bg-zinc-50 dark:bg-zinc-800 p-2.5 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 transition-all focus:outline-none focus:ring-2 focus:ring-zinc-200">
+                            <span class="sr-only">Fechar</span>
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                @endif
 
-        <!-- Modal Body -->
-        <div>
-            {{ $slot }}
+                <!-- Modal Body -->
+                <div class="relative">
+                    {{ $slot }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
