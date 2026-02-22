@@ -117,7 +117,7 @@ class PostItem extends Component
             $name = trim($matches[1]);
             $user = \App\Models\User::where('name', $name)->first();
             if ($user) {
-                return '<a href="'.route('profile.view', $user->id).'" class="text-brand-600 font-bold hover:underline cursor-pointer">@'.$name.'</a>';
+                return '<a href="'.profile_url($user).'" class="text-brand-600 font-bold hover:underline cursor-pointer">@'.$name.'</a>';
             }
 
             return '@'.$name;
@@ -242,10 +242,15 @@ class PostItem extends Component
         if (!$this->post->is_poll) return;
 
         $user = auth()->user();
+        $isMultiple = (bool)(is_array($this->post->meta) && ($this->post->meta['isMultiple'] ?? false));
         
-        // Check if duplicate vote
-        if ($this->post->hasVoted($user)) {
-            // Optional: Toggle vote or show error
+        // Single choice check
+        if (!$isMultiple && $this->post->hasVoted($user)) {
+            return;
+        }
+
+        // Check if already voted for THIS specific option
+        if ($this->post->pollVotes()->where('user_id', $user->id)->where('poll_option_id', $optionId)->exists()) {
             return;
         }
 

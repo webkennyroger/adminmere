@@ -117,7 +117,7 @@ class ActivityItem extends Component
             $name = trim($matches[1]);
             $user = \App\Models\User::where('name', $name)->first();
             if ($user) {
-                return '<a href="'.route('profile.view', $user->id).'" class="text-brand-600 font-bold hover:underline cursor-pointer">@'.$name.'</a>';
+                return '<a href="'.profile_url($user).'" class="text-brand-600 font-bold hover:underline cursor-pointer">@'.$name.'</a>';
             }
 
             return '@'.$name;

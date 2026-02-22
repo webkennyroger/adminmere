@@ -36,6 +36,7 @@ class ActivityFeed extends Component
 
     // Poll Properties
     public $isPoll = false;
+    public $isMultiple = false;
     public $pollOptions = ['', '']; // Start with 2 empty options
     public $pollDuration = 7; // Days
 
@@ -163,6 +164,7 @@ class ActivityFeed extends Component
                 'privacy' => 'public',
                 'type' => $this->isPoll ? 'poll' : 'post',
                 'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollDuration) : null,
+                'meta' => $this->isPoll ? ['isMultiple' => (bool)$this->isMultiple] : null,
             ];
 
             Log::info('Creating post with data: ' . json_encode($postData));
@@ -177,7 +179,7 @@ class ActivityFeed extends Component
                 }
             }
 
-            $this->reset(['title', 'content', 'photos', 'videos', 'location', 'isPoll', 'pollOptions']);
+            $this->reset(['title', 'content', 'photos', 'videos', 'location', 'isPoll', 'pollOptions', 'isMultiple']);
             $this->pollOptions = ['', ''];
             session()->flash('message', 'Publicado com sucesso! 🎉');
             Log::info('=== SAVE POST COMPLETED ===');
@@ -214,13 +216,13 @@ class ActivityFeed extends Component
             'type'       => 'event',
             'feed_type'  => $this->feedType,
             'privacy'    => 'public',
-            'meta'       => json_encode([
+            'meta'       => [
                 'date'           => $this->eventDate,
                 'time'           => $this->eventTime,
                 'duration'       => $this->eventDuration,
                 'location'       => $this->eventLocation,
                 'attachment_url' => $attachmentUrl,
-            ]),
+            ],
         ]);
 
         $this->reset(['eventTitle', 'eventDescription', 'eventDate', 'eventTime', 'eventDuration', 'eventLocation', 'eventGuestEmail', 'eventAttachment']);

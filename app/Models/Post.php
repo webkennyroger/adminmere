@@ -29,6 +29,7 @@ class Post extends Model
     protected $casts = [
         'media' => 'array',
         'poll_expires_at' => 'datetime',
+        'meta' => 'array',
     ];
 
     protected $with = ['pollOptions']; // Eager load poll options usually

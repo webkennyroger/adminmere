@@ -94,9 +94,19 @@
                     $hasVoted = $post->hasVoted(auth()->user());
                     $totalVotes = $post->total_votes;
                     $isExpired = $post->poll_expires_at && $post->poll_expires_at->isPast();
+                    $isMultiple = (bool)(is_array($post->meta) && ($post->meta['isMultiple'] ?? false));
                     // Show results ONLY if voted or expired. Don't force show for owner unless voted.
                     $showResults = $hasVoted || $isExpired;
                 @endphp
+
+                @if($isMultiple)
+                    <div class="flex items-center gap-1.5 mb-2 text-zinc-500 dark:text-zinc-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        <span class="text-[11px] font-semibold uppercase tracking-wider">Múltipla escolha</span>
+                    </div>
+                @endif
 
                 @foreach($post->pollOptions as $option)
                     @php

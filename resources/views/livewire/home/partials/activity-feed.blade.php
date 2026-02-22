@@ -424,6 +424,14 @@
                                 </button>
                             @endif
                         </div>
+                        {{-- Múltipla Escolha --}}
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="checkbox" wire:model="isMultiple" id="isMultiple"
+                                class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-zinc-300">
+                            <label for="isMultiple" class="text-sm text-zinc-600 dark:text-zinc-400 cursor-pointer">Permitir
+                                múltiplas escolhas</label>
+                        </div>
+
                         {{-- Duração --}}
                         <div class="flex items-center gap-3">
                             <span class="text-sm text-zinc-500">Duração:</span>
