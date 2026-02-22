@@ -40,8 +40,8 @@ class ActivityItem extends Component
 
     public function startEditingPost()
     {
-        if ($this->activity->user_id !== auth()->id()) {
-            return; // Only owner can edit
+        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can edit
         }
         $this->editingPost = true;
     }
@@ -55,13 +55,13 @@ class ActivityItem extends Component
 
     public function updatePost()
     {
-        if ($this->activity->user_id !== auth()->id()) {
-            return; // Only owner can edit
+        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can edit
         }
 
         $this->validate([
             'editTitle' => 'nullable|string|max:100',
-            'editContent' => 'required|min:3',
+            'editContent' => 'nullable|string',
         ]);
 
         $this->activity->update([
@@ -76,8 +76,8 @@ class ActivityItem extends Component
 
     public function confirmDeletePost()
     {
-        if ($this->activity->user_id !== auth()->id()) {
-            return; // Only owner can delete
+        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can delete
         }
         $this->confirmingPostDeletion = true;
     }
@@ -89,8 +89,8 @@ class ActivityItem extends Component
 
     public function deletePost()
     {
-        if ($this->activity->user_id !== auth()->id()) {
-            return; // Only owner can delete
+        if ($this->activity->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can delete
         }
 
         $this->activity->delete();

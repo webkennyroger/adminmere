@@ -42,7 +42,7 @@
                         class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                         Salvar post
                     </button>
-                    @if(auth()->id() === $activity->user_id)
+                    @if(auth()->id() === $activity->user_id || auth()->user()->isAdmin())
                         <button wire:click="startEditingPost" @click="showMenu = false"
                             class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             Editar post

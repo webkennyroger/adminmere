@@ -32,6 +32,14 @@ class Post extends Model
         'meta' => 'array',
     ];
 
+    protected static function booted()
+    {
+        static::deleting(function ($post) {
+            $post->comments()->delete();
+            $post->likes()->delete();
+        });
+    }
+
     protected $with = ['pollOptions']; // Eager load poll options usually
 
     public function user(): BelongsTo

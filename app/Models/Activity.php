@@ -35,6 +35,14 @@ class Activity extends Model
         'tagged_users' => 'array',
     ];
 
+    protected static function booted()
+    {
+        static::deleting(function ($activity) {
+            $activity->comments()->delete();
+            $activity->likes()->delete();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

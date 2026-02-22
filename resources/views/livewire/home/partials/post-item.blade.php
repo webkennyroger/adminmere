@@ -29,8 +29,8 @@
                 </svg>
             </button>
 
-            <!-- Three Dots Menu (Only for Owner) -->
-            @if(auth()->id() === $post->user_id)
+            <!-- Three Dots Menu (Only for Owner or Admin) -->
+            @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
                 <div class="relative" @click.away="showMenu = false">
                     <button @click="showMenu = !showMenu"
                         class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
@@ -112,10 +112,14 @@
                     @php
                         $percentage = $totalVotes > 0 ? round(($option->votes_count / $totalVotes) * 100) : 0;
                         $isVotedOption = $hasVoted && $post->pollVotes->where('user_id', auth()->id())->where('poll_option_id', $option->id)->isNotEmpty();
+                        // For Multiple Choice: show result only for the specific option voted, otherwise keep voting button.
+                        // For Single Choice: show all results if any option was voted.
+                        // Expired: always show results.
+                        $showThisResult = $isExpired || ($isMultiple ? $isVotedOption : $hasVoted);
                     @endphp
 
                     <div class="relative w-full">
-                        @if($showResults)
+                        @if($showThisResult)
                             <!-- Result View -->
                             <div class="relative w-full h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
                                 <!-- Progress Bar -->

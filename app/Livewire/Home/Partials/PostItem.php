@@ -40,8 +40,8 @@ class PostItem extends Component
 
     public function startEditingPost()
     {
-        if ($this->post->user_id !== auth()->id()) {
-            return; // Only owner can edit
+        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can edit
         }
         $this->editingPost = true;
     }
@@ -55,13 +55,13 @@ class PostItem extends Component
 
     public function updatePost()
     {
-        if ($this->post->user_id !== auth()->id()) {
-            return; // Only owner can edit
+        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can edit
         }
 
         $this->validate([
             'editTitle' => 'nullable|string|max:100',
-            'editContent' => 'required|min:3',
+            'editContent' => 'nullable|string',
         ]);
 
         $this->post->update([
@@ -76,8 +76,8 @@ class PostItem extends Component
 
     public function confirmDeletePost()
     {
-        if ($this->post->user_id !== auth()->id()) {
-            return; // Only owner can delete
+        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can delete
         }
         $this->confirmingPostDeletion = true;
     }
@@ -89,8 +89,8 @@ class PostItem extends Component
 
     public function deletePost()
     {
-        if ($this->post->user_id !== auth()->id()) {
-            return; // Only owner can delete
+        if ($this->post->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return; // Only owner or admin can delete
         }
 
         $this->post->delete();
