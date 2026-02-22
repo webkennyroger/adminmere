@@ -16,6 +16,7 @@ class PostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'content' => 'nullable|string',
+            'title' => 'nullable|string',
             'mediaPaths' => 'nullable|array',
             'privacy' => 'nullable|in:public,friends,private',
             'feedType' => 'nullable|string',
@@ -29,7 +30,7 @@ class PostController extends Controller
 
         $post = Post::create([
             'user_id' => $user->id,
-            'title' => '',
+            'title' => $request->title ?? '',
             'content' => $request->content ?? '',
             'type' => 'post', // Explicitly set type to post
             'media' => $request->mediaPaths ?? [],
