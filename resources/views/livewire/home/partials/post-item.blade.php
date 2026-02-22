@@ -443,35 +443,35 @@
     </x-ui.modal>
 
     <!-- Edit Post Modal -->
-    <x-ui.modal wire:model="editingPost" :showCloseButton="true" wire:key="edit-post-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
-        <div class="p-4 sm:p-6 pb-2 sm:pb-4">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-neutral-200 mb-6">Editar Publicação</h3>
+    <x-ui.modal wire:model="editingPost" :showCloseButton="true" wire:key="edit-post-modal-{{ $post->id }}" :maxWidth="'sm:max-w-md'">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-neutral-200 mb-6 font-['Inter']">Editar Publicação</h3>
 
             <div class="space-y-4">
                 <!-- Title Input -->
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Título (opcional)</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">Título (opcional)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400" placeholder="Insira o título...">
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 font-['Inter']">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                 <!-- Content Input -->
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Conteúdo</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">Conteúdo</label>
                     <textarea wire:model="editContent" rows="4"
-                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none" placeholder="O que você deseja compartilhar?"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none font-['Inter']"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
             
             <div class="mt-8 flex items-center justify-start gap-3">
                 <button type="button" wire:click="cancelEditingPost"
-                    class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                    class="inline-flex justify-center items-center rounded-lg bg-[#FFC107] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#e0a800] transition-all font-['Inter']">
                     Cancelar
                 </button>
                 <button type="button" wire:click="updatePost"
-                    class="inline-flex justify-center items-center rounded-lg bg-green-600 dark:bg-green-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 dark:hover:bg-green-600 transition-all">
+                    class="inline-flex justify-center items-center rounded-lg bg-[#00B14F] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#009b45] transition-all font-['Inter']">
                     Salvar Alterações
                 </button>
             </div>
@@ -479,31 +479,36 @@
     </x-ui.modal>
 
     <!-- Delete Post Modal -->
-    <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-[700px]'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
-        <div class="p-6">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
-                    <svg class="h-5 w-5 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+    <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-2xl'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
+        <div>
+            <!-- Header Area -->
+            <div class="p-6 pb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+                        <svg class="h-4 w-4 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-bold text-[#111827] dark:text-white font-['Inter']">Apagar Publicação</h3>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-neutral-200">Apagar Publicação</h3>
-                </div>
+                
+                <p class="text-[13px] text-[#6B7280] dark:text-neutral-400 leading-relaxed font-['Inter']">
+                    Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos.
+                </p>
             </div>
-            
-            <p class="text-sm text-gray-500 dark:text-neutral-400 pl-14">
-                Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos.
-            </p>
 
-            <div class="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
-                <div class="flex items-center justify-start gap-3 pl-14">
+            <!-- Full-width separator -->
+            <div class="w-full border-t border-[#E5E7EB] dark:border-neutral-700"></div>
+
+            <!-- Footer Area -->
+            <div class="p-6 pt-4">
+                <div class="flex items-center justify-start gap-3">
                     <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                        class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                        class="inline-flex justify-center items-center rounded-lg bg-[#FFC107] px-5 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#e0a800] transition-all font-['Inter']">
                         Cancelar
                     </button>
                     <button type="button" wire:click="deletePost"
-                        class="inline-flex justify-center items-center rounded-lg bg-red-600 dark:bg-red-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-red-700 dark:hover:bg-red-600 transition-all">
+                        class="inline-flex justify-center items-center rounded-lg bg-[#E60000] px-5 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#cc0000] transition-all font-['Inter']">
                         {{ $post->type === 'poll' ? 'Apagar Enquete' : 'Apagar Publicação' }}
                     </button>
                 </div>
@@ -512,31 +517,36 @@
     </x-ui.modal>
 
     <!-- Delete Poll Modal -->
-    <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-[700px]'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
-        <div class="p-6">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
-                    <svg class="h-5 w-5 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+    <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-2xl'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
+        <div>
+            <!-- Header Area -->
+            <div class="p-6 pb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+                        <svg class="h-4 w-4 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-bold text-[#111827] dark:text-white font-['Inter']">Apagar Enquete</h3>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-neutral-200">Apagar Enquete</h3>
-                </div>
+                
+                <p class="text-[13px] text-[#6B7280] dark:text-neutral-400 leading-relaxed font-['Inter']">
+                    Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos.
+                </p>
             </div>
-            
-            <p class="text-sm text-gray-500 dark:text-neutral-400 pl-14">
-                Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos.
-            </p>
 
-            <div class="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
-                <div class="flex items-center justify-start gap-3 pl-14">
+            <!-- Full-width separator -->
+            <div class="w-full border-t border-[#E5E7EB] dark:border-neutral-700"></div>
+
+            <!-- Footer Area -->
+            <div class="p-6 pt-4">
+                <div class="flex items-center justify-start gap-3">
                     <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                        class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                        class="inline-flex justify-center items-center rounded-lg bg-[#FFC107] px-5 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#e0a800] transition-all font-['Inter']">
                         Cancelar
                     </button>
                     <button type="button" wire:click="deletePost"
-                        class="inline-flex justify-center items-center rounded-lg bg-red-600 dark:bg-red-500 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-red-700 dark:hover:bg-red-600 transition-all">
+                        class="inline-flex justify-center items-center rounded-lg bg-[#E60000] px-5 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#cc0000] transition-all font-['Inter']">
                         Apagar Enquete
                     </button>
                 </div>
@@ -545,33 +555,33 @@
     </x-ui.modal>
 
     <!-- Edit Poll Modal -->
-    <x-ui.modal wire:model="editingPoll" :showCloseButton="true" wire:key="edit-poll-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
-        <div class="p-4 sm:p-6 pb-2 sm:pb-4">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-neutral-200 mb-6">Editar Enquete</h3>
+    <x-ui.modal wire:model="editingPoll" :showCloseButton="true" wire:key="edit-poll-modal-{{ $post->id }}" :maxWidth="'sm:max-w-md'">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-neutral-200 mb-6 font-['Inter']">Editar Enquete</h3>
 
             <div class="space-y-4">
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Título (Opcional)</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">Título (Opcional)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400">
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 font-['Inter']">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wide mb-1">Pergunta da Enquete</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">Pergunta da Enquete</label>
                     <textarea wire:model="editContent" rows="3"
-                        class="w-full bg-transparent border-none p-0 text-sm text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none font-['Inter']"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
             
             <div class="mt-8 flex items-center justify-start gap-3">
                 <button type="button" wire:click="cancelEditingPost"
-                    class="inline-flex justify-center items-center rounded-lg bg-yellow-400 dark:bg-yellow-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-yellow-500 dark:hover:bg-yellow-600 transition-all">
+                    class="inline-flex justify-center items-center rounded-lg bg-[#FFC107] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#e0a800] transition-all font-['Inter']">
                     Cancelar
                 </button>
                 <button type="button" wire:click="updatePost"
-                    class="inline-flex justify-center items-center rounded-lg bg-green-600 dark:bg-green-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-green-700 dark:hover:bg-green-600 transition-all">
+                    class="inline-flex justify-center items-center rounded-lg bg-[#00B14F] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#009b45] transition-all font-['Inter']">
                     Salvar Enquete
                 </button>
             </div>
