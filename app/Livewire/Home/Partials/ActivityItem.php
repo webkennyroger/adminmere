@@ -128,11 +128,11 @@ class ActivityItem extends Component
     {
         $user = auth()->user();
 
-        $existingLike = $this->activity->likes()->where('user_id', $user->id)->first();
-        if ($existingLike) {
-            $existingLike->delete();
+        $existingLikeQuery = $this->activity->allLikes()->where('user_id', $user->id);
+        if ($existingLikeQuery->exists()) {
+            $existingLikeQuery->delete();
         } else {
-            $this->activity->likes()->create(['user_id' => $user->id]);
+            $this->activity->allLikes()->create(['user_id' => $user->id]);
         }
 
         $this->activity->refresh(); // Reload mainly for likes count if needed, but reactivity handles it mostly
@@ -168,7 +168,7 @@ class ActivityItem extends Component
             $isCommentOwner = $comment->user_id === $user->id;
             $isActivityOwner = $this->activity->user_id === $user->id; // Logic simplified since we have context
 
-            if ($isCommentOwner || $isActivityOwner) {
+            if ($isCommentOwner || $isActivityOwner || auth()->user()->isAdmin()) {
                 $comment->delete();
             }
         }

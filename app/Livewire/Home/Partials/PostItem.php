@@ -128,11 +128,13 @@ class PostItem extends Component
     {
         $user = auth()->user();
 
-        $existingLike = $this->post->likes()->where('user_id', $user->id)->first();
-        if ($existingLike) {
-            $existingLike->delete();
+        // Use the relationship directly instead of getting a stdClass/Model instance first
+        $existingLikeQuery = $this->post->allLikes()->where('user_id', $user->id);
+        
+        if ($existingLikeQuery->exists()) {
+            $existingLikeQuery->delete();
         } else {
-            $this->post->likes()->create(['user_id' => $user->id]);
+            $this->post->allLikes()->create(['user_id' => $user->id]);
         }
 
         $this->post->refresh();
@@ -168,7 +170,7 @@ class PostItem extends Component
             $isCommentOwner = $comment->user_id === $user->id;
             $isPostOwner = $this->post->user_id === $user->id;
 
-            if ($isCommentOwner || $isPostOwner) {
+            if ($isCommentOwner || $isPostOwner || auth()->user()->isAdmin()) {
                 $comment->delete();
             }
         }

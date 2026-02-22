@@ -37,7 +37,10 @@ class Post extends Model
         static::deleting(function ($post) {
             // Use each->delete() to trigger Comment's own deleting event (for replies/likes)
             $post->allComments()->get()->each->delete();
-            $post->likes()->delete();
+            $post->allLikes()->delete();
+            // Delete Poll data
+            $post->pollVotes()->delete();
+            $post->pollOptions()->delete();
         });
     }
 
@@ -93,5 +96,10 @@ class Post extends Model
     public function getTotalVotesAttribute(): int
     {
         return $this->pollVotes()->count();
+    }
+
+    public function allLikes(): MorphMany
+    {
+        return $this->morphMany(Like::class, 'likeable');
     }
 }
