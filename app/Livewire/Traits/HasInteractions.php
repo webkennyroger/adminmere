@@ -62,6 +62,29 @@ trait HasInteractions
         $model->refresh();
     }
 
+    public function toggleSave()
+    {
+        $user = auth()->user();
+        $model = $this->getInteractableModel();
+
+        $existingSave = \App\Models\SavedItem::where('user_id', $user->id)
+            ->where('saved_item_id', $model->id)
+            ->where('saved_item_type', get_class($model))
+            ->first();
+
+        if ($existingSave) {
+            $existingSave->delete();
+        } else {
+            \App\Models\SavedItem::create([
+                'user_id' => $user->id,
+                'saved_item_id' => $model->id,
+                'saved_item_type' => get_class($model),
+            ]);
+        }
+
+        $model->refresh();
+    }
+
     public function toggleCommentLike($commentId)
     {
         $user = auth()->user();

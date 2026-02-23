@@ -279,168 +279,33 @@
                 </button>
             </div>
 
-            <!-- Share Button -->
-            <button class="flex items-center gap-2 group">
-                <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
+                <!-- Share Button -->
+                <button class="flex items-center gap-2 group">
+                    <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Bookmark Button -->
+            <button wire:click="toggleSave" class="flex items-center group">
+                @if($post->savedItems->contains('user_id', auth()->id()))
+                    <svg class="w-6 h-6 text-brand-600 fill-current" viewBox="0 0 24 24">
+                        <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                @else
+                    <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3-7 3V5z" />
+                    </svg>
+                @endif
             </button>
         </div>
     </div>
 
-    <!-- Comments Section -->
-    <div x-data="{ showComments: @entangle('showComments') }" x-show="showComments" x-transition
-        class="border-t border-zinc-100 dark:border-zinc-800 px-4 py-3">
-
-        <!-- Comments List -->
-        <div class="space-y-3 mb-4 max-h-96 overflow-y-auto">
-            @foreach($post->comments as $comment)
-                @if(is_null($comment->parent_id))
-                    <div x-data="{ showReplies: false }" class="group/comment" wire:key="comment-{{ $comment->id }}">
-                        <div class="flex gap-2">
-                            <a href="{{ profile_url($comment->user) }}">
-                                <img src="{{ $comment->user->image_url }}"
-                                    class="w-8 h-8 rounded-full border border-zinc-100 dark:border-zinc-800 shrink-0">
-                            </a>
-                            <div class="flex-1 min-w-0">
-                                <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-2 inline-block">
-                                    <a href="{{ profile_url($comment->user) }}"
-                                        class="font-semibold text-sm text-zinc-900 dark:text-white hover:underline">
-                                        {{ $comment->user->name }}
-                                    </a>
-                                    <p class="text-sm text-zinc-700 dark:text-zinc-300">
-                                        {!! $this->formatComment($comment->body) !!}
-                                    </p>
-                                </div>
-                                <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
-                                    <span>{{ $comment->created_at->diffForHumans() }}</span>
-                                    <button wire:click="toggleCommentLike({{ $comment->id }})"
-                                        class="flex items-center gap-1 hover:scale-110 transition-transform">
-                                        <span
-                                            class="{{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-400' }}">❤️</span>
-                                        <span
-                                            class="text-[10px] font-semibold {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $comment->likes->count() }}</span>
-                                    </button>
-                                    <button
-                                        @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@' + '{{ $comment->user->name }} ' );"
-                                        class="font-semibold hover:underline">
-                                        Responder
-                                    </button>
-                                    @if(auth()->id() === $comment->user_id || auth()->id() === $post->user_id)
-                                        <button wire:click="confirmDelete({{ $comment->id }})"
-                                            class="opacity-0 group-hover/comment:opacity-100 transition-opacity text-red-600 hover:underline">
-                                            Excluir
-                                        </button>
-                                    @endif
-                                </div>
-
-                                <!-- Replies -->
-                                @if($comment->replies->count() > 0)
-                                    <button @click="showReplies = !showReplies"
-                                        class="text-xs text-zinc-500 font-semibold mt-2 ml-3 hover:underline">
-                                        <span
-                                            x-text="showReplies ? 'Ocultar respostas' : 'Ver {{ $comment->replies->count() }} resposta(s)'"></span>
-                                    </button>
-
-                                    <div x-show="showReplies" style="display: none;" class="mt-2 ml-8 space-y-2">
-                                        @foreach($comment->replies as $reply)
-                                            <div class="flex gap-2 group/reply" wire:key="reply-{{ $reply->id }}">
-                                                <img src="{{ $reply->user->image_url }}" class="w-6 h-6 rounded-full">
-                                                <div class="flex-1">
-                                                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-3 py-1.5 inline-block">
-                                                        <a href="{{ profile_url($reply->user) }}"
-                                                            class="font-semibold text-xs text-zinc-900 dark:text-white hover:underline">
-                                                            {{ $reply->user->name }}
-                                                        </a>
-                                                        <p class="text-xs text-zinc-700 dark:text-zinc-300">
-                                                            {!! $this->formatComment($reply->body) !!}
-                                                        </p>
-                                                    </div>
-                                                    <div class="flex items-center gap-3 mt-1 ml-2 text-[10px] text-zinc-500">
-                                                        <span>{{ $reply->created_at->diffForHumans() }}</span>
-                                                        <button wire:click="toggleCommentLike({{ $reply->id }})"
-                                                            class="flex items-center gap-1 hover:scale-110 transition-transform">
-                                                            <span
-                                                                class="{{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-400' }}">❤️</span>
-                                                            <span
-                                                                class="text-[10px] font-semibold {{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $reply->likes->count() }}</span>
-                                                        </button>
-                                                        @if(auth()->id() === $reply->user_id || auth()->id() === $post->user_id)
-                                                            <button wire:click="confirmDelete({{ $reply->id }})"
-                                                                class="opacity-0 group-hover/reply:opacity-100 transition-opacity text-red-600 hover:underline">
-                                                                Excluir
-                                                            </button>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
-
-        <!-- Comment Input -->
-        <div class="flex gap-2 items-center relative">
-            <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover">
-            <div class="flex-1 relative">
-                <input type="text" x-ref="commentInput" wire:model.live="newComment" wire:keydown.enter="postComment"
-                    placeholder="Escreva um comentário..."
-                    class="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
-
-                <!-- Mentions Dropdown -->
-                @if($showMentions && count($filteredUsers) > 0)
-                    <div
-                        class="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden z-20">
-                        <ul>
-                            @foreach($filteredUsers as $user)
-                                <li wire:click="selectUser({{ json_encode($user) }})"
-                                    class="flex items-center gap-3 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer">
-                                    <img src="{{ $user['image_url'] }}" class="w-8 h-8 rounded-full">
-                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $user['name'] }}</p>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Comment Modal -->
-    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-md'" :showCloseButton="false" wire:key="delete-comment-modal-{{ $post->id }}">
-        <div class="px-4 py-8 sm:px-14 text-center">
-            <div class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
-                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200">
-                Apagar Comentário
-            </h3>
-            <p class="text-gray-500 dark:text-neutral-400">
-                Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita.
-            </p>
-        </div>
-
-        <div class="flex items-center">
-            <button type="button" wire:click="cancelDelete"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-400 dark:bg-yellow-500 text-white hover:bg-yellow-500 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-colors">
-                Cancelar
-            </button>
-            <button type="button" wire:click="deleteComment"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-red-600 dark:bg-red-500 border border-transparent text-white hover:bg-red-700 dark:hover:bg-red-600 focus:outline-hidden disabled:opacity-50 transition-colors">
-                Apagar Comentário
-            </button>
-        </div>
-    </x-ui.modal>
+    @include('livewire.home.partials._comment_section', ['item' => $post])
+    @include('livewire.home.partials._delete_comment_modal', ['item' => $post])
 
     <!-- Edit Post Modal -->
     <x-ui.modal wire:model="editingPost" :showCloseButton="true" wire:key="edit-post-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
@@ -469,11 +334,11 @@
 
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-yellow-100 dark:bg-yellow-700 border border-transparent text-white hover:bg-green-200 dark:hover:bg-green-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Salvar Publicação
             </button>
         </div>
@@ -498,11 +363,11 @@
 
         <div class="flex items-center">
             <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-[#FFC107] hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-red-500 border border-transparent text-white hover:bg-red-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Apagar
             </button>
         </div>
@@ -527,11 +392,11 @@
 
         <div class="flex items-center">
             <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-[#FFC107] hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-red-500 border border-transparent text-white hover:bg-red-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Apagar
             </button>
         </div>
@@ -552,8 +417,7 @@
 
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
                     <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">PERGUNTA DA ENQUETE</label>
-                    <textarea wire:model="editContent" rows="3"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400 resize-none  shadow-none"></textarea>
+                    <textarea wire:model="editContent" rows="3"class="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm text-gray-800 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:placeholder-neutral-500 dark:focus:border-neutral-700 dark:focus:ring-neutral-600"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
@@ -562,7 +426,7 @@
         <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all border-r border-gray-200 dark:border-neutral-700">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-yellow-100 dark:bg-neutral-700 text-white hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden transition-all border-r border-yellow-200 dark:border-neutral-700">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"

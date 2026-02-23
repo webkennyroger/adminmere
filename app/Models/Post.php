@@ -102,4 +102,9 @@ class Post extends Model
     {
         return $this->morphMany(Like::class, 'likeable');
     }
+
+    public function savedItems(): MorphMany
+    {
+        return $this->morphMany(SavedItem::class, 'saved_item');
+    }
 }

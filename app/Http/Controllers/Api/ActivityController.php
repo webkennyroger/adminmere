@@ -33,6 +33,7 @@ class ActivityController extends Controller
             'comments.replies.user',
             'comments.replies.likes',
             'likes',
+            'savedItems',
         ]);
 
         // Fetch Posts
@@ -46,6 +47,7 @@ class ActivityController extends Controller
             'comments.replies.user',
             'comments.replies.likes',
             'likes',
+            'savedItems',
             'pollOptions',
             'pollVotes.user'
         ]);
@@ -488,6 +490,7 @@ class ActivityController extends Controller
             'calories' => (float) $activity->calories,
             'likes' => $activity->likes->count(),
             'isLiked' => $activity->likes->contains('user_id', $user->id),
+            'isSaved' => $activity->savedItems->contains('user_id', $user->id),
             'commentsList' => $activity->comments->map(function ($comment) use ($user) {
                 return $this->formatComment($comment, $user->id);
             })->toArray(),
@@ -567,6 +570,7 @@ class ActivityController extends Controller
             'calories' => 0.0,
             'likes' => $post->likes->count(),
             'isLiked' => $post->likes->contains('user_id', $user->id),
+            'isSaved' => $post->savedItems->contains('user_id', $user->id),
             'commentsList' => $post->comments->map(function ($comment) use ($user) {
                 return $this->formatComment($comment, $user->id);
             })->toArray(),

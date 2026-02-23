@@ -12,6 +12,26 @@ class CommentController extends Controller
     use ResolvesActivityItems;
 
     /**
+     * List comments for an item (post, poll, activity).
+     */
+    public function index(Request $request, $id)
+    {
+        $item = $this->resolveItem($id);
+        $user = $request->user();
+
+        $comments = $item->comments()
+            ->with(['user', 'likes', 'replies.user', 'replies.likes'])
+            ->whereNull('parent_id')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $comments->map(fn($c) => $this->formatComment($c, $user->id)),
+        ]);
+    }
+
+    /**
      * Store comment on an item (post, poll, activity).
      */
     public function store(Request $request, $id)

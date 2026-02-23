@@ -63,4 +63,9 @@ class Activity extends Model
     {
         return $this->morphMany(Like::class, 'likeable');
     }
+
+    public function savedItems()
+    {
+        return $this->morphMany(SavedItem::class, 'saved_item');
+    }
 }
