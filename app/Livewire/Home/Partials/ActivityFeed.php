@@ -44,7 +44,8 @@ class ActivityFeed extends Component
     #[On('refresh-feed')]
     public function refreshFeed(): void
     {
-        $this->resetPage(); // If I had one, but here it's scroll based
+        $this->page = 1;
+        $this->hasMore = true;
     }
 
     public function render()
@@ -58,12 +59,12 @@ class ActivityFeed extends Component
         $activitiesQuery = \App\Models\Activity::query()->with(['user', 'likes']);
 
         if ($this->feed === 'timeline' || $this->feed === 'network' || $this->feed === 'community') {
-            $postsQuery->where('privacy', 'public');
-            $activitiesQuery->where('privacy', 'public');
-            
             if ($this->feed === 'community') {
-                $postsQuery->orWhere('feed_type', 'community');
+                $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+            } else {
+                $postsQuery->where('privacy', 'public');
             }
+            $activitiesQuery->where('privacy', 'public');
         } elseif ($this->feed === 'personal') {
             $postsQuery->where('user_id', $user->id);
             $activitiesQuery->where('user_id', $user->id);

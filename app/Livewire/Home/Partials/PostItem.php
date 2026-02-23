@@ -121,6 +121,8 @@ class PostItem extends Component
             return;
         }
 
+        $isPoll = $this->post->type === 'poll';
+
         $action = new \App\Actions\Posts\DeletePost();
         $action->execute($this->post);
 
@@ -129,7 +131,7 @@ class PostItem extends Component
         $this->dispatch('post-deleted');
         $this->dispatch('refresh-feed');
         
-        $message = $this->post->type === 'poll' ? 'Enquete excluída!' : 'Post excluído!';
+        $message = $isPoll ? 'Enquete excluída!' : 'Post excluído!';
         session()->flash('message', $message);
     }
 
