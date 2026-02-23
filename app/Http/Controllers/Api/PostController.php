@@ -73,7 +73,7 @@ class PostController extends Controller
 
         $item = (new \App\Actions\Posts\UpdatePost())->execute($item, [
             'title' => $request->title,
-            'content' => $request->input('content') ?? $request->content,
+            'content' => $request->input('content') ?? $request->input('notes') ?? $request->input('description'),
             'privacy' => $request->privacy,
         ]);
 
@@ -107,7 +107,7 @@ class PostController extends Controller
     public function formatPost($post, $user)
     {
         return [
-            'id' => 'post_'.$post->id,
+            'id' => 'post_' . $post->id,
             'type' => 'post',
             'title' => $post->title,
             'user_id' => (string) $post->user_id,
@@ -118,6 +118,8 @@ class PostController extends Controller
             'mediaPaths' => $post->media ?? [],
             'likes' => $post->likes->count(),
             'isLiked' => $post->likes->where('user_id', $user->id)->isNotEmpty(),
+            'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'isArchived' => (bool) ($post->is_archived ?? false),
             'commentsList' => [], // Separate comments for performance
             'shares' => 0,
             'privacy' => $post->privacy,

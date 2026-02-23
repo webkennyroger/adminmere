@@ -182,7 +182,7 @@ class PollController extends Controller
         ];
 
         return [
-            'id' => 'poll_'.$post->id,
+            'id' => 'poll_' . $post->id,
             'type' => 'poll',
             'title' => $post->title,
             'description' => $post->content,
@@ -193,6 +193,8 @@ class PollController extends Controller
             'pollData' => $pollData,
             'likes' => $post->likes->count(),
             'isLiked' => $post->likes->where('user_id', $user->id)->isNotEmpty(),
+            'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'isArchived' => (bool) ($post->is_archived ?? false),
         ];
     }
 }
