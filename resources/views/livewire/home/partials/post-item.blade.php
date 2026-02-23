@@ -449,18 +449,19 @@
             
             <div class="mt-8 space-y-4 text-left">
                 <!-- Title Input -->
-                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 upper tracking-widest mb-1 font-['Inter']">TÍTULO (OPCIONAL)</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">TÍTULO (OPCIONAL)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 font-['Inter']">
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none focus:outline-hidden placeholder-gray-400 font-['Inter'] shadow-none">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                 <!-- Content Input -->
-                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 upper tracking-widest mb-1 font-['Inter']">CONTEÚDO</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">CONTEÚDO</label>
                     <textarea wire:model="editContent" rows="4"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none font-['Inter']"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none shadow-none placeholder-gray-400 resize-none font-['Inter']"
+                        placeholder="Detalhes da atividade..."></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
@@ -469,11 +470,11 @@
         <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter']">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter'] border-r border-gray-200 dark:border-neutral-700">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden transition-all font-['Inter']">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-ee-xl bg-[#00B14F] text-white hover:bg-[#009b45] focus:outline-hidden transition-all font-['Inter']">
                 Salvar Publicação
             </button>
         </div>
@@ -539,17 +540,17 @@
             <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">Editar Enquete</h3>
 
             <div class="mt-8 space-y-4 text-left">
-                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 upper tracking-widest mb-1 font-['Inter']">TÍTULO (OPCIONAL)</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">TÍTULO (OPCIONAL)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 font-['Inter']">
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none focus:outline-hidden placeholder-gray-400 font-['Inter'] shadow-none">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
-                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 upper tracking-widest mb-1 font-['Inter']">PERGUNTA DA ENQUETE</label>
+                <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">PERGUNTA DA ENQUETE</label>
                     <textarea wire:model="editContent" rows="3"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 placeholder-gray-400 resize-none font-['Inter']"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none focus:outline-hidden placeholder-gray-400 resize-none font-['Inter'] shadow-none"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
@@ -558,11 +559,11 @@
         <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter']">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter'] border-r border-gray-200 dark:border-neutral-700">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden transition-all font-['Inter']">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-ee-xl bg-[#00B14F] text-white hover:bg-[#009b45] focus:outline-hidden transition-all font-['Inter']">
                 Salvar Enquete
             </button>
         </div>
