@@ -445,22 +445,22 @@
     <!-- Edit Post Modal -->
     <x-ui.modal wire:model="editingPost" :showCloseButton="true" wire:key="edit-post-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
         <div class="p-4 sm:p-10 text-center">
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">Editar Publicação</h3>
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">Editar Publicação</h3>
             
             <div class="mt-8 space-y-4 text-left">
                 <!-- Title Input -->
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">TÍTULO (OPCIONAL)</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">TÍTULO (OPCIONAL)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400 font-['Inter'] shadow-none">
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400  shadow-none">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                 <!-- Content Input -->
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">CONTEÚDO</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">CONTEÚDO</label>
                     <textarea wire:model="editContent" rows="4"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none shadow-none placeholder-gray-400 resize-none font-['Inter']"
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none shadow-none placeholder-gray-400 resize-none "
                         placeholder="Escreva algo..."></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
@@ -469,11 +469,11 @@
 
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden disabled:opacity-50 transition-all ">
                 Salvar Publicação
             </button>
         </div>
@@ -488,21 +488,21 @@
                 </svg>
             </div>
             
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">
                 Apagar Publicação
             </h3>
-            <p class="text-gray-500 dark:text-neutral-400 font-['Inter']">
+            <p class="text-gray-500 dark:text-neutral-400 ">
                 Tem certeza que deseja remover esta publicação? Esta ação não pode ser desfeita e todos os comentários e curtidas serão perdidos.
             </p>
         </div>
 
         <div class="flex items-center">
             <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all ">
                 Apagar
             </button>
         </div>
@@ -517,21 +517,21 @@
                 </svg>
             </div>
             
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">
                 Apagar Enquete
             </h3>
-            <p class="text-gray-500 dark:text-neutral-400 font-['Inter']">
+            <p class="text-gray-500 dark:text-neutral-400 ">
                 Tem certeza que deseja remover esta enquete? Esta ação não pode ser desfeita e todos os votos serão perdidos.
             </p>
         </div>
 
         <div class="flex items-center">
             <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all ">
                 Apagar
             </button>
         </div>
@@ -540,20 +540,20 @@
     <!-- Edit Poll Modal -->
     <x-ui.modal wire:model="editingPoll" :showCloseButton="true" wire:key="edit-poll-modal-{{ $post->id }}" :maxWidth="'sm:max-w-lg'">
         <div class="p-4 sm:p-10 text-center">
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">Editar Enquete</h3>
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">Editar Enquete</h3>
 
             <div class="mt-8 space-y-4 text-left">
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">TÍTULO (OPCIONAL)</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">TÍTULO (OPCIONAL)</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400 font-['Inter'] shadow-none">
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400  shadow-none">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                 <div class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
-                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">PERGUNTA DA ENQUETE</label>
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">PERGUNTA DA ENQUETE</label>
                     <textarea wire:model="editContent" rows="3"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400 resize-none font-['Inter'] shadow-none"></textarea>
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400 resize-none  shadow-none"></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
@@ -562,11 +562,11 @@
         <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter'] border-r border-gray-200 dark:border-neutral-700">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all border-r border-gray-200 dark:border-neutral-700">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-ee-xl bg-[#00B14F] text-white hover:bg-[#009b45] focus:outline-hidden transition-all font-['Inter']">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-ee-xl bg-green-500 text-white hover:bg-green-600 focus:outline-hidden transition-all">
                 Salvar Enquete
             </button>
         </div>

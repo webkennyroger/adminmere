@@ -512,7 +512,7 @@
                 Cancelar
             </button>
             <button type="button" wire:click="deleteActivity"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl  border border-transparent bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
                 Apagar
             </button>
         </div>
