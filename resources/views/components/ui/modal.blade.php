@@ -29,7 +29,7 @@
     role="dialog" 
     tabindex="-1">
     
-    <!-- Backdrop Overlay -->
+    <!-- Backdrop -->
     <div x-show="open"
         x-transition:enter="transition-opacity ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -41,10 +41,12 @@
         class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm dark:bg-neutral-900/80 pointer-events-auto z-[99]">
     </div>
 
-    <!-- Modal Box (hs-cookies clone) -->
+    <!-- Container -->
     <div class="fixed inset-0 z-[101] overflow-y-auto overflow-x-hidden flex items-start justify-center p-4 pt-8 sm:pt-14 pointer-events-none">
+        
+        <!-- O Seu Código Preline Original (Wrapper) -->
         <div x-show="open" 
-            x-transition:enter="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 ease-out transition-all duration-500" 
+            x-transition:enter="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all duration-500" 
             x-transition:enter-start="opacity-0 mt-0"
             x-transition:enter-end="opacity-100 mt-7" 
             x-transition:leave="ease-out transition-all duration-300"
@@ -62,7 +64,9 @@
             </div>
             @endif
 
-            {{ $slot }}
+            <div class="overflow-y-auto">
+                {{ $slot }}
+            </div>
         </div>
     </div>
 </div>

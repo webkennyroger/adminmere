@@ -408,34 +408,35 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false"
+    <!-- Delete Comment Modal -->
+    <x-ui.modal wire:model="confirmingCommentDeletion" :maxWidth="'sm:max-w-lg'" :showCloseButton="false"
         wire:key="delete-comment-modal-activity-{{ $activity->id }}">
-        <div class="p-4 sm:p-14 text-center">
+        <div class="p-4 sm:p-14 text-center overflow-y-auto">
             <div
-                class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/10 mx-auto mb-4">
-                <svg class="h-8 w-8 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
+                <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">Apagar Comentário
+
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">
+                Apagar Comentário
             </h3>
-            <p class="text-gray-500 dark:text-neutral-400 font-['Inter'] leading-relaxed">
+            <p class="text-gray-500 dark:text-neutral-400 font-['Inter']">
                 Tem certeza que deseja remover este comentário? Esta ação não pode ser desfeita.
             </p>
         </div>
 
-        <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelDelete"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
                 Cancelar
             </button>
             <button type="button" wire:click="deleteComment"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden transition-all font-['Inter']">
-                Confirmar Exclusão
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                Apagar
             </button>
         </div>
     </x-ui.modal>
@@ -451,9 +452,9 @@
                 <div
                     class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
                     <label
-                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 upper tracking-widest mb-1 font-['Inter']">TÍTULO</label>
+                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">TÍTULO</label>
                     <input type="text" wire:model="editTitle"
-                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none shadow-none placeholder-gray-400 font-['Inter']"
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400 font-['Inter'] shadow-none"
                         placeholder="Insira o título da atividade">
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
@@ -462,7 +463,7 @@
                 <div
                     class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
                     <label
-                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 upper tracking-widest mb-1 font-['Inter']">DESCRIÇÃO</label>
+                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 font-['Inter']">DESCRIÇÃO</label>
                     <textarea wire:model="editContent" rows="4"
                         class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none shadow-none placeholder-gray-400 resize-none font-['Inter']"
                         placeholder="Detalhes da atividade..."></textarea>
@@ -471,47 +472,48 @@
             </div>
         </div>
 
-        <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingActivity"
-                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-es-xl bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter'] border-r border-gray-200 dark:border-neutral-700">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
                 Cancelar
             </button>
             <button type="button" wire:click="updateActivity"
-                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-ee-xl bg-[#00B14F] text-white hover:bg-[#009b45] focus:outline-hidden transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
                 Salvar Alterações
             </button>
         </div>
     </x-ui.modal>
 
     <!-- Delete Activity Confirmation Modal -->
-    <x-ui.modal wire:model="confirmingActivityDeletion" :maxWidth="'sm:max-w-xl'" :showCloseButton="false"
+    <x-ui.modal wire:model="confirmingActivityDeletion" :maxWidth="'sm:max-w-lg'" :showCloseButton="false"
         wire:key="delete-activity-modal-{{ $activity->id }}">
-        <div class="p-4 sm:p-14 text-center">
+        <div class="p-4 sm:p-14 text-center overflow-y-auto">
             <div
-                class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/10 mx-auto mb-4">
-                <svg class="h-8 w-8 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
+                <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">Apagar Atividade</h3>
-            <p class="text-gray-500 dark:text-neutral-400 font-['Inter'] leading-relaxed">
+
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 font-['Inter']">
+                Apagar Atividade
+            </h3>
+            <p class="text-gray-500 dark:text-neutral-400 font-['Inter']">
                 Tem certeza que deseja remover esta atividade? Esta ação não pode ser desfeita e todos os comentários e
                 curtidas serão perdidos.
             </p>
         </div>
 
-        <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" @click="showMenu = false; $wire.cancelDeleteActivity()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden transition-all font-['Inter']">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
                 Cancelar
             </button>
             <button type="button" wire:click="deleteActivity"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden transition-all font-['Inter']">
-                Confirmar Exclusão
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#E60000] border border-transparent text-white hover:bg-[#cc0000] focus:outline-hidden disabled:opacity-50 transition-all font-['Inter']">
+                Apagar
             </button>
         </div>
     </x-ui.modal>
