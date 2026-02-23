@@ -66,13 +66,13 @@ class ActivityItem extends Component
             'editContent' => 'nullable|string',
         ]);
 
-        $this->activity->update([
+        $action = new \App\Actions\Activities\UpdateActivity();
+        $this->activity = $action->execute($this->activity, [
             'title' => $this->editTitle ?: 'Publicação',
             'description' => $this->editContent,
         ]);
 
         $this->editingActivity = false;
-        $this->activity->refresh();
         session()->flash('message', 'Atividade atualizada com sucesso!');
     }
 
@@ -101,9 +101,12 @@ class ActivityItem extends Component
             return;
         }
 
-        $this->activity->delete();
+        $action = new \App\Actions\Activities\DeleteActivity();
+        $action->execute($this->activity);
+
         $this->confirmingActivityDeletion = false;
         $this->dispatch('activity-deleted');
+        $this->dispatch('refresh-feed');
         session()->flash('message', 'Atividade deletada com sucesso!');
     }
 

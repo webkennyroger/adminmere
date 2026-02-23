@@ -292,7 +292,6 @@
                     </svg>
                 @endif
             </button>
-        </div>
     </div>
 
     @include('livewire.home.partials._comment_section', ['item' => $post])

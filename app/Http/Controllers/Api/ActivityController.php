@@ -162,17 +162,22 @@ class ActivityController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $item->update([
-            'title' => $request->activityTitle ?? $request->title ?? $item->title,
-            'description' => $request->description ?? $request->content ?? ($item->description ?? $item->content),
-            'content' => $request->content ?? $request->description ?? ($item->content ?? $item->description),
-            'privacy' => $request->privacy ?? $item->privacy,
-        ]);
-
         if ($item instanceof \App\Models\Activity) {
-            $formatted = $this->formatActivity($item->refresh(), $user);
+            $action = new \App\Actions\Activities\UpdateActivity();
+            $item = $action->execute($item, [
+                'title' => $request->activityTitle ?? $request->title,
+                'description' => $request->description ?? $request->content,
+                'privacy' => $request->privacy,
+            ]);
+            $formatted = $this->formatActivity($item, $user);
         } else {
-            $formatted = $item->refresh();
+            $action = new \App\Actions\Posts\UpdatePost();
+            $item = $action->execute($item, [
+                'title' => $request->title ?? $request->activityTitle,
+                'content' => $request->content ?? $request->description,
+                'privacy' => $request->privacy,
+            ]);
+            $formatted = $item; 
         }
 
         return response()->json([
@@ -190,7 +195,11 @@ class ActivityController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $item->delete();
+        if ($item instanceof \App\Models\Activity) {
+            (new \App\Actions\Activities\DeleteActivity())->execute($item);
+        } else {
+            (new \App\Actions\Posts\DeletePost())->execute($item);
+        }
 
         return response()->json(['success' => true]);
     }

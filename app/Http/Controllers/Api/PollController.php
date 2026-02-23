@@ -36,7 +36,7 @@ class PollController extends Controller
         $user = $request->user();
 
         // Create Poll (as a Post with type='poll')
-        $poll = Post::create([
+        $poll = (new \App\Actions\Posts\CreatePost())->execute([
             'user_id' => $user->id,
             'title' => $request->question,
             'content' => $request->description ?? '',
@@ -44,16 +44,9 @@ class PollController extends Controller
             'privacy' => $request->privacy ?? 'public',
             'feed_type' => $request->feedType ?? 'personal',
             'poll_expires_at' => $request->expiresAt ? Carbon::parse($request->expiresAt) : null,
-            'is_mandatory' => $request->isMandatory ?? false,
+            'poll_options' => $request->options,
             'meta' => ['isMultiple' => $request->isMultiple ?? false],
         ]);
-
-        foreach ($request->options as $optionText) {
-            $poll->pollOptions()->create([
-                'option_text' => $optionText,
-                'votes_count' => 0,
-            ]);
-        }
 
         // Eager load relationships for formatting
         $poll->load(['user', 'pollOptions', 'pollVotes.user', 'likes', 'savedItems', 'comments' => function ($q) {
@@ -90,10 +83,10 @@ class PollController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $item->update([
-            'title' => $request->question ?? $item->title,
-            'content' => $request->description ?? $item->content,
-            'privacy' => $request->privacy ?? $item->privacy,
+        $item = (new \App\Actions\Posts\UpdatePost())->execute($item, [
+            'title' => $request->question,
+            'content' => $request->description,
+            'privacy' => $request->privacy,
             'poll_expires_at' => $request->expiresAt ? Carbon::parse($request->expiresAt) : $item->poll_expires_at,
         ]);
 
@@ -116,7 +109,7 @@ class PollController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $item->delete();
+        (new \App\Actions\Posts\DeletePost())->execute($item);
 
         return response()->json([
             'success' => true,
@@ -164,7 +157,7 @@ class PollController extends Controller
         ]);
     }
 
-    private function formatPoll($post, $user)
+    public function formatPoll($post, $user)
     {
         $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
         $totalVotes = $post->pollVotes->count();

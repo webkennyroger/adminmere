@@ -295,84 +295,84 @@
             @endif
         </button>
     </div>
-</div>
 
-@include('livewire.home.partials._comment_section', ['item' => $activity])
-@include('livewire.home.partials._delete_comment_modal', ['item' => $activity])
+    @include('livewire.home.partials._comment_section', ['item' => $activity])
+    @include('livewire.home.partials._delete_comment_modal', ['item' => $activity])
 
-<!-- Edit Activity Modal -->
-<x-ui.modal wire:model="editingActivity" :showCloseButton="true" wire:key="edit-activity-modal-{{ $activity->id }}"
-    :maxWidth="'sm:max-w-lg'">
-    <div class="p-4 sm:p-10 text-center">
-        <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">Editar Atividade</h3>
+    <!-- Edit Activity Modal -->
+    <x-ui.modal wire:model="editingActivity" :showCloseButton="true" wire:key="edit-activity-modal-{{ $activity->id }}"
+        :maxWidth="'sm:max-w-lg'">
+        <div class="p-4 sm:p-10 text-center">
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">Editar Atividade</h3>
 
-        <div class="mt-8 space-y-4 text-left">
-            <!-- Title Input -->
-            <div
-                class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
-                <label
-                    class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">TÍTULO</label>
-                <input type="text" wire:model="editTitle"
-                    class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400  shadow-none"
-                    placeholder="Insira o título da atividade">
+            <div class="mt-8 space-y-4 text-left">
+                <!-- Title Input -->
+                <div
+                    class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
+                    <label
+                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">TÍTULO</label>
+                    <input type="text" wire:model="editTitle"
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none placeholder-gray-400  shadow-none"
+                        placeholder="Insira o título da atividade">
+                </div>
+                @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+
+                <!-- Content Input -->
+                <div
+                    class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
+                    <label
+                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">DESCRIÇÃO</label>
+                    <textarea wire:model="editContent" rows="4"
+                        class="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm text-gray-800 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:placeholder-neutral-500 dark:focus:border-neutral-700 dark:focus:ring-neutral-600"
+                        placeholder="Detalhes da atividade..."></textarea>
+                </div>
+                @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
-            @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-
-            <!-- Content Input -->
-            <div
-                class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
-                <label
-                    class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">DESCRIÇÃO</label>
-                <textarea wire:model="editContent" rows="4"
-                    class="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm text-gray-800 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:placeholder-neutral-500 dark:focus:border-neutral-700 dark:focus:ring-neutral-600"
-                    placeholder="Detalhes da atividade..."></textarea>
-            </div>
-            @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-        </div>
-    </div>
-
-    <div class="flex items-center">
-        <button type="button" wire:click="cancelEditingActivity"
-            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden disabled:opacity-50 transition-all ">
-            Cancelar
-        </button>
-        <button type="button" wire:click="updateActivity"
-            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-brand-600 border border-transparent text-white hover:bg-brand-700 focus:outline-hidden disabled:opacity-50 transition-all ">
-            Salvar Atividade
-        </button>
-    </div>
-</x-ui.modal>
-
-<!-- Delete Activity Confirmation Modal -->
-<x-ui.modal wire:model="confirmingActivityDeletion" :maxWidth="'sm:max-w-lg'" :showCloseButton="false"
-    wire:key="delete-activity-modal-{{ $activity->id }}">
-    <div class="p-4 sm:p-14 text-center overflow-y-auto">
-        <div
-            class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
-            <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
         </div>
 
-        <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">
-            Apagar Atividade
-        </h3>
-        <p class="text-gray-500 dark:text-neutral-400 ">
-            Tem certeza que deseja remover esta atividade? Esta ação não pode ser desfeita e todos os comentários e
-            curtidas serão perdidos.
-        </p>
-    </div>
+        <div class="flex items-center">
+            <button type="button" wire:click="cancelEditingActivity"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden disabled:opacity-50 transition-all ">
+                Cancelar
+            </button>
+            <button type="button" wire:click="updateActivity"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-brand-600 border border-transparent text-white hover:bg-brand-700 focus:outline-hidden disabled:opacity-50 transition-all ">
+                Salvar Atividade
+            </button>
+        </div>
+    </x-ui.modal>
 
-    <div class="flex items-center">
-        <button type="button" @click="showMenu = false; $wire.cancelDeleteActivity()"
-            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden disabled:opacity-50 transition-all ">
-            Cancelar
-        </button>
-        <button type="button" wire:click="deleteActivity"
-            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl  border border-transparent bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
-            Apagar
-        </button>
-    </div>
-</x-ui.modal>
+    <!-- Delete Activity Confirmation Modal -->
+    <x-ui.modal wire:model="confirmingActivityDeletion" :maxWidth="'sm:max-w-lg'" :showCloseButton="false"
+        wire:key="delete-activity-modal-{{ $activity->id }}">
+        <div class="p-4 sm:p-14 text-center overflow-y-auto">
+            <div
+                class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
+                <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+
+            <h3 class="mb-2 text-2xl font-bold text-gray-800 dark:text-neutral-200 ">
+                Apagar Atividade
+            </h3>
+            <p class="text-gray-500 dark:text-neutral-400 ">
+                Tem certeza que deseja remover esta atividade? Esta ação não pode ser desfeita e todos os comentários e
+                curtidas serão perdidos.
+            </p>
+        </div>
+
+        <div class="flex items-center">
+            <button type="button" @click="showMenu = false; $wire.cancelDeleteActivity()"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden disabled:opacity-50 transition-all ">
+                Cancelar
+            </button>
+            <button type="button" wire:click="deleteActivity"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl  border border-transparent bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
+                Apagar
+            </button>
+        </div>
+    </x-ui.modal>
 </div>

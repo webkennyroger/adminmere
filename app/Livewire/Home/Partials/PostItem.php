@@ -77,14 +77,15 @@ class PostItem extends Component
             'editContent' => 'nullable|string',
         ]);
 
-        $this->post->update([
-            'title' => $this->editTitle ?: null,
+        $action = new \App\Actions\Posts\UpdatePost();
+        $this->post = $action->execute($this->post, [
+            'title' => $this->editTitle,
             'content' => $this->editContent,
         ]);
 
         $this->editingPost = false;
         $this->editingPoll = false;
-        $this->post->refresh();
+        
         $message = $this->post->type === 'poll' ? 'Enquete atualizada!' : 'Post atualizado!';
         session()->flash('message', $message);
     }
@@ -120,10 +121,14 @@ class PostItem extends Component
             return;
         }
 
-        $this->post->delete();
+        $action = new \App\Actions\Posts\DeletePost();
+        $action->execute($this->post);
+
         $this->confirmingPostDeletion = false;
         $this->confirmingPollDeletion = false;
         $this->dispatch('post-deleted');
+        $this->dispatch('refresh-feed');
+        
         $message = $this->post->type === 'poll' ? 'Enquete excluída!' : 'Post excluído!';
         session()->flash('message', $message);
     }
