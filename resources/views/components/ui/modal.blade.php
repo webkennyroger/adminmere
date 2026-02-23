@@ -38,7 +38,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @click="open = false"
-        class="fixed inset-0 bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 shadow-sm backdrop-blur-sm pointer-events-auto z-[99]">
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm dark:bg-neutral-900/80 pointer-events-auto z-[99]">
         
     </div>
 
@@ -53,7 +53,7 @@
             x-transition:leave="ease-out transition-all duration-300"
             x-transition:leave-start="opacity-100 mt-7"
             x-transition:leave-end="opacity-0 mt-0"
-            class="relative w-full {{ $maxWidth }} flex flex-col bg-white dark:bg-neutral-800 border border-transparent rounded-xl pointer-events-auto shadow-xl {{ $attributes->get('class') }}" 
+            class="relative w-full {{ $maxWidth }} flex flex-col bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 rounded-xl pointer-events-auto shadow-xl {{ $attributes->get('class') }}" 
             @click.stop>
             
             @if ($showCloseButton)
