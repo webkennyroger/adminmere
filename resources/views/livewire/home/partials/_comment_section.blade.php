@@ -31,7 +31,7 @@
                                         class="text-[10px] font-semibold {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $comment->likes->count() }}</span>
                                 </button>
                                 <button
-                                    @click="$wire.replyingToCommentId = {{ $comment->id }}; $refs.commentInput.focus(); $wire.newComment = '@' + '{{ $comment->user->name }} ';"
+                                    @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@' + '{{ $comment->user->name }} ' );"
                                     class="font-semibold hover:underline">
                                     Responder
                                 </button>

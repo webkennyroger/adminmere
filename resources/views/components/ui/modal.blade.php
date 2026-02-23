@@ -45,7 +45,7 @@
     <!-- Container -->
     <div class="fixed inset-0 z-[101] overflow-y-auto overflow-x-hidden flex items-start justify-center p-4 pt-8 sm:pt-14 pointer-events-none">
         
-        <!-- O Seu Código Preline Original (Wrapper) -->
+        
         <div x-show="open" 
             x-transition:enter="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all duration-500" 
             x-transition:enter-start="opacity-0 mt-0"

@@ -284,7 +284,6 @@
                             d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
                 </button>
-            </div>
         </div>
     </div>
 
@@ -374,9 +373,13 @@
                             @endforeach
                             @foreach($editVideos as $video)
                                 <div class="aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-black flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
+                                    @if($video && method_exists($video, 'temporaryUrl'))
+                                        <video src="{{ $video->temporaryUrl() }}" class="w-full h-full object-cover"></video>
+                                    @else
+                                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
