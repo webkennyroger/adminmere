@@ -51,54 +51,50 @@ class ActivityFeed extends Component
     {
         $user = auth()->user();
 
-        // Users for Mentions
-        $mentionableUsers = \App\Models\User::select('id', 'name', 'avatar')->take(50)->get();
+        // Posts Query
+        $postsQuery = Post::query()->with(['user', 'likes', 'pollOptions', 'pollVotes']);
 
-        // Fetch Posts
-        $postsQuery = Post::with(['user', 'comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes', 'likes', 'pollOptions', 'pollVotes']);
+        // Activities Query
+        $activitiesQuery = \App\Models\Activity::query()->with(['user', 'likes']);
 
-        // Fetch Activities
-        $activitiesQuery = \App\Models\Activity::with(['user', 'comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes', 'likes']);
-
-        if ($this->feed === 'timeline' || $this->feed === 'network') {
-            // Show public posts and activities from everyone (Discovery mode)
+        if ($this->feed === 'timeline' || $this->feed === 'network' || $this->feed === 'community') {
             $postsQuery->where('privacy', 'public');
             $activitiesQuery->where('privacy', 'public');
+            
+            if ($this->feed === 'community') {
+                $postsQuery->orWhere('feed_type', 'community');
+            }
         } elseif ($this->feed === 'personal') {
             $postsQuery->where('user_id', $user->id);
             $activitiesQuery->where('user_id', $user->id);
-        } elseif ($this->feed === 'community') {
-            // Community feed shows public posts from everyone
-            $postsQuery->where('feed_type', 'community')->orWhere('privacy', 'public');
-            // Activities are usually public
-            $activitiesQuery->where('privacy', 'public');
         }
 
-        // Get posts and activities
-        $posts = $postsQuery->latest('created_at')->limit(50)->get();
-        $activities = $activitiesQuery->latest('start_time')->limit(50)->get();
+        // Fetch enough to cover the current page + some buffer
+        $limit = max(100, $this->perPage * $this->page + 20);
+        $posts = $postsQuery->latest()->limit($limit)->get();
+        $activities = $activitiesQuery->latest('start_time')->limit($limit)->get();
 
-        // Merge and sort by date
+        // Merge and sort
         $items = collect([])
             ->merge($posts->map(fn($post) => [
                 'type' => 'post',
                 'item' => $post,
-                'date' => $post->created_at ? $post->created_at->toDateTimeString() : now()->toDateTimeString()
+                'date' => $post->created_at?->toDateTimeString() ?? now()->toDateTimeString()
             ]))
             ->merge($activities->map(fn($activity) => [
                 'type' => 'activity',
                 'item' => $activity,
-                'date' => $activity->start_time ? $activity->start_time->toDateTimeString() : now()->toDateTimeString()
+                'date' => $activity->start_time?->toDateTimeString() ?? ($activity->created_at?->toDateTimeString() ?? now()->toDateTimeString())
             ]))
             ->sortByDesc('date')
-            ->take($this->perPage * $this->page)
             ->values();
 
-        $totalCount = $posts->count() + $activities->count();
-        $this->hasMore = ($this->perPage * $this->page) < $totalCount;
+        $pagedItems = $items->take($this->perPage * $this->page);
+        $this->hasMore = $items->count() > $pagedItems->count();
 
         return view('livewire.home.partials.activity-feed', [
-            'items' => $items,
+            'items' => $pagedItems,
+            'feed' => $this->feed,
         ]);
     }
 }
