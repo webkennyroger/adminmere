@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
@@ -23,7 +23,7 @@ class PostController extends Controller
         ]);
 
         if ($validator->fails()) {
-             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $user = $request->user();
@@ -32,13 +32,13 @@ class PostController extends Controller
             'user_id' => $user->id,
             'title' => $request->title ?? '',
             'content' => $request->input('content') ?? '',
-            'type' => 'post', // Explicitly set type to post
+            'type' => 'post',
             'media' => $request->mediaPaths ?? [],
             'privacy' => $request->privacy ?? 'public',
             'feed_type' => $request->feedType ?? 'personal',
         ]);
 
-        $post->load(['user', 'likes']);
+        $post->load(['user', 'likes', 'comments.user']);
 
         return response()->json([
             'success' => true,
@@ -53,7 +53,7 @@ class PostController extends Controller
     public function destroy(Request $request, $id)
     {
         $cleanId = str_replace(['post_', 'poll_'], '', $id);
-        
+
         $post = Post::where('id', $cleanId)->where('type', 'post')->firstOrFail();
 
         if ($post->user_id !== $request->user()->id) {
@@ -68,23 +68,21 @@ class PostController extends Controller
         ]);
     }
 
-
-
     private function formatPost($post, $user)
     {
         return [
             'id' => 'post_'.$post->id,
             'type' => 'post',
             'title' => $post->title,
-            'user_id' => (string)$post->user_id,
+            'user_id' => (string) $post->user_id,
             'userName' => $post->user->name,
             'userAvatarUrl' => $post->user->image_url,
             'createdAt' => $post->created_at->toIso8601String(),
             'description' => $post->content,
             'mediaPaths' => $post->media ?? [],
             'likes' => $post->likes->count(),
-            'isLiked' => $post->likes->contains('user_id', $user->id),
-            'commentsList' => [],
+            'isLiked' => $post->likes->where('user_id', $user->id)->isNotEmpty(),
+            'commentsList' => [], // Separate comments for performance
             'shares' => 0,
             'privacy' => $post->privacy,
         ];

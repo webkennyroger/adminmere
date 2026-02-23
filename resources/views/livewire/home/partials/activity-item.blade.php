@@ -337,12 +337,12 @@
 
     <div class="flex items-center">
         <button type="button" wire:click="cancelEditingActivity"
-            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-gray-100 dark:bg-neutral-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden disabled:opacity-50 transition-all ">
             Cancelar
         </button>
         <button type="button" wire:click="updateActivity"
-            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-[#00B14F] border border-transparent text-white hover:bg-[#009b45] focus:outline-hidden disabled:opacity-50 transition-all ">
-            Salvar Alterações
+            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-brand-600 border border-transparent text-white hover:bg-brand-700 focus:outline-hidden disabled:opacity-50 transition-all ">
+            Salvar Atividade
         </button>
     </div>
 </x-ui.modal>

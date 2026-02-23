@@ -129,27 +129,25 @@
 
                 @foreach($post->pollOptions as $option)
                     @php
-                        $percentage = $totalVotes > 0 ? round(($option->votes_count / $totalVotes) * 100) : 0;
-                        $isVotedOption = $hasVoted && $post->pollVotes->where('user_id', auth()->id())->where('poll_option_id', $option->id)->isNotEmpty();
-                        // For Multiple Choice: show result only for the specific option voted, otherwise keep voting button.
-                        // For Single Choice: show all results if any option was voted.
-                        // Expired: always show results.
-                        $showThisResult = $isExpired || ($isMultiple ? $isVotedOption : $hasVoted);
+                        $totalVotes = $post->pollVotes->count();
+                        $optionVotes = $post->pollVotes->where('poll_option_id', $option->id)->count();
+                        $percentage = $totalVotes > 0 ? round(($optionVotes / $totalVotes) * 100) : 0;
+                        $hasVoted = $post->pollVotes->where('user_id', auth()->id())->isNotEmpty();
+                        $isVotedOption = $post->pollVotes->where('user_id', auth()->id())->where('poll_option_id', $option->id)->isNotEmpty();
+                        $isExpired = $post->poll_expires_at && $post->poll_expires_at->isPast();
+                        $showResults = $hasVoted || $isExpired;
                     @endphp
 
-                    <div class="relative w-full">
-                        @if($showThisResult)
+                    <div class="mb-3 last:mb-0">
+                        @if($showResults)
                             <!-- Result View -->
-                            <div class="relative w-full h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                                <!-- Progress Bar -->
-                                <div class="absolute top-0 left-0 h-full bg-purple-100 dark:bg-purple-900/30 transition-all duration-500"
-                                     style="width: {{ $percentage }}%"></div>
-                                
-                                <!-- Content -->
-                                <div class="absolute inset-0 flex items-center justify-between px-4 z-10">
-                                    <span class="text-sm font-medium {{ $isVotedOption ? 'text-purple-700 dark:text-purple-300' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <div class="relative h-10 w-full bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                                <div class="absolute inset-y-0 left-0 bg-brand-500/20 dark:bg-brand-500/30 transition-all duration-1000"
+                                    style="width: {{ $percentage }}%"></div>
+                                <div class="absolute inset-0 flex items-center justify-between px-4">
+                                    <span class="text-sm font-medium {{ $isVotedOption ? 'text-brand-700 dark:text-brand-300' : 'text-zinc-700 dark:text-zinc-300' }}">
                                         {{ $option->option_text }}
-                                        @if($isVotedOption) <span class="ml-1 text-xs bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-1.5 py-0.5 rounded-md">Você</span> @endif
+                                        @if($isVotedOption) <span class="ml-1 text-xs bg-brand-200 dark:bg-brand-800 text-brand-800 dark:text-brand-200 px-1.5 py-0.5 rounded-md">Você</span> @endif
                                     </span>
                                     <span class="text-xs font-bold text-zinc-600 dark:text-zinc-400">{{ $percentage }}%</span>
                                 </div>
@@ -157,7 +155,7 @@
                         @else
                             <!-- Voting View -->
                             <button wire:click="vote({{ $option->id }})" wire:loading.attr="disabled"
-                                class="w-full text-left px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 text-zinc-900 dark:text-white transition-all text-sm font-medium">
+                                class="w-full text-left px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-brand-500 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 text-zinc-900 dark:text-white transition-all text-sm font-medium">
                                 {{ $option->option_text }}
                             </button>
                         @endif
@@ -334,11 +332,11 @@
 
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-[#FFC107] hover:bg-gray-200 dark:hover:bg-neutral-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-yellow-100 dark:bg-yellow-700 border border-transparent text-white hover:bg-green-200 dark:hover:bg-green-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-ee-xl bg-brand-600 border border-transparent text-white hover:bg-brand-700 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Salvar Publicação
             </button>
         </div>

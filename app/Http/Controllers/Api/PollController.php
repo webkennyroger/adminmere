@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Post;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Traits\FormatsApiData;
+use Illuminate\Support\Facades\Validator;
 
 class PollController extends Controller
 {
-    use FormatsApiData;
     /**
      * Store a newly created poll in storage.
      */
@@ -51,7 +49,7 @@ class PollController extends Controller
         foreach ($request->options as $optionText) {
             $poll->pollOptions()->create([
                 'option_text' => $optionText,
-                'votes_count' => 0
+                'votes_count' => 0,
             ]);
         }
 
@@ -63,7 +61,7 @@ class PollController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Enquete criada com sucesso',
-            'data' => $this->formatPost($poll, $user),
+            'data' => $this->formatPoll($poll, $user),
         ], 201);
     }
 
@@ -98,9 +96,9 @@ class PollController extends Controller
 
         $poll = Post::where('id', $cleanId)->where('type', 'poll')->firstOrFail();
         $user = $request->user();
-        $isMultiple = (bool)(is_array($poll->meta) && ($poll->meta['isMultiple'] ?? false));
+        $isMultiple = (bool) (is_array($poll->meta) && ($poll->meta['isMultiple'] ?? false));
 
-        if (!$isMultiple && $poll->hasVoted($user)) {
+        if (! $isMultiple && $poll->hasVoted($user)) {
             return response()->json(['success' => false, 'message' => 'Você já votou nesta enquete'], 400);
         }
 
@@ -117,17 +115,53 @@ class PollController extends Controller
 
         $poll->pollVotes()->create([
             'user_id' => $user->id,
-            'poll_option_id' => $option->id
+            'poll_option_id' => $option->id,
         ]);
 
         $option->increment('votes_count');
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatPost($poll->refresh(), $user)
+            'data' => $this->formatPoll($poll->refresh(), $user),
         ]);
     }
 
+    private function formatPoll($post, $user)
+    {
+        $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
+        $totalVotes = $post->pollVotes->count();
 
+        $meta = is_array($post->meta) ? $post->meta : [];
+        $pollData = [
+            'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
+            'isMandatory' => (bool) $post->is_mandatory,
+            'isMultiple' => (bool) ($meta['isMultiple'] ?? false),
+            'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
+            'hasVoted' => $hasVoted,
+            'totalVotes' => $totalVotes,
+            'options' => $post->pollOptions->map(function ($opt) use ($user, $post, $totalVotes) {
+                return [
+                    'id' => (int) $opt->id,
+                    'text' => $opt->option_text,
+                    'votes' => (int) $opt->votes_count,
+                    'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
+                    'isUserVote' => $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty(),
+                ];
+            })->values(),
+        ];
 
+        return [
+            'id' => 'poll_'.$post->id,
+            'type' => 'poll',
+            'title' => $post->title,
+            'description' => $post->content,
+            'user_id' => (string) $post->user_id,
+            'userName' => $post->user->name,
+            'userAvatarUrl' => $post->user->image_url,
+            'createdAt' => $post->created_at->toIso8601String(),
+            'pollData' => $pollData,
+            'likes' => $post->likes->count(),
+            'isLiked' => $post->likes->where('user_id', $user->id)->isNotEmpty(),
+        ];
+    }
 }

@@ -73,7 +73,7 @@
                 {{-- ENQUETE --}}
                 <button type="button" @click="modalEnquete = true"
                     class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-                    <div class="p-1 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                    <div class="p-1 rounded bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -399,7 +399,7 @@
                         <div
                             class="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2.5">
                             <h4 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
@@ -408,7 +408,7 @@
                             @foreach($pollOptions as $index => $option)
                                 <div class="flex items-center gap-2">
                                     <input type="text" wire:model="pollOptions.{{ $index }}"
-                                        class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm px-3 py-2 focus:ring-purple-500 focus:border-purple-500 dark:text-white"
+                                        class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm px-3 py-2 focus:ring-brand-500 focus:border-brand-500 dark:text-white"
                                         placeholder="Opção {{ $index + 1 }}">
                                     @if($index > 1)
                                         <button type="button" wire:click="removePollOption({{ $index }})"
@@ -425,7 +425,7 @@
                             @endforeach
                             @if(count($pollOptions) < 5)
                                 <button type="button" wire:click="addPollOption"
-                                    class="text-xs font-medium text-purple-600 dark:text-purple-400 flex items-center gap-1 mt-1">
+                                    class="text-xs font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1 mt-1">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 4v16m8-8H4" />
@@ -460,7 +460,7 @@
                             class="px-5 py-2 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 transition-colors">Cancelar</button>
                         <button type="button" wire:click="activatePoll"
                             x-on:click="setTimeout(() => { $wire.savePost(); modalEnquete = false; }, 100)"
-                            class="px-5 py-2 rounded-xl text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 transition-colors">Publicar
+                            class="px-5 py-2 rounded-xl text-sm font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/20 transition-colors">Publicar
                             enquete</button>
                     </div>
                 </div>

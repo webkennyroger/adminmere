@@ -133,15 +133,19 @@ trait HasInteractions
 
         $model = $this->getInteractableModel();
 
+        // Ensure parent_id is null if not provided or empty
+        $parentId = ! empty($this->replyingToCommentId) ? $this->replyingToCommentId : null;
+
         $model->comments()->create([
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
             'body' => $this->newComment,
-            'parent_id' => $this->replyingToCommentId,
+            'parent_id' => $parentId,
         ]);
 
         $this->newComment = '';
         $this->replyingToCommentId = null;
         $this->showComments = true;
+
         $model->refresh();
     }
 
