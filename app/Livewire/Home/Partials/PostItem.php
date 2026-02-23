@@ -8,6 +8,7 @@ use Livewire\Component;
 class PostItem extends Component
 {
     use \App\Livewire\Traits\HasInteractions;
+    use \Livewire\WithFileUploads;
 
     public Post $post;
 
@@ -24,6 +25,12 @@ class PostItem extends Component
     public $editTitle = '';
 
     public $editContent = '';
+
+    public $editPhotos = [];
+
+    public $editVideos = [];
+
+    public $mediaToRemove = [];
 
     public function getInteractableModel()
     {
@@ -53,6 +60,7 @@ class PostItem extends Component
         } else {
             $this->editingPost = true;
         }
+        $this->mediaToRemove = [];
     }
 
     public function cancelEditingPost()
@@ -61,6 +69,13 @@ class PostItem extends Component
         $this->editingPoll = false;
         $this->editTitle = $this->post->title ?? '';
         $this->editContent = $this->post->content ?? '';
+    }
+
+    public function removeExistingMedia($url)
+    {
+        if (! in_array($url, $this->mediaToRemove)) {
+            $this->mediaToRemove[] = $url;
+        }
     }
 
     public function updatePost()
@@ -75,17 +90,41 @@ class PostItem extends Component
         $this->validate([
             'editTitle' => 'nullable|string|max:100',
             'editContent' => 'nullable|string',
+            'editPhotos.*' => 'nullable|image|max:20480',
+            'editVideos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:102400',
         ]);
 
-        $action = new \App\Actions\Posts\UpdatePost();
+        $media = collect($this->post->media ?? [])
+            ->reject(fn ($m) => in_array($m, $this->mediaToRemove))
+            ->values()
+            ->all();
+
+        if ($this->editPhotos) {
+            foreach ($this->editPhotos as $photo) {
+                $path = $photo->store('posts/'.auth()->id().'/photos', 'public');
+                $media[] = url('storage/'.$path);
+            }
+        }
+
+        if ($this->editVideos) {
+            foreach ($this->editVideos as $video) {
+                $path = $video->store('posts/'.auth()->id().'/videos', 'public');
+                $media[] = url('storage/'.$path);
+            }
+        }
+
+        $action = new \App\Actions\Posts\UpdatePost;
         $this->post = $action->execute($this->post, [
             'title' => $this->editTitle,
             'content' => $this->editContent,
+            'media' => $media,
         ]);
 
+        $this->editPhotos = [];
+        $this->editVideos = [];
         $this->editingPost = false;
         $this->editingPoll = false;
-        
+
         $message = $this->post->type === 'poll' ? 'Enquete atualizada!' : 'Post atualizado!';
         session()->flash('message', $message);
     }
@@ -123,14 +162,14 @@ class PostItem extends Component
 
         $isPoll = $this->post->type === 'poll';
 
-        $action = new \App\Actions\Posts\DeletePost();
+        $action = new \App\Actions\Posts\DeletePost;
         $action->execute($this->post);
 
         $this->confirmingPostDeletion = false;
         $this->confirmingPollDeletion = false;
         $this->dispatch('post-deleted');
         $this->dispatch('refresh-feed');
-        
+
         $message = $isPoll ? 'Enquete excluída!' : 'Post excluído!';
         session()->flash('message', $message);
     }

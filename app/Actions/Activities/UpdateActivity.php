@@ -7,7 +7,6 @@ use App\Models\Activity;
 class UpdateActivity
 {
     /**
-     * @param Activity $activity
      * @param array{
      *   title?: string,
      *   description?: string|null,
@@ -20,6 +19,7 @@ class UpdateActivity
             'title' => $data['title'] ?? $activity->title,
             'description' => $data['description'] ?? $activity->description,
             'privacy' => $data['privacy'] ?? $activity->privacy,
+            'media' => $data['media'] ?? $activity->media,
         ]);
 
         return $activity->refresh();

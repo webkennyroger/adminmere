@@ -188,17 +188,25 @@
                             </svg>
                             <span class="text-sm text-zinc-400">Arraste aqui ou clique para enviar vídeo.</span>
                         </div>
-                        <input type="file" wire:model="postForm.videos" class="hidden" accept="video/*">
+                        <input type="file" wire:model="postForm.videos" class="hidden" multiple accept="video/*">
                     </label>
                 </div>
                 {{-- Video Preview --}}
-                @if ($postForm->videos && count($postForm->videos) > 0)
+                @if ($postForm->videos)
                     <div class="grid grid-cols-2 gap-2">
-                        @foreach($postForm->videos as $video)
-                            @if(method_exists($video, 'temporaryUrl'))
+                        @php
+                            $videoArray = is_array($postForm->videos) ? $postForm->videos : [$postForm->videos];
+                        @endphp
+                        @foreach($videoArray as $video)
+                            @if($video && method_exists($video, 'temporaryUrl'))
                                 <div
                                     class="aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-black">
                                     <video src="{{ $video->temporaryUrl() }}" class="w-full h-full object-cover" controls></video>
+                                </div>
+                            @elseif($video)
+                                <div
+                                    class="aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 flex items-center justify-center p-4">
+                                    <span class="text-[10px] text-zinc-500 truncate">{{ $video->getClientOriginalName() }}</span>
                                 </div>
                             @endif
                         @endforeach

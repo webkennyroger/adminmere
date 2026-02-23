@@ -38,262 +38,267 @@
             </div>
         </div>
 
-        <!-- Three Dots Menu -->
-        <div class="relative" @click.away="showMenu = false">
-            <button @click="showMenu = !showMenu"
-                class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
-                <svg class="w-5 h-5 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                </svg>
+        <div class="flex items-center gap-2">
+            <!-- Bookmark Button -->
+            <button wire:click="toggleSave"
+                class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors group">
+                @if($activity->savedItems->contains('user_id', auth()->id()))
+                    <svg class="w-5 h-5 text-green-600 fill-current" viewBox="0 0 24 24">
+                        <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
+                    </svg>
+                @else
+                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-green-600 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3-7 3V5z" />
+                    </svg>
+                @endif
             </button>
 
-            <!-- Dropdown Menu -->
-            <div x-show="showMenu" x-transition:enter="transition ease-out duration-100"
-                x-transition:enter-start="transform opacity-0 scale-95"
-                x-transition:enter-end="transform opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-75"
-                x-transition:leave-start="transform opacity-100 scale-100"
-                x-transition:leave-end="transform opacity-0 scale-95"
-                class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
-                style="display: none;">
-                <div class="py-1">
-                    <button
-                        class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                        Salvar atividade
-                    </button>
-                    @if(auth()->id() == $activity->user_id || auth()->user()->isAdmin())
-                        <button @click="showMenu = false; $wire.startEditingActivity()"
-                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Editar atividade
-                        </button>
-                        <button @click="showMenu = false; $wire.confirmDeleteActivity()"
-                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Excluir atividade
-                        </button>
-                    @else
-                        <button
-                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            Denunciar atividade
-                        </button>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Post Content -->
-    @if($activity->description)
-        <div class="px-4 pb-3">
-            <p class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">
-                {{ Str::limit($activity->description, 200) }}
-            </p>
-            @if(strlen($activity->description) > 200)
-                <button class="text-brand-600 hover:text-brand-700 text-sm font-medium mt-1">Ver mais</button>
-            @endif
-        </div>
-    @endif
-
-    <!-- Media Section -->
-    @php
-        // Filter out local Android/iOS paths that won't load on web
-        $mediaItems = collect($activity->media ?? [])->filter(function ($path) {
-            return str_starts_with($path, 'http') || str_starts_with($path, '/storage') || str_starts_with($path, 'storage/');
-        })->values()->all();
-
-        $hasMedia = !empty($mediaItems) || !empty($activity->polylines);
-        $mediaCount = count($mediaItems);
-    @endphp
-
-    @if($hasMedia)
-        <!-- Map Display -->
-        @if(!empty($activity->polylines))
-            @php
-                $poly = null;
-                if (is_array($activity->polylines)) {
-                    // Extract summary_polyline from the polylines array
-                    $poly = $activity->polylines['summary_polyline'] ?? null;
-                } else {
-                    // If it's a string, use it directly
-                    $poly = $activity->polylines;
-                }
-            @endphp
-
-            @if($poly)
-                <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden">
-                    <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
-                        class="w-full h-full object-cover" alt="Mapa da atividade" loading="lazy">
-                </div>
-            @else
-                <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                    <div class="text-center">
-                        <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0v10m0-10L5.553 2.894A1 1 0 005 2h14a1 1 0 011 1v14a1 1 0 01-1.553.894L15 13m0 0v10m0-10l4.447 2.724A1 1 0 0021 20.382V9.618a1 1 0 00-1.553-.894L15 11" />
-                        </svg>
-                        <p class="text-sm text-zinc-400">Mapa indisponível</p>
-                    </div>
-                </div>
-            @endif
-        @endif
-
-        <!-- Media Grid -->
-        @if($mediaCount > 0)
-            @if($mediaCount === 1)
-                <!-- Single Image/Video - Full Width -->
-                <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
-                    @if(str_contains($mediaItems[0], '.mp4'))
-                        <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
-                    @else
-                        <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
-                    @endif
-                </div>
-            @elseif($mediaCount === 2)
-                <!-- Two Images Side by Side -->
-                <div class="grid grid-cols-2 gap-0.5">
-                    @foreach($mediaItems as $media)
-                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                            @if(str_contains($media, '.mp4'))
-                                <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
-                            @else
-                                <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            @elseif($mediaCount === 3)
-                <!-- Three Images Grid -->
-                <div class="grid grid-cols-2 gap-0.5">
-                    <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                        <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
-                    </div>
-                    <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                        <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover" alt="Post image">
-                    </div>
-                    <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                        <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover" alt="Post image">
-                    </div>
-                </div>
-            @else
-                <!-- 4+ Images Grid with Counter -->
-                <div class="grid grid-cols-2 gap-0.5">
-                    @foreach($mediaItems as $index => $media)
-                        @if($index < 4)
-                            <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                                <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
-                                @if($index === 3 && $mediaCount > 4)
-                                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                        <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-            @endif
-        @endif
-    @endif
-
-    <!-- Activity Stats (if sports activity) -->
-    <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
-        <div class="flex items-center justify-around text-center">
-            <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                    {{ number_format(($activity->distance ?? 0) / 1000, 2, ',', '.') }}
-                </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Distância</p>
-            </div>
-
-            @php
-                $pace = 0;
-                if (($activity->distance ?? 0) > 0 && ($activity->duration ?? 0) > 0) {
-                    $pace = ($activity->duration / 60) / ($activity->distance / 1000);
-                }
-                $paceMin = floor($pace);
-                $paceSec = round(($pace - $paceMin) * 60);
-            @endphp
-            <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                    {{ $paceMin }}:{{ str_pad($paceSec, 2, '0', STR_PAD_LEFT) }}
-                </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Ritmo</p>
-            </div>
-
-            <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                    {{ $activity->duration ? gmdate($activity->duration >= 3600 ? "H:i:s" : "i:s", $activity->duration) : '00:00' }}
-                </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Tempo</p>
-            </div>
-
-            <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                    {{ number_format($activity->calories ?? 0, 0, ',', '.') }}
-                </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Calorias</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Actions Bar -->
-    <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-6">
-                <!-- Like Button -->
-                <button wire:click="toggleLike" class="flex items-center gap-2 group">
-                    @if($activity->likes->contains('user_id', auth()->id()))
-                        <svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                        </svg>
-                    @else
-                        <svg class="w-6 h-6 text-zinc-500 group-hover:text-red-500 transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    @endif
-                    <span
-                        class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->likes->count() }}</span>
+            <!-- Three Dots Menu -->
+            <div class="relative" @click.away="showMenu = false">
+                <button @click="showMenu = !showMenu"
+                    class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+                    <svg class="w-5 h-5 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                    </svg>
                 </button>
 
-                <!-- Comment Button -->
-                <button @click="$wire.showComments = !$wire.showComments" class="flex items-center gap-2 group">
+                <!-- Dropdown Menu -->
+                <div x-show="showMenu" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10"
+                    style="display: none;">
+                    <div class="py-1">
+                        <button
+                            class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                            Salvar atividade
+                        </button>
+                        @if(auth()->id() == $activity->user_id || auth()->user()->isAdmin())
+                            <button @click="showMenu = false; $wire.startEditingActivity()"
+                                class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                                Editar atividade
+                            </button>
+                            <button @click="showMenu = false; $wire.confirmDeleteActivity()"
+                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                                Excluir atividade
+                            </button>
+                        @else
+                            <button
+                                class="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                                Denunciar atividade
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Post Content -->
+        @if($activity->description)
+            <div class="px-4 pb-3">
+                <p class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">
+                    {{ Str::limit($activity->description, 200) }}
+                </p>
+                @if(strlen($activity->description) > 200)
+                    <button class="text-brand-600 hover:text-brand-700 text-sm font-medium mt-1">Ver mais</button>
+                @endif
+            </div>
+        @endif
+
+        <!-- Media Section -->
+        @php
+            // Filter out local Android/iOS paths that won't load on web
+            $mediaItems = collect($activity->media ?? [])->filter(function ($path) {
+                return str_starts_with($path, 'http') || str_starts_with($path, '/storage') || str_starts_with($path, 'storage/');
+            })->values()->all();
+
+            $hasMedia = !empty($mediaItems) || !empty($activity->polylines);
+            $mediaCount = count($mediaItems);
+        @endphp
+
+        @if($hasMedia)
+            <!-- Map Display -->
+            @if(!empty($activity->polylines))
+                @php
+                    $poly = null;
+                    if (is_array($activity->polylines)) {
+                        // Extract summary_polyline from the polylines array
+                        $poly = $activity->polylines['summary_polyline'] ?? null;
+                    } else {
+                        // If it's a string, use it directly
+                        $poly = $activity->polylines;
+                    }
+                @endphp
+
+                @if($poly)
+                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden">
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
+                            class="w-full h-full object-cover" alt="Mapa da atividade" loading="lazy">
+                    </div>
+                @else
+                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0v10m0-10L5.553 2.894A1 1 0 005 2h14a1 1 0 011 1v14a1 1 0 01-1.553.894L15 13m0 0v10m0-10l4.447 2.724A1 1 0 0021 20.382V9.618a1 1 0 00-1.553-.894L15 11" />
+                            </svg>
+                            <p class="text-sm text-zinc-400">Mapa indisponível</p>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
+            <!-- Media Grid -->
+            @if($mediaCount > 0)
+                @if($mediaCount === 1)
+                    <!-- Single Image/Video - Full Width -->
+                    <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
+                        @if(str_contains($mediaItems[0], '.mp4'))
+                            <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
+                        @else
+                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
+                        @endif
+                    </div>
+                @elseif($mediaCount === 2)
+                    <!-- Two Images Side by Side -->
+                    <div class="grid grid-cols-2 gap-0.5">
+                        @foreach($mediaItems as $media)
+                            <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
+                                @if(str_contains($media, '.mp4'))
+                                    <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
+                                @else
+                                    <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @elseif($mediaCount === 3)
+                    <!-- Three Images Grid -->
+                    <div class="grid grid-cols-2 gap-0.5">
+                        <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
+                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
+                        </div>
+                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
+                            <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover" alt="Post image">
+                        </div>
+                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
+                            <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover" alt="Post image">
+                        </div>
+                    </div>
+                @else
+                    <!-- 4+ Images Grid with Counter -->
+                    <div class="grid grid-cols-2 gap-0.5">
+                        @foreach($mediaItems as $index => $media)
+                            @if($index < 4)
+                                <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
+                                    <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
+                                    @if($index === 3 && $mediaCount > 4)
+                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                            <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
+            @endif
+        @endif
+
+        <!-- Activity Stats (if sports activity) -->
+        <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
+            <div class="flex items-center justify-around text-center">
+                <div>
+                    <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                        {{ number_format(($activity->distance ?? 0) / 1000, 2, ',', '.') }}
+                    </p>
+                    <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Distância
+                    </p>
+                </div>
+
+                @php
+                    $pace = 0;
+                    if (($activity->distance ?? 0) > 0 && ($activity->duration ?? 0) > 0) {
+                        $pace = ($activity->duration / 60) / ($activity->distance / 1000);
+                    }
+                    $paceMin = floor($pace);
+                    $paceSec = round(($pace - $paceMin) * 60);
+                @endphp
+                <div>
+                    <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                        {{ $paceMin }}:{{ str_pad($paceSec, 2, '0', STR_PAD_LEFT) }}
+                    </p>
+                    <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Ritmo</p>
+                </div>
+
+                <div>
+                    <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                        {{ $activity->duration ? gmdate($activity->duration >= 3600 ? "H:i:s" : "i:s", $activity->duration) : '00:00' }}
+                    </p>
+                    <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Tempo</p>
+                </div>
+
+                <div>
+                    <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                        {{ number_format($activity->calories ?? 0, 0, ',', '.') }}
+                    </p>
+                    <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Calorias
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-6">
+                    <!-- Like Button -->
+                    <button wire:click="toggleLike" class="flex items-center gap-2 group">
+                        @if($activity->likes->contains('user_id', auth()->id()))
+                            <svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        @else
+                            <svg class="w-6 h-6 text-zinc-500 group-hover:text-red-500 transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        @endif
+                        <span
+                            class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->likes->count() }}</span>
+                    </button>
+
+                    <!-- Comment Button -->
+                    <button @click="$wire.showComments = !$wire.showComments" class="flex items-center gap-2 group">
+                        <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span
+                            class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->comments->count() }}</span>
+                    </button>
+                </div>
+
+                <!-- Share Button -->
+                <button class="flex items-center gap-2 group">
                     <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
-                    <span
-                        class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $activity->comments->count() }}</span>
                 </button>
             </div>
-
-            <!-- Share Button -->
-            <button class="flex items-center gap-2 group">
-                <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-            </button>
         </div>
-
-        <!-- Bookmark Button -->
-        <button wire:click="toggleSave" class="flex items-center group">
-            @if($activity->savedItems->contains('user_id', auth()->id()))
-                <svg class="w-6 h-6 text-brand-600 fill-current" viewBox="0 0 24 24">
-                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
-                </svg>
-            @else
-                <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3-7 3V5z" />
-                </svg>
-            @endif
-        </button>
     </div>
 
     @include('livewire.home.partials._comment_section', ['item' => $activity])
@@ -317,16 +322,98 @@
                 </div>
                 @error('editTitle') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
-                <!-- Content Input -->
                 <div
                     class="border border-gray-200 dark:border-neutral-700 rounded-xl p-3 px-4 focus-within:border-blue-500 transition-colors">
                     <label
                         class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest mb-1 ">DESCRIÇÃO</label>
                     <textarea wire:model="editContent" rows="4"
-                        class="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm text-gray-800 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:placeholder-neutral-500 dark:focus:border-neutral-700 dark:focus:ring-neutral-600"
+                        class="w-full bg-transparent border-none p-0 text-[15px] text-gray-800 dark:text-neutral-200 focus:ring-0 focus:outline-none shadow-none placeholder-gray-400 resize-none "
                         placeholder="Detalhes da atividade..."></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+
+                <!-- Existing Media Management -->
+                @if(count($activity->media ?? []) > 0)
+                    <div class="space-y-2">
+                        <label
+                            class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">MÍDIA
+                            ATUAL (CLIQUE PARA REMOVER)</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            @foreach($activity->media as $media)
+                                @if(!in_array($media, $mediaToRemove))
+                                    <div
+                                        class="relative aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 group">
+                                        @if(str_contains($media, '.mp4'))
+                                            <video src="{{ $media }}" class="w-full h-full object-cover"></video>
+                                        @else
+                                            <img src="{{ $media }}" class="w-full h-full object-cover">
+                                        @endif
+                                        <button wire:click="removeExistingMedia('{{ $media }}')"
+                                            class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Media Uploads (Edit Activity) -->
+                <div class="space-y-3">
+                    <label
+                        class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">ADICIONAR
+                        MÍDIA</label>
+                    <div class="flex gap-4">
+                        <label class="cursor-pointer flex-1">
+                            <div
+                                class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-4 flex flex-col items-center gap-1 hover:border-brand-500 transition-colors">
+                                <svg class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-[10px] text-zinc-500">Fotos</span>
+                            </div>
+                            <input type="file" wire:model="editPhotos" class="hidden" multiple accept="image/*">
+                        </label>
+                        <label class="cursor-pointer flex-1">
+                            <div
+                                class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-4 flex flex-col items-center gap-1 hover:border-brand-500 transition-colors">
+                                <svg class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" />
+                                </svg>
+                                <span class="text-[10px] text-zinc-500">Vídeos</span>
+                            </div>
+                            <input type="file" wire:model="editVideos" class="hidden" multiple accept="video/*">
+                        </label>
+                    </div>
+
+                    {{-- Previews --}}
+                    @if(count($editPhotos) > 0 || count($editVideos) > 0)
+                        <div class="grid grid-cols-4 gap-2 mt-2">
+                            @foreach($editPhotos as $photo)
+                                <div
+                                    class="aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                                    <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
+                                </div>
+                            @endforeach
+                            @foreach($editVideos as $video)
+                                <div
+                                    class="aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-black flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
 

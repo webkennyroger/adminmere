@@ -6,8 +6,6 @@ use App\Models\Post;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Log;
 
 class ActivityFeed extends Component
 {
@@ -15,8 +13,11 @@ class ActivityFeed extends Component
     public $feed = 'personal';
 
     public $viewingUserProfile = null;
+
     public $page = 1;
+
     public $perPage = 10;
+
     public $hasMore = true;
 
     public function viewUserProfile($name)
@@ -53,10 +54,10 @@ class ActivityFeed extends Component
         $user = auth()->user();
 
         // Posts Query
-        $postsQuery = Post::query()->with(['user', 'likes', 'pollOptions', 'pollVotes']);
+        $postsQuery = Post::query()->with(['user', 'likes', 'pollOptions', 'pollVotes', 'savedItems']);
 
         // Activities Query
-        $activitiesQuery = \App\Models\Activity::query()->with(['user', 'likes']);
+        $activitiesQuery = \App\Models\Activity::query()->with(['user', 'likes', 'savedItems']);
 
         if ($this->feed === 'timeline' || $this->feed === 'network' || $this->feed === 'community') {
             if ($this->feed === 'community') {
@@ -66,8 +67,20 @@ class ActivityFeed extends Component
             }
             $activitiesQuery->where('privacy', 'public');
         } elseif ($this->feed === 'personal') {
-            $postsQuery->where('user_id', $user->id);
-            $activitiesQuery->where('user_id', $user->id);
+            $savedPostsIds = \App\Models\SavedItem::where('user_id', $user->id)
+                ->where('saved_item_type', Post::class)
+                ->pluck('saved_item_id');
+
+            $savedActivitiesIds = \App\Models\SavedItem::where('user_id', $user->id)
+                ->where('saved_item_type', \App\Models\Activity::class)
+                ->pluck('saved_item_id');
+
+            $postsQuery->where(function ($q) use ($user, $savedPostsIds) {
+                $q->where('user_id', $user->id)->orWhereIn('id', $savedPostsIds);
+            });
+            $activitiesQuery->where(function ($q) use ($user, $savedActivitiesIds) {
+                $q->where('user_id', $user->id)->orWhereIn('id', $savedActivitiesIds);
+            });
         }
 
         // Fetch enough to cover the current page + some buffer
@@ -77,15 +90,15 @@ class ActivityFeed extends Component
 
         // Merge and sort
         $items = collect([])
-            ->merge($posts->map(fn($post) => [
+            ->merge($posts->map(fn ($post) => [
                 'type' => 'post',
                 'item' => $post,
-                'date' => $post->created_at?->toDateTimeString() ?? now()->toDateTimeString()
+                'date' => $post->created_at?->toDateTimeString() ?? now()->toDateTimeString(),
             ]))
-            ->merge($activities->map(fn($activity) => [
+            ->merge($activities->map(fn ($activity) => [
                 'type' => 'activity',
                 'item' => $activity,
-                'date' => $activity->start_time?->toDateTimeString() ?? ($activity->created_at?->toDateTimeString() ?? now()->toDateTimeString())
+                'date' => $activity->start_time?->toDateTimeString() ?? ($activity->created_at?->toDateTimeString() ?? now()->toDateTimeString()),
             ]))
             ->sortByDesc('date')
             ->values();

@@ -32,13 +32,19 @@
 
         <!-- Bookmark Icon (Save Post) + Owner Menu -->
         <div class="flex items-center gap-2">
-            <!-- Bookmark Icon -->
-            <button class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
-                <svg class="w-5 h-5 text-zinc-500 hover:text-brand-600 transition-colors" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                </svg>
+            <!-- Bookmark Icon (Save Post) -->
+            <button wire:click="toggleSave" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors group">
+                @if($post->savedItems->contains('user_id', auth()->id()))
+                    <svg class="w-5 h-5 text-green-600 fill-current" viewBox="0 0 24 24">
+                        <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                @else
+                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-green-600 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                @endif
             </button>
 
             <!-- Three Dots Menu (Only for Owner or Admin) -->
@@ -279,19 +285,7 @@
                     </svg>
                 </button>
             </div>
-
-            <!-- Bookmark Button -->
-            <button wire:click="toggleSave" class="flex items-center group">
-                @if($post->savedItems->contains('user_id', auth()->id()))
-                    <svg class="w-6 h-6 text-brand-600 fill-current" viewBox="0 0 24 24">
-                        <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-                    </svg>
-                @else
-                    <svg class="w-6 h-6 text-zinc-500 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3-7 3V5z" />
-                    </svg>
-                @endif
-            </button>
+        </div>
     </div>
 
     @include('livewire.home.partials._comment_section', ['item' => $post])
@@ -319,6 +313,75 @@
                         placeholder="Escreva algo..."></textarea>
                 </div>
                 @error('editContent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+
+                <!-- Existing Media Management -->
+                @if(count($post->media ?? []) > 0)
+                    <div class="space-y-2">
+                        <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">MÍDIA ATUAL (CLIQUE PARA REMOVER)</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            @foreach($post->media as $media)
+                                @if(!in_array($media, $mediaToRemove))
+                                    <div class="relative aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 group">
+                                        @if(str_contains($media, '.mp4'))
+                                            <video src="{{ $media }}" class="w-full h-full object-cover"></video>
+                                        @else
+                                            <img src="{{ $media }}" class="w-full h-full object-cover">
+                                        @endif
+                                        <button wire:click="removeExistingMedia('{{ $media }}')"
+                                            class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Media Uploads (Edit) -->
+                <div class="space-y-3">
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">ADICIONAR MÍDIA</label>
+                    <div class="flex gap-4">
+                        <label class="cursor-pointer flex-1">
+                            <div class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-4 flex flex-col items-center gap-1 hover:border-brand-500 transition-colors">
+                                <svg class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-[10px] text-zinc-500">Fotos</span>
+                            </div>
+                            <input type="file" wire:model="editPhotos" class="hidden" multiple accept="image/*">
+                        </label>
+                        <label class="cursor-pointer flex-1">
+                            <div class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-4 flex flex-col items-center gap-1 hover:border-brand-500 transition-colors">
+                                <svg class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" />
+                                </svg>
+                                <span class="text-[10px] text-zinc-500">Vídeos</span>
+                            </div>
+                            <input type="file" wire:model="editVideos" class="hidden" multiple accept="video/*">
+                        </label>
+                    </div>
+
+                    {{-- Previews --}}
+                    @if(count($editPhotos) > 0 || count($editVideos) > 0)
+                        <div class="grid grid-cols-4 gap-2 mt-2">
+                            @foreach($editPhotos as $photo)
+                                <div class="aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                                    <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
+                                </div>
+                            @endforeach
+                            @foreach($editVideos as $video)
+                                <div class="aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-black flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
 

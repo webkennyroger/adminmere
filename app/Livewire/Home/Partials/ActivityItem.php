@@ -8,6 +8,7 @@ use Livewire\Component;
 class ActivityItem extends Component
 {
     use \App\Livewire\Traits\HasInteractions;
+    use \Livewire\WithFileUploads;
 
     public Activity $activity;
 
@@ -17,6 +18,12 @@ class ActivityItem extends Component
     public $editTitle = '';
 
     public $editContent = '';
+
+    public $editPhotos = [];
+
+    public $editVideos = [];
+
+    public $mediaToRemove = [];
 
     public $confirmingActivityDeletion = false;
 
@@ -43,6 +50,7 @@ class ActivityItem extends Component
         $this->editTitle = $this->activity->title ?? '';
         $this->editContent = $this->activity->description ?? '';
         $this->editingActivity = true;
+        $this->mediaToRemove = [];
     }
 
     public function cancelEditingActivity()
@@ -50,6 +58,13 @@ class ActivityItem extends Component
         $this->editingActivity = false;
         $this->editTitle = $this->activity->title ?? '';
         $this->editContent = $this->activity->description ?? '';
+    }
+
+    public function removeExistingMedia($url)
+    {
+        if (! in_array($url, $this->mediaToRemove)) {
+            $this->mediaToRemove[] = $url;
+        }
     }
 
     public function updateActivity()
@@ -64,14 +79,38 @@ class ActivityItem extends Component
         $this->validate([
             'editTitle' => 'nullable|string|max:100',
             'editContent' => 'nullable|string',
+            'editPhotos.*' => 'nullable|image|max:20480',
+            'editVideos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:102400',
         ]);
 
-        $action = new \App\Actions\Activities\UpdateActivity();
+        $media = collect($this->activity->media ?? [])
+            ->reject(fn ($m) => in_array($m, $this->mediaToRemove))
+            ->values()
+            ->all();
+
+        if ($this->editPhotos) {
+            foreach ($this->editPhotos as $photo) {
+                $path = $photo->store('activities/'.auth()->id().'/photos', 'public');
+                $media[] = url('storage/'.$path);
+            }
+        }
+
+        if ($this->editVideos) {
+            foreach ($this->editVideos as $video) {
+                $path = $video->store('activities/'.auth()->id().'/videos', 'public');
+                $media[] = url('storage/'.$path);
+            }
+        }
+
+        $action = new \App\Actions\Activities\UpdateActivity;
         $this->activity = $action->execute($this->activity, [
             'title' => $this->editTitle ?: 'Publicação',
             'description' => $this->editContent,
+            'media' => $media,
         ]);
 
+        $this->editPhotos = [];
+        $this->editVideos = [];
         $this->editingActivity = false;
         session()->flash('message', 'Atividade atualizada com sucesso!');
     }
@@ -101,7 +140,7 @@ class ActivityItem extends Component
             return;
         }
 
-        $action = new \App\Actions\Activities\DeleteActivity();
+        $action = new \App\Actions\Activities\DeleteActivity;
         $action->execute($this->activity);
 
         $this->confirmingActivityDeletion = false;

@@ -7,7 +7,6 @@ use App\Models\Post;
 class UpdatePost
 {
     /**
-     * @param Post $post
      * @param array{
      *   title?: string|null,
      *   content?: string,
@@ -22,6 +21,7 @@ class UpdatePost
             'content' => $data['content'] ?? $post->content,
             'privacy' => $data['privacy'] ?? $post->privacy,
             'poll_expires_at' => $data['poll_expires_at'] ?? $post->poll_expires_at,
+            'media' => $data['media'] ?? $post->media,
         ]);
 
         return $post->refresh();
