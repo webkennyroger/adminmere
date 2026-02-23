@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use App\Traits\FormatsApiData;
 
 class PollController extends Controller
 {
+    use FormatsApiData;
     /**
      * Store a newly created poll in storage.
      */
@@ -54,12 +56,14 @@ class PollController extends Controller
         }
 
         // Eager load relationships for formatting
-        $poll->load(['user', 'pollOptions', 'pollVotes', 'likes']);
+        $poll->load(['user', 'pollOptions', 'pollVotes.user', 'likes', 'savedItems', 'comments' => function ($q) {
+            $q->whereNull('parent_id')->latest();
+        }]);
 
         return response()->json([
             'success' => true,
             'message' => 'Enquete criada com sucesso',
-            'data' => $this->formatPoll($poll, $user),
+            'data' => $this->formatPost($poll, $user),
         ], 201);
     }
 
@@ -120,55 +124,10 @@ class PollController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatPoll($poll->refresh(), $user)
+            'data' => $this->formatPost($poll->refresh(), $user)
         ]);
     }
 
 
 
-    private function formatPoll($post, $user)
-    {
-        $hasVoted = $post->pollVotes->where('user_id', $user->id)->isNotEmpty();
-        $totalVotes = $post->pollVotes->count();
-
-        $meta = is_array($post->meta) ? $post->meta : [];
-        $pollData = [
-            'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
-            'isMandatory' => (bool) $post->is_mandatory,
-            'isMultiple' => (bool) ($meta['isMultiple'] ?? false),
-            'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
-            'hasVoted' => $hasVoted,
-            'totalVotes' => $totalVotes,
-            'options' => $post->pollOptions->map(function ($opt) use ($user, $post, $totalVotes) {
-                return [
-                    'id' => (int) $opt->id,
-                    'text' => $opt->option_text,
-                    'votes' => (int) $opt->votes_count,
-                    'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
-                    'isUserVote' => $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty(),
-                    'voterAvatars' => []
-                ];
-            })->values()
-        ];
-
-        return [
-            'id' => 'poll_' . $post->id,
-            'type' => 'poll',
-            'sport' => 'Poll',
-            'title' => $post->title,
-            'activityTitle' => $post->title,
-            'description' => $post->content,
-            'user_id' => (string) $post->user_id,
-            'userId' => (string) $post->user_id,
-            'userName' => $post->user->name,
-            'userAvatarUrl' => $post->user->image_url,
-            'createdAt' => $post->created_at->toIso8601String(),
-            'pollData' => $pollData,
-            'likes' => $post->likes->count(),
-            'isLiked' => $post->likes->contains('user_id', $user->id),
-            'commentsList' => [], // TODO: Add comments later if needed
-            'shares' => 0,
-            'privacy' => $post->privacy,
-        ];
-    }
 }
