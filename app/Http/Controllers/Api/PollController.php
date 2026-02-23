@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PollController extends Controller
 {
+    use \App\Traits\ResolvesActivityItems;
+
     /**
      * Store a newly created poll in storage.
      */
@@ -66,19 +68,55 @@ class PollController extends Controller
     }
 
     /**
+     * Update the specified poll.
+     */
+    public function update(Request $request, $id)
+    {
+        $item = $this->resolveItem($id);
+        $user = $request->user();
+
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'question' => 'nullable|string',
+            'description' => 'nullable|string',
+            'privacy' => 'nullable|in:public,friends,private',
+            'expiresAt' => 'nullable|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $item->update([
+            'title' => $request->question ?? $item->title,
+            'content' => $request->description ?? $item->content,
+            'privacy' => $request->privacy ?? $item->privacy,
+            'poll_expires_at' => $request->expiresAt ? Carbon::parse($request->expiresAt) : $item->poll_expires_at,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Enquete atualizada com sucesso',
+            'data' => $this->formatPoll($item->refresh(), $user),
+        ]);
+    }
+
+    /**
      * Remove the specified poll.
      */
     public function destroy(Request $request, $id)
     {
-        $cleanId = str_replace(['post_', 'poll_'], '', $id);
+        $item = $this->resolveItem($id);
+        $user = $request->user();
 
-        $poll = Post::where('id', $cleanId)->where('type', 'poll')->firstOrFail();
-
-        if ($poll->user_id !== $request->user()->id) {
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $poll->delete();
+        $item->delete();
 
         return response()->json([
             'success' => true,

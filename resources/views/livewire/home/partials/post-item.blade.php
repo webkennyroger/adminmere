@@ -353,8 +353,8 @@
         </div>
 
         <div class="flex items-center">
-            <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-[#FFC107] hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+            <button type="button" @click="showMenu = false; $wire.cancelDeletePost()"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-yellow-700 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
@@ -382,8 +382,8 @@
         </div>
 
         <div class="flex items-center">
-            <button type="button" @click="open = false; $wire.cancelDeletePost()"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-[#FFC107] hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-all ">
+            <button type="button" @click="showMenu = false; $wire.cancelDeletePost()"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-es-xl border border-transparent bg-yellow-100 dark:bg-yellow-700 text-yellow-700 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden disabled:opacity-50 transition-all ">
                 Cancelar
             </button>
             <button type="button" wire:click="deletePost"
@@ -417,7 +417,7 @@
         <!-- Split Footer Buttons -->
         <div class="flex items-center">
             <button type="button" wire:click="cancelEditingPost"
-                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-yellow-100 dark:bg-neutral-700 text-white hover:bg-yellow-200 dark:hover:bg-yellow-600 focus:outline-hidden transition-all border-r border-yellow-200 dark:border-neutral-700">
+                class="w-1/2 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-md font-bold rounded-es-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-hidden transition-all border-r border-zinc-200 dark:border-zinc-700">
                 Cancelar
             </button>
             <button type="button" wire:click="updatePost"

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 
 class ActivityController extends Controller
 {
+    use \App\Traits\ResolvesActivityItems;
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -139,22 +141,61 @@ class ActivityController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, $id)
+    public function update(Request $request, $id)
     {
-        $cleanId = str_replace('activity_', '', $id);
-        $activity = Activity::findOrFail($cleanId);
+        $item = $this->resolveItem($id);
         $user = $request->user();
 
-        if ($activity->user_id != $user->id && ! $user->isAdmin()) {
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $activity->delete();
+        $validator = Validator::make($request->all(), [
+            'activityTitle' => 'nullable|string',
+            'title' => 'nullable|string',
+            'description' => 'nullable|string',
+            'content' => 'nullable|string',
+            'privacy' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $item->update([
+            'title' => $request->activityTitle ?? $request->title ?? $item->title,
+            'description' => $request->description ?? $request->content ?? ($item->description ?? $item->content),
+            'content' => $request->content ?? $request->description ?? ($item->content ?? $item->description),
+            'privacy' => $request->privacy ?? $item->privacy,
+        ]);
+
+        if ($item instanceof \App\Models\Activity) {
+            $formatted = $this->formatActivity($item->refresh(), $user);
+        } else {
+            $formatted = $item->refresh();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $formatted,
+        ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $item = $this->resolveItem($id);
+        $user = $request->user();
+
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $item->delete();
 
         return response()->json(['success' => true]);
     }
 
-    protected function formatActivity($activity, $user)
+    public function formatActivity($activity, $user)
     {
         $routePoints = $activity->polylines;
         if (is_array($routePoints) && isset($routePoints['points'])) {

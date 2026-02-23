@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
+    use \App\Traits\ResolvesActivityItems;
+
     /**
      * Store a newly created post in storage.
      */
@@ -48,19 +50,53 @@ class PostController extends Controller
     }
 
     /**
+     * Update the specified post.
+     */
+    public function update(Request $request, $id)
+    {
+        $item = $this->resolveItem($id);
+        $user = $request->user();
+
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'content' => 'nullable|string',
+            'title' => 'nullable|string',
+            'privacy' => 'nullable|in:public,friends,private',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $item->update([
+            'title' => $request->title ?? $item->title,
+            'content' => $request->input('content') ?? $item->content,
+            'privacy' => $request->privacy ?? $item->privacy,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post atualizado com sucesso',
+            'data' => $this->formatPost($item->refresh(), $user),
+        ]);
+    }
+
+    /**
      * Remove the specified post.
      */
     public function destroy(Request $request, $id)
     {
-        $cleanId = str_replace(['post_', 'poll_'], '', $id);
+        $item = $this->resolveItem($id);
+        $user = $request->user();
 
-        $post = Post::where('id', $cleanId)->where('type', 'post')->firstOrFail();
-
-        if ($post->user_id !== $request->user()->id) {
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $post->delete();
+        $item->delete();
 
         return response()->json([
             'success' => true,

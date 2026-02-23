@@ -15,7 +15,7 @@ Route::get('/app-version', function () {
         'version' => '1.0.0', // Versão atual no servidor
         'build' => 1,
         'url' => 'https://mere-app.com.br/download', // Onde baixar a nova versão
-        'message' => 'Uma nova versão do MERE está disponível!'
+        'message' => 'Uma nova versão do MERE está disponível!',
     ]);
 });
 
@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $data['height'] = $user->profile->height ?? '';
         $data['weight'] = $user->profile->weight ?? '';
         $data['settings'] = $user->profile->settings ?? [];
+
         return $data;
     });
 
@@ -52,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Polls API
     Route::post('/polls', [\App\Http\Controllers\Api\PollController::class, 'store']);
+    Route::put('/polls/{id}', [\App\Http\Controllers\Api\PollController::class, 'update']);
     Route::delete('/polls/{id}', [\App\Http\Controllers\Api\PollController::class, 'destroy']);
     Route::post('/polls/{id}/vote', [\App\Http\Controllers\Api\PollController::class, 'vote']);
     Route::post('/polls/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleItemLike']);
@@ -60,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Posts API
     Route::post('/posts', [\App\Http\Controllers\Api\PostController::class, 'store']);
+    Route::put('/posts/{id}', [\App\Http\Controllers\Api\PostController::class, 'update']);
     Route::delete('/posts/{id}', [\App\Http\Controllers\Api\PostController::class, 'destroy']);
     Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleItemLike']);
     Route::post('/posts/{id}/save', [\App\Http\Controllers\Api\SaveController::class, 'toggleSave']);
