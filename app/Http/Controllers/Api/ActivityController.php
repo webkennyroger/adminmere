@@ -24,7 +24,7 @@ class ActivityController extends Controller
 
         // Fetch Activities
         $activitiesQuery = Activity::with([
-            'user',
+            'user.profile',
             'comments' => function ($q) {
                 $q->whereNull('parent_id')->latest();
             },
@@ -38,7 +38,7 @@ class ActivityController extends Controller
 
         // Fetch Posts
         $postsQuery = \App\Models\Post::with([
-            'user',
+            'user.profile',
             'comments' => function ($q) {
                 $q->whereNull('parent_id')->latest();
             },
@@ -102,7 +102,8 @@ class ActivityController extends Controller
         $user = $request->user();
         $perPage = (int) $request->get('per_page', 20);
 
-        $activities = Activity::where('user_id', $user->id)
+        $activities = Activity::with(['user.profile', 'likes', 'savedItems'])
+            ->where('user_id', $user->id)
             ->whereNotNull('sport_type') // Ensure it's a sport activity
             ->latest('start_time')
             ->paginate($perPage);
