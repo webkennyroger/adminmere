@@ -141,7 +141,8 @@ class ActivityController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $activity = Activity::findOrFail($id);
+        $cleanId = str_replace('activity_', '', $id);
+        $activity = Activity::findOrFail($cleanId);
         $user = $request->user();
 
         if ($activity->user_id != $user->id && ! $user->isAdmin()) {

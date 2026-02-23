@@ -1,11 +1,4 @@
-<div x-data="{ 
-    showMenu: false,
-    editingPost: @entangle('editingPost'),
-    editingPoll: @entangle('editingPoll'),
-    confirmingPostDeletion: @entangle('confirmingPostDeletion'),
-    confirmingPollDeletion: @entangle('confirmingPollDeletion'),
-    confirmingCommentDeletion: @entangle('confirmingCommentDeletion')
-}"
+<div x-data="{ showMenu: false }"
     class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
     @if (session()->has('error'))
         <div class="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm font-medium flex items-center gap-2">

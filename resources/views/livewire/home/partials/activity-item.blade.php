@@ -1,9 +1,5 @@
-<div x-data="{ 
-    showMenu: false,
-    editingActivity: @entangle('editingActivity'),
-    confirmingActivityDeletion: @entangle('confirmingActivityDeletion'),
-    confirmingCommentDeletion: @entangle('confirmingCommentDeletion')
-}" class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+<div x-data="{ showMenu: false }"
+    class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
     @if (session()->has('error'))
         <div class="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm font-medium flex items-center gap-2">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

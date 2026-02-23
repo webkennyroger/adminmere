@@ -5,12 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Traits\ResolvesActivityItems;
 use App\Models\SavedItem;
 
 class SaveController extends Controller
 {
-    use ResolvesActivityItems;
+    protected function resolveItem($id)
+    {
+        if (str_starts_with($id, 'post_') || str_starts_with($id, 'poll_')) {
+            $realId = str_replace(['post_', 'poll_'], '', $id);
+            return \App\Models\Post::findOrFail($realId);
+        }
+
+        if (str_starts_with($id, 'activity_')) {
+            $realId = str_replace('activity_', '', $id);
+            return \App\Models\Activity::findOrFail($realId);
+        }
+
+        // Fallback
+        return \App\Models\Post::find($id) ?? \App\Models\Activity::findOrFail($id);
+    }
 
     /**
      * Toggle save on an item (post, poll, activity).
