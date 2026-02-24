@@ -1,16 +1,21 @@
 <div class="w-full mb-8">
-    <div class="flex gap-6 overflow-x-hidden py-4">
+    <div class="flex gap-8 overflow-x-hidden py-8 px-2">
         @foreach(range(1, 10) as $i)
-            <div
-                class="flex-none w-[130px] h-[180px] rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-4 flex flex-col justify-between animate-pulse shadow-sm">
-                <!-- Circle top left -->
-                <div class="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800"></div>
-
-                <!-- Lines at bottom -->
-                <div class="space-y-3">
-                    <div class="h-2 w-3/4 bg-zinc-100 dark:bg-zinc-800 rounded"></div>
-                    <div class="h-2 w-1/2 bg-zinc-100 dark:bg-zinc-800 rounded"></div>
+            <div class="flex-none w-[120px] sm:w-[140px] flex flex-col items-center relative animate-pulse">
+                <!-- Square Main Box -->
+                <div
+                    class="w-full aspect-square rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
                 </div>
+
+                <!-- Avatar Overlay Box -->
+                <div class="absolute bottom-[-18px] left-1/2 -translate-x-1/2 z-20">
+                    <div
+                        class="w-12 h-12 bg-zinc-200 dark:bg-zinc-700 rounded-xl border-4 border-white dark:border-zinc-900 shadow-sm">
+                    </div>
+                </div>
+
+                <!-- Label Line -->
+                <div class="h-2.5 w-3/4 bg-zinc-100 dark:bg-zinc-800 rounded mt-7"></div>
             </div>
         @endforeach
     </div>
