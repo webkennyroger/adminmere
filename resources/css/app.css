@@ -1305,3 +1305,12 @@ pre[class*="language-"] {
     background-color: #27272a;
     box-shadow: 0 6px 20px rgba(63, 63, 70, 0.3);
 }
+
+/* Scrollbar hide utility */
+@utility scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

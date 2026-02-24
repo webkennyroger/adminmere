@@ -52,50 +52,61 @@
             this.timer = null;
         }
     }
-}" x-init="setTimeout(() => checkScroll(), 100)"
-    class="relative w-full max-w-5xl mx-auto p-8 overflow-hidden">
+}" x-init="setTimeout(() => checkScroll(), 100)" class="relative w-full max-w-5xl mx-auto p-8 overflow-hidden">
 
     <div x-ref="storyList" @scroll.debounce.100ms="checkScroll()"
-        class="flex items-center space-x-6 overflow-x-auto pb-4 scrollbar-hide">
+        class="flex items-center space-x-6 overflow-x-auto pb-4 scrollbar-hide no-scrollbar scroll-smooth">
 
         <!-- Auth User Story (Add Story) -->
         <div class="flex flex-col items-center flex-shrink-0 group cursor-pointer"
             onclick="document.getElementById('story-upload-input')?.click()">
-            <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm">
+            <div
+                class="w-[104px] h-[136px] min-w-[104px] min-h-[136px] rounded-xl relative shadow-sm overflow-hidden bg-gray-100">
                 <img src="{{ auth()->user()->image_url }}" alt="Background"
-                    class="w-full h-full object-cover rounded-xl" />
+                    class="w-full h-full object-cover rounded-xl opacity-50" />
 
-                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group cursor-pointer">
-                    <img src="{{ auth()->user()->image_url }}" alt="{{ auth()->user()->name }}"
-                        class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-gray-200" />
-
+                <!-- Center Plus Icon (Added for UX, but kept subtle) -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
-                        class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 bg-white text-gray-600 text-[10px] px-2 py-0.5 border border-gray-200 shadow-sm whitespace-nowrap z-10">
-                        Criar Story
+                        class="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
                     </div>
+                </div>
+
+                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+                    <img src="{{ auth()->user()->image_url }}" alt="{{ auth()->user()->name }}"
+                        class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-gray-200 shadow-sm" />
                 </div>
             </div>
             <span class="mt-5 text-[11px] font-medium text-gray-700">Meu Story</span>
         </div>
 
+        <!-- Followers Stories -->
         @foreach($stories as $story)
-            <div class="flex flex-col items-center flex-shrink-0" @click="openStory({{ json_encode($story) }})">
-                <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm">
-                    <img src="{{ $story['story_image'] }}" alt="Background" class="w-full h-full object-cover rounded-xl" />
+            <div class="flex flex-col items-center flex-shrink-0">
+                <div class="w-[104px] h-[136px] min-w-[104px] min-h-[136px] rounded-xl relative shadow-sm cursor-pointer group"
+                    @click="openStory({{ json_encode($story) }})">
+                    <div class="w-full h-full overflow-hidden rounded-xl">
+                        <img src="{{ $story['story_image'] }}" alt="Background"
+                            class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500" />
+                    </div>
 
                     <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group cursor-pointer">
                         <img src="{{ $story['avatar'] }}" alt="{{ $story['name'] }}"
-                            class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-gray-200" />
+                            class="w-8 h-8 rounded-lg border-2 border-white object-cover shadow-sm bg-gray-200" />
 
                         <div
-                            class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 bg-white text-gray-600 text-[10px] px-2 py-0.5 border border-gray-200 shadow-sm whitespace-nowrap z-10">
+                            class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 bg-white text-gray-600 text-[10px] px-2 py-0.5 border border-gray-200 shadow-sm whitespace-nowrap z-10 pointer-events-none">
                             {{ $story['name'] }}
                         </div>
                     </div>
                 </div>
-                <span class="mt-5 text-[11px] font-medium text-gray-700">{{ $story['name'] }}</span>
+                <span
+                    class="mt-5 text-[11px] font-medium text-gray-700 truncate w-[104px] text-center">{{ $story['name'] }}</span>
             </div>
-            
         @endforeach
 
     </div>
