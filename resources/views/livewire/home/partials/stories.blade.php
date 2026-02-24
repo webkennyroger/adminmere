@@ -70,62 +70,46 @@
 
     <!-- Stories List -->
     <div x-ref="storyList" @scroll.debounce.100ms="checkScroll()"
-        class="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar py-8 px-2"
+        class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar py-4 px-2"
         style="scrollbar-width: none; -ms-overflow-style: none;">
 
         <!-- Add Story Card -->
-        <div class="flex-none w-[120px] sm:w-[140px] snap-start">
-            <div class="flex flex-col items-center group cursor-pointer relative">
-                <!-- Main Box (Add Icon) -->
-                <div
-                    class="relative w-full aspect-square rounded-2xl bg-zinc-50 dark:bg-zinc-900 border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center gap-2 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300">
+        <div class="flex-none snap-start">
+            <div class="story-card group">
+                <!-- Placeholder background or blurred user avatar -->
+                <div class="absolute inset-0 bg-zinc-100 dark:bg-zinc-800">
+                    <img src="{{ auth()->user()->image_url }}" class="w-full h-full object-cover blur-sm opacity-50">
+                </div>
+
+                <!-- Center Add Icon -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
                     <div
-                        class="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                        class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform mb-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
                             </path>
                         </svg>
                     </div>
+                    <span class="text-[11px] font-bold text-white drop-shadow-md">Criar Story</span>
                 </div>
 
-                <!-- Avatar Overlay (Center Bottom) -->
-                <div class="absolute bottom-[-18px] left-1/2 -translate-x-1/2 z-20">
-                    <div
-                        class="p-1.5 bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-100 dark:border-zinc-800 transform group-hover:scale-110 transition-transform duration-300">
-                        <img src="{{ auth()->user()->image_url }}" class="w-10 h-10 rounded-lg object-cover">
-                    </div>
-                </div>
-
-                <span
-                    class="text-[12px] font-bold text-zinc-900 dark:text-zinc-200 mt-7 truncate w-full text-center">Criar
-                    Story</span>
+                <!-- Own Avatar at bottom -->
+                <img src="{{ auth()->user()->image_url }}" class="story-avatar">
             </div>
         </div>
 
         <!-- Rendered Stories -->
         @foreach($stories as $story)
-            <div class="flex-none w-[120px] sm:w-[140px] snap-start">
-                <div @click="openStory({{ json_encode($story) }})"
-                    class="flex flex-col items-center group cursor-pointer relative">
-                    <!-- Image Card Wrapper -->
-                    <div
-                        class="relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900">
-                        <img src="{{ $story['story_image'] }}"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-colors"></div>
-                    </div>
+            <div class="flex-none snap-start">
+                <div @click="openStory({{ json_encode($story) }})" class="story-card group">
+                    <!-- Background Image -->
+                    <img src="{{ $story['story_image'] }}" class="story-bg">
 
                     <!-- Avatar Box Overlay -->
-                    <div class="absolute bottom-[-18px] left-1/2 -translate-x-1/2 z-20">
-                        <div
-                            class="p-1.5 bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-100 dark:border-zinc-800 transform group-hover:scale-110 transition-transform duration-300">
-                            <img src="{{ $story['avatar'] }}" class="w-10 h-10 rounded-lg object-cover">
-                        </div>
-                    </div>
+                    <img src="{{ $story['avatar'] }}" class="story-avatar">
 
                     <!-- Name Label -->
-                    <span
-                        class="text-[12px] font-bold text-zinc-800 dark:text-zinc-200 mt-7 truncate w-full text-center group-hover:text-brand-600 transition-colors">
+                    <span class="story-name">
                         {{ $story['name'] }}
                     </span>
                 </div>
