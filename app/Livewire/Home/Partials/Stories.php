@@ -37,6 +37,18 @@ class Stories extends Component
                     'is_own' => $u->id === $user->id,
                 ];
             });
+
+        if ($this->stories->isEmpty()) {
+            $this->stories = collect([
+                ['user_id' => 1, 'name' => 'Felix Deo', 'avatar' => 'https://i.pravatar.cc/150?u=1', 'story_image' => 'https://picsum.photos/400/400?random=1', 'is_own' => false],
+                ['user_id' => 2, 'name' => 'Jenny Wilson', 'avatar' => 'https://i.pravatar.cc/150?u=2', 'story_image' => 'https://picsum.photos/400/400?random=2', 'is_own' => false],
+                ['user_id' => 3, 'name' => 'Freya Davies', 'avatar' => 'https://i.pravatar.cc/150?u=3', 'story_image' => 'https://picsum.photos/400/400?random=3', 'is_own' => false],
+                ['user_id' => 4, 'name' => 'Robert Fox', 'avatar' => 'https://i.pravatar.cc/150?u=4', 'story_image' => 'https://picsum.photos/400/400?random=4', 'is_own' => false],
+                ['user_id' => 5, 'name' => 'Leslie Alexander', 'avatar' => 'https://i.pravatar.cc/150?u=5', 'story_image' => 'https://picsum.photos/400/400?random=5', 'is_own' => false],
+                ['user_id' => 6, 'name' => 'Aaron Jones', 'avatar' => 'https://i.pravatar.cc/150?u=6', 'story_image' => 'https://picsum.photos/400/400?random=6', 'is_own' => false],
+                ['user_id' => 7, 'name' => 'Jerry Williams', 'avatar' => 'https://i.pravatar.cc/150?u=7', 'story_image' => 'https://picsum.photos/400/400?random=7', 'is_own' => false],
+            ]);
+        }
     }
 
     public function render()
