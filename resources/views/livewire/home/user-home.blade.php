@@ -1,4 +1,4 @@
-<div class="py-6 px-4 lg:px-6 max-w-[1400px] mx-auto space-y-8">
+<div class="py-6 px-4 lg:px-6 max-w-[1200px] mx-auto space-y-8">
     @if($feed === 'timeline')
         <livewire:home.partials.stories />
     @endif

@@ -1,4 +1,5 @@
 <div class="space-y-6">
+    @livewire('home.partials.user-profile-card')
     @if(!$isPremium)
         <!-- Premium Promo Card -->
         <div

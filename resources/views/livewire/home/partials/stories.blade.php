@@ -68,57 +68,65 @@
         </svg>
     </button>
 
-    <!-- Stories List — SocialV Premium Carousel -->
+    <!-- Stories List — SocialV Premium Style -->
     <div x-ref="storyList" @scroll.debounce.100ms="checkScroll()"
-        class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-10"
+        class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar py-2"
         style="scrollbar-width: none; -ms-overflow-style: none;">
+        
         <!-- Add Story Card -->
-        <div class="flex-none w-[130px] sm:w-[155px] md:w-[175px] lg:w-[190px] snap-start">
-            <div class="flex flex-col items-center gap-3">
-                <div
-                    class="relative w-full aspect-[1/1.55] rounded-2xl overflow-hidden shadow-sm group cursor-pointer border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 flex flex-col items-center justify-center gap-3 text-zinc-400">
-                    <div
-                        class="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform text-white">
+        <div class="flex-none w-[130px] sm:w-[150px] snap-start">
+            <div @click="/* Open create story logic */" 
+                class="relative h-[200px] sm:h-[240px] rounded-2xl overflow-hidden cursor-pointer group border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 shadow-sm hover:shadow-md transition-all duration-300">
+                
+                <!-- Top Half (Empty/Icon) -->
+                <div class="h-[70%] flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800/50">
+                    <div class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
-                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
                         </svg>
                     </div>
+                </div>
 
-                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-                        <div
-                            class="p-1 px-1 bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-100 dark:border-zinc-800">
-                            <img src="{{ auth()->user()->image_url }}" class="w-12 h-12 rounded-lg object-cover">
-                        </div>
+                <!-- Bottom Half (Label) -->
+                <div class="h-[30%] bg-white dark:bg-zinc-900 flex items-center justify-center px-2">
+                    <span class="text-[12px] font-bold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Criar<br>Story</span>
+                </div>
+
+                <!-- User Avatar Overlay (Center) -->
+                <div class="absolute top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <div class="p-1 bg-white dark:bg-zinc-900 rounded-full shadow-lg border-2 border-brand-500">
+                        <img src="{{ auth()->user()->image_url }}" class="w-10 h-10 rounded-full object-cover">
                     </div>
                 </div>
-                <span
-                    class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200 mt-5 truncate w-full text-center">Criar
-                    Story</span>
             </div>
         </div>
 
         <!-- Rendered Stories -->
         @foreach($stories->where('is_own', false) as $story)
-            <div class="flex-none w-[130px] sm:w-[155px] md:w-[175px] lg:w-[190px] snap-start">
-                <div @click="openStory({{ json_encode($story) }})" class="flex flex-col items-center gap-3 group">
-                    <div
-                        class="relative w-full aspect-[1/1.55] rounded-2xl overflow-hidden shadow-md cursor-pointer border border-zinc-100/50 dark:border-zinc-800">
-                        <img src="{{ $story['story_image'] }}"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div
-                            class="absolute inset-0 bg-linear-to-b from-black/5 via-transparent to-black/50 transition-opacity group-hover:opacity-80">
-                        </div>
+            <div class="flex-none w-[130px] sm:w-[150px] snap-start">
+                <div @click="openStory({{ json_encode($story) }})" 
+                    class="relative h-[200px] sm:h-[240px] rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-500">
+                    
+                    <!-- Background Image -->
+                    <img src="{{ $story['story_image'] }}" 
+                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70"></div>
 
-                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-                            <div
-                                class="p-1.5 bg-white dark:bg-zinc-950 rounded-xl shadow-xl border border-zinc-100 dark:border-zinc-800">
-                                <img src="{{ $story['avatar'] }}" class="w-12 h-12 rounded-lg object-cover">
-                            </div>
+                    <!-- User Avatar (Top Left) -->
+                    <div class="absolute top-3 left-3">
+                        <div class="p-0.5 bg-brand-500 rounded-full shadow-lg">
+                            <img src="{{ $story['avatar'] }}" class="w-8 h-8 rounded-full object-cover border-2 border-white dark:border-zinc-900">
                         </div>
                     </div>
-                    <span
-                        class="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 mt-5 truncate w-full text-center group-hover:text-brand-600 transition-colors">{{ $story['name'] }}</span>
+
+                    <!-- User Name (Bottom) -->
+                    <div class="absolute bottom-3 left-0 right-0 px-3">
+                        <p class="text-[12px] font-bold text-white text-center truncate drop-shadow-md">
+                            {{ $story['name'] }}
+                        </p>
+                    </div>
                 </div>
             </div>
         @endforeach
