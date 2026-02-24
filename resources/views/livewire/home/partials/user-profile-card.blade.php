@@ -1,64 +1,75 @@
 <div
-    class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200/80 dark:border-zinc-800 overflow-hidden shadow-sm">
-    <!-- Cover -->
-    <div class="h-20 bg-linear-to-r from-brand-500 via-brand-400 to-emerald-500 relative">
-        <div class="absolute inset-0 opacity-10"
-            style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg=='); background-repeat: repeat;">
-        </div>
+    class="bg-white dark:bg-zinc-900 shadow-sm overflow-hidden rounded-xl border border-zinc-200/80 dark:border-zinc-800 mb-5">
+    <!-- Cover Banner -->
+    <div class="h-24 bg-linear-to-r from-blue-500 via-brand-500 to-emerald-500 relative">
+        @if($user->cover_url)
+            <img src="{{ $user->cover_url }}" class="w-full h-full object-cover" alt="">
+        @endif
     </div>
 
-    <!-- Profile Info -->
-    <div class="px-5 pb-5 text-center relative">
-        <!-- Avatar -->
-        <div class="relative -mt-8 mb-3 inline-block">
-            <a href="{{ profile_url($user) }}">
-                <img src="{{ $user->image_url }}" alt="{{ $user->name }}"
-                    class="w-16 h-16 rounded-full border-4 border-white dark:border-zinc-900 shadow-md object-cover hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer">
-            </a>
+    <!-- Avatar centered (overlaps banner) -->
+    <div class="flex flex-col items-center -mt-10 pb-4 px-4 relative z-10">
+        <div class="relative mb-3">
+            <img src="{{ $user->image_url }}"
+                class="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-zinc-900 shadow-lg"
+                alt="{{ $user->name }}">
             @if($user->isManager() || $user->isAdmin())
-                <span
-                    class="absolute -bottom-0.5 -right-0.5 p-0.5 bg-blue-500 rounded-full border-2 border-white dark:border-zinc-900"
-                    title="Verificado">
-                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                <div
+                    class="absolute bottom-1 right-1 bg-blue-500 text-white rounded-full p-0.5 border-2 border-white dark:border-zinc-900 shadow-sm">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
-                </span>
+                </div>
             @endif
         </div>
 
-        <a href="{{ profile_url($user) }}" class="hover:text-brand-600 transition-colors">
-            <h3 class="text-base font-bold text-zinc-900 dark:text-white">{{ $user->name }}</h3>
-        </a>
-        <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-3">{{ '@' . ($user->handle ?? $user->id) }}</p>
+        <!-- Name & Handle -->
+        <h3 class="text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+            {{ $user->name }}
+        </h3>
+        <span class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            {{ '@' . ($user->handle ?? $user->id) }}
+        </span>
+    </div>
 
-        <!-- Stats Row -->
-        <div class="flex justify-center items-center gap-6 py-3 border-t border-zinc-200/80 dark:border-zinc-800">
-            <a href="{{ route('users.following', $user) }}" class="group text-center cursor-pointer">
-                <span
-                    class="block text-lg font-bold text-zinc-900 dark:text-white group-hover:text-brand-600 transition-colors">{{ $user->following()->count() }}</span>
-                <span
-                    class="text-[11px] text-zinc-500 dark:text-zinc-400 group-hover:text-brand-600 transition-colors">Seguindo</span>
-            </a>
-            <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-800"></div>
-            <a href="{{ route('users.followers', $user) }}" class="group text-center cursor-pointer">
-                <span
-                    class="block text-lg font-bold text-zinc-900 dark:text-white group-hover:text-brand-600 transition-colors">{{ $user->followers()->count() }}</span>
-                <span
-                    class="text-[11px] text-zinc-500 dark:text-zinc-400 group-hover:text-brand-600 transition-colors">Seguidores</span>
-            </a>
-            <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-800"></div>
-            <div class="text-center">
-                <span class="block text-lg font-bold text-zinc-900 dark:text-white">{{ $challengesCount }}</span>
-                <span class="text-[11px] text-zinc-500 dark:text-zinc-400">Atividades</span>
+    <!-- Divider -->
+    <div class="mx-6 border-t border-zinc-100 dark:border-zinc-800"></div>
+
+    <!-- Stats row -->
+    <div class="flex items-center justify-between py-4 px-6 text-center">
+        <div>
+            <div class="text-lg font-bold text-zinc-900 dark:text-white">
+                {{ $challengesCount }}
             </div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">
+                Desafios</div>
         </div>
+        <div class="w-px h-8 bg-zinc-100 dark:bg-zinc-800"></div>
+        <div>
+            <div class="text-lg font-bold text-zinc-900 dark:text-white">
+                {{ $completedChallenges }}
+            </div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">
+                Concluídos</div>
+        </div>
+        <div class="w-px h-8 bg-zinc-100 dark:bg-zinc-800"></div>
+        <div>
+            <div class="text-lg font-bold text-zinc-900 dark:text-white">
+                {{ number_format($totalKm, 1) }}
+            </div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">Total
+                Km</div>
+        </div>
+    </div>
 
-        <!-- Action -->
-        <a href="{{ route('profile') }}"
-            class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <!-- Profile Action -->
+    <div class="p-4 pt-0">
+        <a href="{{ profile_url($user) }}"
+            class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-all shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
             Meu perfil
         </a>

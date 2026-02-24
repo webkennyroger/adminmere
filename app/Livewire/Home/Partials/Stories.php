@@ -3,15 +3,22 @@
 namespace App\Livewire\Home\Partials;
 
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class Stories extends Component
 {
     public $stories;
 
+    public function placeholder()
+    {
+        return view('livewire.home.partials.stories-skeleton');
+    }
+
     public function mount()
     {
         $user = auth()->user();
-        
+
         $followingIds = $user->following()->pluck('following_id')->toArray();
         $followingIds[] = $user->id;
 

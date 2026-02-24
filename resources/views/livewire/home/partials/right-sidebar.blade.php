@@ -1,4 +1,5 @@
 <div class="space-y-6">
+    <livewire:home.partials.user-profile-card />
     @if(!$isPremium)
         <!-- Premium Promo Card -->
         <div
@@ -32,7 +33,7 @@
                     <a href="{{ route('challenges.show', $challenge) }}"
                         class="flex gap-4 items-start group cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 p-2 rounded-lg transition-colors -mx-2"
                         wire:key="challenge-{{ $challenge->id }}">
-                        <div class="relative flex-shrink-0">
+                        <div class="relative shrink-0">
                             <img src="{{ $challenge->image ? Storage::url($challenge->image) : 'https://placehold.co/48x48/374151/9ca3af?text=Img' }}"
                                 class="w-12 h-12 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 object-cover">
                             <span
@@ -70,7 +71,7 @@
         class="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-6">
         <section class="flex gap-4 items-start">
             <div
-                class="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center flex-shrink-0">
+                class="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6 text-zinc-400 dark:text-zinc-600" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -34,40 +34,69 @@
     }
 }" class="relative w-full mb-2">
 
-    <!-- Stories List — SocialV Style -->
-    <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
+    <!-- Stories List — Premium Grid Style -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
 
         <!-- Add Story Card -->
-        <div class="story-card group" style="background: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 100%);">
-            <div class="absolute inset-0 flex flex-col items-center justify-center z-10 gap-2">
+        <div class="flex flex-col items-center gap-2">
+            <div
+                class="relative w-full aspect-3/4 rounded-xl overflow-hidden shadow-sm group cursor-pointer border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col items-center justify-center gap-2 text-zinc-400">
                 <div
-                    class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4">
                         </path>
                     </svg>
                 </div>
-                <span class="text-xs font-semibold text-zinc-600">Criar Story</span>
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+                    <div
+                        class="p-1 bg-white dark:bg-zinc-950 rounded-lg shadow-md border border-zinc-100 dark:border-zinc-800">
+                        <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-md object-cover">
+                    </div>
+                </div>
             </div>
-            @auth
-                <img src="{{ auth()->user()->image_url }}" class="story-bg opacity-30 blur-sm" alt="">
-            @endauth
+            <span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mt-3 truncate w-full text-center">Seu
+                story</span>
         </div>
 
         <!-- Rendered Stories -->
-        @foreach($stories as $story)
-            <div @click="openStory({{ json_encode($story) }})" class="story-card">
-                <img src="{{ $story['story_image'] }}" class="story-bg" alt="">
-                <img src="{{ $story['avatar'] }}" class="story-avatar" alt="{{ $story['name'] }}">
-                <span class="story-name">{{ $story['name'] }}</span>
+        @foreach($stories->where('is_own', false)->take(6) as $story)
+            <div @click="openStory({{ json_encode($story) }})" class="flex flex-col items-center gap-2">
+                <div class="relative w-full aspect-3/4 rounded-xl overflow-hidden shadow-sm group cursor-pointer">
+                    <img src="{{ $story['story_image'] }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
+
+                    <!-- Avatar overlapping bottom center -->
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+                        <div
+                            class="p-1 bg-white dark:bg-zinc-950 rounded-lg shadow-md border border-zinc-100 dark:border-zinc-800">
+                            <img src="{{ $story['avatar'] }}" class="w-8 h-8 rounded-md object-cover">
+                        </div>
+                    </div>
+                </div>
+                <span
+                    class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mt-3 truncate w-full text-center">{{ $story['name'] }}</span>
             </div>
         @endforeach
+
+        {{-- Fallback empty slots to keep grid full if less than 6 stories --}}
+        @if($stories->where('is_own', false)->count() < 6)
+            @foreach(range(1, 6 - $stories->where('is_own', false)->count()) as $i)
+                <div class="flex flex-col items-center gap-2 opacity-40">
+                    <div
+                        class="relative w-full aspect-3/4 rounded-xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+                    </div>
+                    <span class="text-[11px] font-bold text-zinc-400 mt-3 truncate w-full text-center">Disponível</span>
+                </div>
+            @endforeach
+        @endif
     </div>
 
     <!-- Modal Full Screen Viewer -->
     <template x-teleport="body">
         <div x-show="activeStory"
-            class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center backdrop-blur-sm"
+            class="fixed inset-0 z-9999 bg-black/95 flex items-center justify-center backdrop-blur-sm"
             @click.self="closeStory" x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
