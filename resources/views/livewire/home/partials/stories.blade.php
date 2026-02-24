@@ -79,8 +79,10 @@
         </div>
 
         @foreach($stories as $story)
+
+
             <div class="flex flex-col items-center flex-shrink-0" @click="openStory({{ json_encode($story) }})">
-                <div class="w-[90px] h-auto rounded-xl relative shadow-sm group cursor-pointer gap-2">
+                <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm">
                     <img src="{{ $story['story_image'] }}" alt="Background" class="w-full h-full object-cover rounded-xl" />
                     <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group cursor-pointer">
                      <img src="{{ $story['avatar'] }}" alt="{{ $story['name'] }}" class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-indigo-100" />
