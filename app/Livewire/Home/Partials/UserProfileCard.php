@@ -9,16 +9,12 @@ class UserProfileCard extends Component
     public function render()
     {
         $user = auth()->user();
-        $challengesCount = $user->challenges()->count();
-        // Simple gamification logic for demo
-        $completedChallenges = $user->challenges()->wherePivot('status', 'completed')->count();
-        $totalKm = $user->challenges()->sum('progress');
-        
+
         return view('livewire.home.partials.user-profile-card', [
             'user' => $user,
-            'challengesCount' => $challengesCount,
-            'completedChallenges' => $completedChallenges,
-            'totalKm' => $totalKm
+            'followingCount' => $user->following()->count(),
+            'followersCount' => $user->followers()->count(),
+            'activitiesCount' => $user->activities()->count()
         ]);
     }
 }

@@ -55,67 +55,70 @@
 
     <!-- Navigation Buttons (Desktop Only) -->
     <button x-cloak x-show="canScrollLeft" @click="scroll('left')"
-        class="absolute left-[-20px] top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-white dark:bg-zinc-900 rounded-full shadow-lg border border-zinc-100 dark:border-zinc-800 hidden lg:flex items-center justify-center text-zinc-600 hover:text-brand-600 transition-all opacity-0 group-hover/parent:opacity-100">
+        class="absolute left-[-24px] top-[45%] -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-zinc-900 rounded-full shadow-xl border border-zinc-100 dark:border-zinc-800 hidden lg:flex items-center justify-center text-zinc-600 hover:text-brand-600 transition-all opacity-0 group-hover/parent:opacity-100">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
         </svg>
     </button>
 
     <button x-cloak x-show="canScrollRight" @click="scroll('right')"
-        class="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-white dark:bg-zinc-900 rounded-full shadow-lg border border-zinc-100 dark:border-zinc-800 hidden lg:flex items-center justify-center text-zinc-600 hover:text-brand-600 transition-all opacity-0 group-hover/parent:opacity-100">
+        class="absolute right-[-24px] top-[45%] -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-zinc-900 rounded-full shadow-xl border border-zinc-100 dark:border-zinc-800 hidden lg:flex items-center justify-center text-zinc-600 hover:text-brand-600 transition-all opacity-0 group-hover/parent:opacity-100">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
         </svg>
     </button>
 
-    <!-- Stories List — Premium Carousel Style -->
+    <!-- Stories List — SocialV Premium Carousel -->
     <div x-ref="storyList" @scroll.debounce.100ms="checkScroll()"
-        class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4"
+        class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-10"
         style="scrollbar-width: none; -ms-overflow-style: none;">
         <!-- Add Story Card -->
-        <div class="flex-none w-[110px] sm:w-[130px] md:w-[145px] lg:w-[155px] snap-start">
-            <div class="flex flex-col items-center gap-2">
+        <div class="flex-none w-[130px] sm:w-[155px] md:w-[175px] lg:w-[190px] snap-start">
+            <div class="flex flex-col items-center gap-3">
                 <div
-                    class="relative w-full aspect-3/4 rounded-xl overflow-hidden shadow-sm group cursor-pointer border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col items-center justify-center gap-2 text-zinc-400">
+                    class="relative w-full aspect-[1/1.55] rounded-2xl overflow-hidden shadow-sm group cursor-pointer border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 flex flex-col items-center justify-center gap-3 text-zinc-400">
                     <div
-                        class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4">
+                        class="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
                             </path>
                         </svg>
                     </div>
+
                     <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
                         <div
-                            class="p-1 bg-white dark:bg-zinc-950 rounded-lg shadow-md border border-zinc-100 dark:border-zinc-800">
-                            <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-md object-cover">
+                            class="p-1 px-1 bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-100 dark:border-zinc-800">
+                            <img src="{{ auth()->user()->image_url }}" class="w-12 h-12 rounded-lg object-cover">
                         </div>
                     </div>
                 </div>
                 <span
-                    class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mt-3 truncate w-full text-center">Seu
-                    story</span>
+                    class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200 mt-5 truncate w-full text-center">Criar
+                    Story</span>
             </div>
         </div>
 
         <!-- Rendered Stories -->
         @foreach($stories->where('is_own', false) as $story)
-            <div class="flex-none w-[110px] sm:w-[130px] md:w-[145px] lg:w-[155px] snap-start">
-                <div @click="openStory({{ json_encode($story) }})" class="flex flex-col items-center gap-2">
-                    <div class="relative w-full aspect-3/4 rounded-xl overflow-hidden shadow-sm group cursor-pointer">
+            <div class="flex-none w-[130px] sm:w-[155px] md:w-[175px] lg:w-[190px] snap-start">
+                <div @click="openStory({{ json_encode($story) }})" class="flex flex-col items-center gap-3 group">
+                    <div
+                        class="relative w-full aspect-[1/1.55] rounded-2xl overflow-hidden shadow-md cursor-pointer border border-zinc-100/50 dark:border-zinc-800">
                         <img src="{{ $story['story_image'] }}"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div
+                            class="absolute inset-0 bg-linear-to-b from-black/5 via-transparent to-black/50 transition-opacity group-hover:opacity-80">
+                        </div>
 
-                        <!-- Avatar overlapping bottom center -->
                         <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
                             <div
-                                class="p-1 bg-white dark:bg-zinc-950 rounded-lg shadow-md border border-zinc-100 dark:border-zinc-800">
-                                <img src="{{ $story['avatar'] }}" class="w-8 h-8 rounded-md object-cover">
+                                class="p-1.5 bg-white dark:bg-zinc-950 rounded-xl shadow-xl border border-zinc-100 dark:border-zinc-800">
+                                <img src="{{ $story['avatar'] }}" class="w-12 h-12 rounded-lg object-cover">
                             </div>
                         </div>
                     </div>
                     <span
-                        class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mt-3 truncate w-full text-center">{{ $story['name'] }}</span>
+                        class="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 mt-5 truncate w-full text-center group-hover:text-brand-600 transition-colors">{{ $story['name'] }}</span>
                 </div>
             </div>
         @endforeach

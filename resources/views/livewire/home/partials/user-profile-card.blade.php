@@ -40,26 +40,26 @@
     <div class="flex items-center justify-between py-4 px-6 text-center">
         <div>
             <div class="text-lg font-bold text-zinc-900 dark:text-white">
-                {{ $challengesCount }}
+                {{ $followingCount }}
             </div>
             <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">
-                Desafios</div>
+                Seguindo</div>
         </div>
         <div class="w-px h-8 bg-zinc-100 dark:bg-zinc-800"></div>
         <div>
             <div class="text-lg font-bold text-zinc-900 dark:text-white">
-                {{ $completedChallenges }}
+                {{ $followersCount }}
             </div>
             <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">
-                Concluídos</div>
+                Seguidores</div>
         </div>
         <div class="w-px h-8 bg-zinc-100 dark:bg-zinc-800"></div>
         <div>
             <div class="text-lg font-bold text-zinc-900 dark:text-white">
-                {{ number_format($totalKm, 1) }}
+                {{ $activitiesCount }}
             </div>
-            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">Total
-                Km</div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-medium mt-0.5">
+                Atividades</div>
         </div>
     </div>
 
