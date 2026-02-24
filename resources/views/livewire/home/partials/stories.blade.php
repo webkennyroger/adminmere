@@ -51,71 +51,67 @@
             this.timer = null;
         }
     }
-}" x-init="setTimeout(() => checkScroll(), 100)" class="relative w-full mb-8 group/parent">
+}" x-init="setTimeout(() => checkScroll(), 100)"
+    class="relative w-full max-w-5xl mx-auto bg-[#F8F9FA] p-8 overflow-hidden mb-8">
 
     <!-- Navigation Buttons -->
-    <button x-cloak x-show="canScrollLeft" @click="scroll('left')"
-        class="absolute -left-2 top-[40%] -translate-y-1/2 z-30 w-8 h-8 bg-white dark:bg-zinc-800 rounded-full shadow-md border border-zinc-100 dark:border-zinc-700 flex items-center justify-center text-zinc-600 hover:text-brand-600 transition-all">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
-        </svg>
-    </button>
-
     <button x-cloak x-show="canScrollRight" @click="scroll('right')"
-        class="absolute -right-2 top-[40%] -translate-y-1/2 z-30 w-8 h-8 bg-white dark:bg-zinc-800 rounded-full shadow-md border border-zinc-100 dark:border-zinc-700 flex items-center justify-center text-zinc-600 hover:text-brand-600 transition-all">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="absolute right-4 top-[40%] transform -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md text-gray-800 hover:bg-gray-50 z-10 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
         </svg>
     </button>
 
-    <!-- Stories List -->
     <div x-ref="storyList" @scroll.debounce.100ms="checkScroll()"
-        class="flex items-center space-x-6 overflow-x-auto no-scrollbar pb-6 px-2 scroll-smooth">
+        class="flex items-center space-x-6 overflow-x-auto pb-4 no-scrollbar scroll-smooth">
 
-        <!-- Add Story Card -->
-        <div class="flex flex-col items-center shrink-0 group cursor-pointer">
-            <div
-                class="w-[104px] h-[136px] rounded-xl relative shadow-sm bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden">
-                <img src="{{ auth()->user()->image_url }}"
-                    class="absolute inset-0 w-full h-full object-cover blur-[2px] opacity-30">
-                <div
-                    class="relative z-10 w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
-                    </svg>
+        <!-- Add Story Card (Based on the structure provided) -->
+        <div class="flex flex-col items-center flex-shrink-0 group cursor-pointer">
+            <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm bg-gray-200">
+                <img src="{{ auth()->user()->image_url }}" alt="Background"
+                    class="w-full h-full object-cover rounded-xl opacity-50 blur-[1px]" />
+
+                <!-- Center Icon for 'Criar' -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                    </div>
                 </div>
 
-                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
-                    <img src="{{ auth()->user()->image_url }}"
-                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-900 object-cover shadow-sm" />
+                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group">
+                    <img src="{{ auth()->user()->image_url }}" alt="You"
+                        class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-gray-200 shadow-sm" />
                 </div>
             </div>
-            <span class="mt-5 text-[11px] font-medium text-zinc-700 dark:text-zinc-300">Criar Story</span>
+            <span class="mt-5 text-[11px] font-medium text-gray-700">Criar Story</span>
         </div>
 
         <!-- Rendered Stories -->
         @foreach($stories as $story)
-            <div class="flex flex-col items-center flex-shrink-0 group cursor-pointer"
-                @click="openStory({{ json_encode($story) }})">
-                <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <img src="{{ $story['story_image'] }}"
-                        class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-500" />
+            <div class="flex flex-col items-center flex-shrink-0" @click="openStory({{ json_encode($story) }})">
+                <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm cursor-pointer group">
+                    <img src="{{ $story['story_image'] }}" alt="Background"
+                        class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500" />
 
-                    <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
-                        <img src="{{ $story['avatar'] }}"
-                            class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-900 object-cover shadow-sm" />
+                    <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group">
+                        <img src="{{ $story['avatar'] }}" alt="{{ $story['name'] }}"
+                            class="w-8 h-8 rounded-lg border-2 border-white object-cover shadow-sm" />
 
                         <div
-                            class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] px-2 py-0.5 border border-zinc-200 dark:border-zinc-700 shadow-sm whitespace-nowrap z-10">
+                            class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 bg-white text-gray-600 text-[10px] px-2 py-0.5 border border-gray-200 shadow-sm whitespace-nowrap z-10">
                             {{ $story['name'] }}
                         </div>
                     </div>
                 </div>
-                <span class="mt-5 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 truncate w-full text-center">
-                    {{ $story['name'] }}
-                </span>
+                <span
+                    class="mt-5 text-[11px] font-medium text-gray-700 truncate w-full text-center">{{ $story['name'] }}</span>
             </div>
         @endforeach
+
     </div>
 
     <!-- Modal Viewer -->
@@ -145,8 +141,9 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="flex-1 flex items-center justify-center bg-zinc-900"><img :src="activeStory.story_image"
-                            class="max-w-full max-h-full object-contain"></div>
+                    <div class="flex-1 flex items-center justify-center bg-zinc-900">
+                        <img :src="activeStory.story_image" class="max-w-full max-h-full object-contain">
+                    </div>
                 </div>
             </template>
         </div>
