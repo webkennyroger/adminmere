@@ -59,24 +59,15 @@
         class="flex items-center space-x-6 overflow-x-auto pb-4 scrollbar-hide">
 
         <!-- Auth User Story (Add Story) -->
-        <div class="flex flex-col items-center flex-shrink-0 group cursor-pointer"
-            onclick="document.getElementById('story-upload-input')?.click()">
-            <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm">
-                <img src="{{ auth()->user()->image_url }}" alt="Background"
-                    class="w-full h-full object-cover rounded-xl" />
-
-                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group cursor-pointer">
-                    <img src="{{ auth()->user()->image_url }}" alt="{{ auth()->user()->name }}"
-                        class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-gray-200" />
-
-                    <div
-                        class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 bg-white text-gray-600 text-[10px] px-2 py-0.5 border border-gray-200 shadow-sm whitespace-nowrap z-10">
-                        Criar Story
-                    </div>
-                </div>
-            </div>
-            <span class="mt-5 text-[11px] font-medium text-gray-700">Meu Story</span>
+    <div class="flex flex-col items-center flex-shrink-0">
+      <div class="w-[104px] h-[136px] rounded-xl relative shadow-sm">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=400&fit=crop" alt="Background" class="w-full h-full object-cover rounded-xl" />
+        <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 group cursor-pointer">
+          <img src="https://i.pravatar.cc/150?u=2" alt="Jenny Wilson" class="w-8 h-8 rounded-lg border-2 border-white object-cover bg-indigo-100" />
         </div>
+      </div>
+      <span class="mt-5 text-[11px] font-medium text-gray-700">Jenny Wilson</span>
+    </div>
 
         @foreach($stories as $story)
             <div class="flex flex-col items-center flex-shrink-0" @click="openStory({{ json_encode($story) }})">
