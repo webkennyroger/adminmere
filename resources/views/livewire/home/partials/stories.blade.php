@@ -66,8 +66,7 @@
             <!-- Hidden File Input -->
             <input type="file" x-ref="photoInput" wire:model="photo" class="hidden" accept="image/*">
 
-            <div
-                class="w-[104px] h-[136px] min-w-[104px] min-h-[136px] rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-brand-500 transition-all">
+            <div class="w-[104px] h-[136px] min-w-[104px] min-h-[136px] rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-brand-500 transition-all">
                 <img src="{{ auth()->user()->image_url }}" alt="Background"
                     class="w-full h-full object-cover rounded-xl opacity-60 dark:opacity-40 group-hover:scale-110 transition-transform duration-500" />
 

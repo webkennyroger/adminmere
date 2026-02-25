@@ -22,10 +22,22 @@ class StoryController extends Controller
             ->whereHas('stories', function ($query) {
                 $query->where('expires_at', '>', now());
             })
-            ->with(['latestStory', 'profile'])
+            ->with(['stories' => function ($query) {
+                $query->where('expires_at', '>', now())->orderBy('created_at', 'asc');
+            }, 'profile'])
             ->get();
 
         $stories = $usersWithStories->map(function ($u) use ($user) {
+            $userStories = $u->stories->map(function ($s) {
+                return [
+                    'id' => $s->id,
+                    'url' => $s->image_url,
+                    'type' => 'image', // Por enquanto apenas imagens
+                    'duration' => 5,
+                    'created_at' => $s->created_at,
+                ];
+            });
+
             return [
                 'user_id' => $u->id,
                 'name' => $u->id === $user->id ? 'Seu story' : $u->name,
@@ -33,8 +45,9 @@ class StoryController extends Controller
                 'avatar' => $u->image_url,
                 'has_story' => true,
                 'is_own' => $u->id === $user->id,
-                'latest_story_image' => $u->latestStory->image_url,
-                'expires_at' => $u->latestStory->expires_at,
+                'stories' => $userStories,
+                'latest_story_image' => $u->stories->last()->image_url,
+                'expires_at' => $u->stories->last()->expires_at,
             ];
         });
 
