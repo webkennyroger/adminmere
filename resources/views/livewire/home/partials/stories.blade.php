@@ -67,14 +67,14 @@
             <input type="file" x-ref="photoInput" wire:model="photo" class="hidden" accept="image/*">
 
             <div
-                class="w-28 h-36 flex-none rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-brand-500 transition-all">
+                class="w-28 h-36 flex-none rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-green-500 transition-all">
                 <img src="{{ auth()->user()->image_url }}" alt="Background"
                     class="w-full h-full object-cover rounded-xl opacity-60 dark:opacity-40 group-hover:scale-110 transition-transform duration-500" />
 
                 <!-- Center Plus Icon -->
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
-                        class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-lg group-hover:bg-brand-700 transition-colors">
+                        class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white shadow-lg group-hover:bg-green-700 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
                             </path>
@@ -104,7 +104,7 @@
                     @click="{{ $story['has_story'] ? 'openStory(' . json_encode($story) . ')' : 'window.location.href=\'' . $story['profile_url'] . '\'' }}">
 
                     <div
-                        class="w-full h-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 ring-2 {{ $story['has_story'] ? 'ring-brand-500' : 'ring-transparent' }} group-hover:ring-brand-400 transition-all">
+                        class="w-full h-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 ring-2 {{ $story['has_story'] ? 'ring-green-500' : 'ring-transparent' }} group-hover:ring-green-400 transition-all">
                         <img src="{{ $story['story_image'] }}" alt="Background"
                             class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}" />
                     </div>
@@ -163,7 +163,7 @@
                     <div class="absolute top-6 left-0 right-0 z-30 px-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <img :src="activeStory.avatar"
-                                class="w-10 h-10 rounded-full border-2 border-brand-500 shadow-lg">
+                                class="w-10 h-10 rounded-full border-2 border-green-500 shadow-lg">
                             <div class="flex flex-col">
                                 <span class="text-white font-bold text-sm drop-shadow-md"
                                     x-text="activeStory.name"></span>
