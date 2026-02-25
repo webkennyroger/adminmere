@@ -54,7 +54,7 @@
         }
     }
 }" x-init="setTimeout(() => checkScroll(), 100)"
-    class="relative w-full max-w-5xl mx-auto p-4 md:p-8 overflow-hidden bg-white dark:bg-zinc-900 md:rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-300">
+    class="relative w-full max-w-5xl mx-auto p-4 md:p-8 overflow-hidden transition-all duration-300">
 
     <div x-ref="storyList" @scroll.debounce.100ms="checkScroll()"
         class="flex items-center space-x-6 overflow-x-auto pb-4 scrollbar-hide no-scrollbar scroll-smooth">
