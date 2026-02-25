@@ -166,7 +166,7 @@
                         <li>
                             <a href="{{ route('users.find') }}"
                                 class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
-                                {{ request()->routeIs('users.find') ? 'bg-green-500 text-white shadow-sm' : 'text-green-500 hover:bg-green-100 dark:hover:bg-zinc-800 dark:text-zinc-400' }}">
+                                {{ request()->routeIs('users.find') ? 'bg-green-500 text-white shadow-sm' : 'text-green-500 hover:text-white hover:bg-green-100 dark:hover:bg-green-900/30 dark:text-green-400' }}">
                                 <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                     stroke-width="1.75">
                                     <path stroke-linecap="round" stroke-linejoin="round"
