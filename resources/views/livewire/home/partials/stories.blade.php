@@ -61,67 +61,74 @@
 
         <!-- Auth User Story (Add Story) -->
         <div class="flex flex-col items-center flex-shrink-0 min-w-0">
-            <div class="w-28 h-36 flex-none rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-green-500 transition-all cursor-pointer group"
+            <div class="w-28 h-36 flex-none rounded-xl relative shadow-sm cursor-pointer group"
                 @click="{{ auth()->user()->stories()->where('expires_at', '>', now())->exists() ? 'openStory(JSON.parse($el.querySelector(\'.myStoryData\').value))' : '$refs.photoInput.click()' }}">
 
                 <!-- Hidden File Input -->
                 <input type="file" x-ref="photoInput" wire:model="photo" class="hidden"
                     accept="image/*,video/mp4,video/quicktime,video/webm">
 
-                <!-- Conditional Rendering Based on whether the user has a story -->
-                @if(auth()->user()->stories()->where('expires_at', '>', now())->exists())
-                    @php
-                        $latest = auth()->user()->stories()->latest()->first();
-                        $isVideo = preg_match('/\.(mp4|mov|avi|webm)$/i', $latest->image_url);
-                        
-                        $myStoryJson = json_encode([
-                            'id' => $latest->id,
-                            'name' => 'Meu Story',
-                            'avatar' => auth()->user()->image_url,
-                            'story_image' => $latest->image_url,
-                            'profile_url' => profile_url(auth()->user()),
-                            'type' => $isVideo ? 'video' : 'image',
-                        ]);
-                    @endphp
-                    
-                    @if($isVideo)
-                        <video src="{{ $latest->image_url }}"
-                            class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700"
-                            autoplay muted loop playsinline></video>
-                    @else
-                        <img src="{{ $latest->image_url }}" alt="Background"
-                            class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700" />
-                    @endif
-                    
-                    <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10 w-full flex justify-center pb-2 pointer-events-none" style="pointer-events: none;">
-                        <input type="hidden" class="myStoryData" value="{{ $myStoryJson }}">
-                    </div>
-                @else
-                    <img src="{{ auth()->user()->image_url }}" alt="Background"
-                        class="w-full h-full object-cover rounded-xl opacity-60 dark:opacity-40 group-hover:scale-110 transition-transform duration-500" />
+                <div
+                    class="w-full h-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 ring-2 {{ auth()->user()->stories()->where('expires_at', '>', now())->exists() ? 'ring-green-500' : 'ring-transparent' }} group-hover:ring-green-400 transition-all">
+                    <!-- Conditional Rendering Based on whether the user has a story -->
+                    @if(auth()->user()->stories()->where('expires_at', '>', now())->exists())
+                        @php
+                            $latest = auth()->user()->stories()->latest()->first();
+                            $isVideo = preg_match('/\.(mp4|mov|avi|webm)$/i', $latest->image_url);
 
-                    <!-- Center Plus Icon -->
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div
-                            class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white shadow-lg group-hover:bg-green-700 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
-                            </svg>
+                            $myStoryJson = json_encode([
+                                'id' => $latest->id,
+                                'name' => 'Meu Story',
+                                'avatar' => auth()->user()->image_url,
+                                'story_image' => $latest->image_url,
+                                'profile_url' => profile_url(auth()->user()),
+                                'type' => $isVideo ? 'video' : 'image',
+                            ]);
+                        @endphp
+
+                        @if($isVideo)
+                            <video src="{{ $latest->image_url }}"
+                                class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700"
+                                autoplay muted loop playsinline></video>
+                        @else
+                            <img src="{{ $latest->image_url }}" alt="Background"
+                                class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700" />
+                        @endif
+
+                        <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10 w-full flex justify-center pb-2 pointer-events-none"
+                            style="pointer-events: none;">
+                            <input type="hidden" class="myStoryData" value="{{ $myStoryJson }}">
                         </div>
-                    </div>
-                @endif
-                
+                    @else
+                        <img src="{{ auth()->user()->image_url }}" alt="Background"
+                            class="w-full h-full object-cover rounded-xl opacity-60 dark:opacity-40 group-hover:scale-110 transition-transform duration-500" />
+
+                        <!-- Center Plus Icon -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div
+                                class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white shadow-lg group-hover:bg-green-700 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
                 <!-- Bottom avatar, always present over background -->
                 <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10">
                     <img src="{{ auth()->user()->image_url }}" alt="{{ auth()->user()->name }}"
                         class="w-10 h-10 rounded-lg border-2 border-white dark:border-zinc-900 object-cover bg-zinc-200 dark:bg-zinc-700 shadow-sm pointer-events-auto" />
-                        
+
                     @if(auth()->user()->stories()->where('expires_at', '>', now())->exists())
                         <!-- Overlaid plus floating button to add MORE stories, separate from the rest of the div which triggers open modal -->
                         <div class="absolute -right-2 -bottom-2 pointer-events-auto" @click.stop="$refs.photoInput.click()">
-                            <div class="w-6 h-6 rounded-full bg-green-600 border border-white dark:border-zinc-800 flex items-center justify-center text-white shadow-md hover:bg-green-700 transition-colors cursor-pointer" title="Add another story">
+                            <div class="w-6 h-6 rounded-full bg-green-600 border border-white dark:border-zinc-800 flex items-center justify-center text-white shadow-md hover:bg-green-700 transition-colors cursor-pointer"
+                                title="Add another story">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M12 4v16m8-8H4"></path>
                                 </svg>
                             </div>
                         </div>
@@ -130,7 +137,7 @@
 
                 <!-- Loading State overlay -->
                 <div wire:loading wire:target="photo"
-                    class="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                    class="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center z-20">
                     <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 </div>
             </div>

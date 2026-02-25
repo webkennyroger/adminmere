@@ -35,40 +35,27 @@ class Stories extends Component
 
         // 1. Get IDs of users being followed
         $followingIds = $user->following()->pluck('following_id')->toArray();
-        $baseUserIds = array_merge($followingIds, [$user->id]);
 
-        // 2. Fetch users
-        $users = \App\Models\User::whereIn('id', $baseUserIds)
+        // 2. Fetch users with active stories
+        $users = \App\Models\User::whereIn('id', $followingIds)
+            ->whereHas('stories', function ($query) {
+                $query->where('expires_at', '>', now());
+            })
             ->with(['latestStory', 'profile'])
             ->get();
 
-        // 3. Fallback: if very few users, suggest some random ones to make it look full and lively
-        if ($users->count() < 6) {
-            $suggestedUsers = \App\Models\User::whereNotIn('id', $baseUserIds)
-                ->with(['latestStory', 'profile'])
-                ->inRandomOrder()
-                ->limit(6 - $users->count())
-                ->get();
-
-            $users = $users->concat($suggestedUsers);
-        }
-
         // 3. Map to stories array
-        $this->stories = $users->map(function ($u) use ($user) {
-            $hasActiveStory = $u->latestStory && $u->latestStory->expires_at->isFuture();
-
+        $this->stories = $users->map(function ($u) {
             return [
                 'user_id' => $u->id,
-                'name' => $u->id === $user->id ? 'Meu Story' : ($u->profile->nickname ?? $u->name),
+                'name' => $u->profile->nickname ?? $u->name,
                 'avatar' => $u->image_url,
-                'story_image' => $hasActiveStory
-                    ? $u->latestStory->image_url
-                    : ($u->profile?->cover_image ? asset('storage/' . $u->profile->cover_image) : 'https://images.unsplash.com/photo-1506744626753-dba37c25a1f1?w=300&h=400&fit=crop'),
-                'is_own' => $u->id === $user->id,
-                'has_story' => $hasActiveStory,
+                'story_image' => $u->latestStory->image_url,
+                'is_own' => false,
+                'has_story' => true,
                 'profile_url' => $u->profile_url,
             ];
-        })->sortByDesc('has_story')->values();
+        })->values();
     }
 
 
