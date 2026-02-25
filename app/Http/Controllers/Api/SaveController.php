@@ -3,27 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\SavedItem;
+use Illuminate\Http\Request;
 
 class SaveController extends Controller
 {
-    protected function resolveItem($id)
-    {
-        if (str_starts_with($id, 'post_') || str_starts_with($id, 'poll_')) {
-            $realId = str_replace(['post_', 'poll_'], '', $id);
-            return \App\Models\Post::findOrFail($realId);
-        }
-
-        if (str_starts_with($id, 'activity_')) {
-            $realId = str_replace('activity_', '', $id);
-            return \App\Models\Activity::findOrFail($realId);
-        }
-
-        // Fallback
-        return \App\Models\Post::find($id) ?? \App\Models\Activity::findOrFail($id);
-    }
+    use \App\Traits\ResolvesActivityItems;
 
     /**
      * Toggle save on an item (post, poll, activity).
@@ -49,6 +34,15 @@ class SaveController extends Controller
             ]);
             $isSaved = true;
         }
+
+        // Determinar o ID prefixado correto para o broadcast
+        $prefixedId = $id;
+        if (! is_string($id) || ! str_contains($id, '_')) {
+            $prefix = ($item instanceof \App\Models\Activity) ? 'activity_' : (($item->type === 'poll') ? 'poll_' : 'post_');
+            $prefixedId = $prefix.$item->id;
+        }
+
+        event(new \App\Events\SaveToggled($prefixedId, $isSaved, $user->id));
 
         return response()->json([
             'success' => true,

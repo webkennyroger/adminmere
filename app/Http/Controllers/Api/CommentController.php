@@ -49,6 +49,17 @@ class CommentController extends Controller
             'parent_id' => ! empty($request->parent_id) ? $request->parent_id : null,
         ]);
 
+        $formattedComment = $this->formatComment($comment->load('user'), $user->id);
+
+        // Determinar o ID prefixado correto para o broadcast
+        $prefixedId = $id;
+        if (! is_string($id) || ! str_contains($id, '_')) {
+            $prefix = ($item instanceof \App\Models\Activity) ? 'activity_' : (($item->type === 'poll') ? 'poll_' : 'post_');
+            $prefixedId = $prefix.$item->id;
+        }
+
+        event(new \App\Events\CommentPosted($prefixedId, $formattedComment));
+
         return response()->json([
             'success' => true,
             'data' => $this->formatComment($comment->load('user'), $user->id),
@@ -77,27 +88,7 @@ class CommentController extends Controller
         ]);
     }
 
-    protected function resolveItem($id)
-    {
-        if (str_starts_with($id, 'post_') || str_starts_with($id, 'poll_')) {
-            $realId = str_replace(['post_', 'poll_'], '', $id);
-
-            return Post::findOrFail($realId);
-        }
-
-        if (str_starts_with($id, 'activity_')) {
-            $realId = str_replace('activity_', '', $id);
-
-            return Activity::findOrFail($realId);
-        }
-
-        // Fallback for numeric IDs based on route
-        if (request()->is('api/posts/*') || request()->is('api/polls/*')) {
-            return Post::findOrFail($id);
-        }
-
-        return Activity::findOrFail($id);
-    }
+    use \App\Traits\ResolvesActivityItems;
 
     protected function formatComment($comment, $userId)
     {

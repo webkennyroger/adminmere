@@ -43,6 +43,9 @@ class ActivityFeed extends Component
     #[On('post-deleted')]
     #[On('activity-deleted')]
     #[On('refresh-feed')]
+    #[On('echo:timeline,like.toggled')]
+    #[On('echo:timeline,comment.posted')]
+    #[On('echo:timeline,save.toggled')]
     public function refreshFeed(): void
     {
         $this->page = 1;
