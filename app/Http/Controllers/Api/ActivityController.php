@@ -32,7 +32,7 @@ class ActivityController extends Controller
         if ($feed === 'timeline' || $feed === 'network' || $feed === 'community') {
             $activitiesQuery->where('privacy', 'public');
             if ($feed === 'community') {
-                $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+                $postsQuery->where(fn($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
             } else {
                 $postsQuery->where('privacy', 'public');
             }
@@ -46,12 +46,12 @@ class ActivityController extends Controller
 
         // Merge and sort
         $merged = collect([])
-            ->merge($activities->map(fn ($a) => [
+            ->merge($activities->map(fn($a) => [
                 'type' => 'activity',
                 'item' => $a,
                 'date' => $a->start_time ?? $a->created_at,
             ]))
-            ->merge($posts->map(fn ($p) => [
+            ->merge($posts->map(fn($p) => [
                 'type' => 'post',
                 'item' => $p,
                 'date' => $p->created_at,
@@ -81,7 +81,7 @@ class ActivityController extends Controller
     public function formatPost($post, $user)
     {
         return [
-            'id' => 'post_'.$post->id,
+            'id' => 'post_' . $post->id,
             'type' => 'post',
             'title' => $post->title,
             'user_id' => (string) $post->user_id,
@@ -94,7 +94,7 @@ class ActivityController extends Controller
             'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
             'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
             'isArchived' => (bool) ($post->is_archived ?? false),
-            'commentsList' => [],
+            'commentsList' => $post->comments ? array_fill(0, $post->comments->count(), []) : [],
             'shares' => 0,
             'privacy' => $post->privacy,
         ];
@@ -125,7 +125,7 @@ class ActivityController extends Controller
         ];
 
         return [
-            'id' => 'poll_'.$post->id,
+            'id' => 'poll_' . $post->id,
             'type' => 'poll',
             'title' => $post->title,
             'description' => $post->content,
@@ -138,6 +138,7 @@ class ActivityController extends Controller
             'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
             'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
             'isArchived' => (bool) ($post->is_archived ?? false),
+            'commentsList' => $post->comments ? array_fill(0, $post->comments->count(), []) : [],
         ];
     }
 
@@ -283,7 +284,7 @@ class ActivityController extends Controller
                 'content' => $request->content ?? $request->description,
                 'privacy' => $request->privacy,
             ]);
-            $formatted = $this->formatPost($item, $user); 
+            $formatted = $this->formatPost($item, $user);
         }
 
         return response()->json([
@@ -318,7 +319,7 @@ class ActivityController extends Controller
         }
 
         return [
-            'id' => 'activity_'.$activity->id,
+            'id' => 'activity_' . $activity->id,
             'user_id' => (string) $activity->user_id,
             'userName' => $activity->user->name,
             'userAvatarUrl' => $activity->user->image_url,
@@ -332,7 +333,7 @@ class ActivityController extends Controller
             'likes' => $activity->likes->count(),
             'isLiked' => $user ? $activity->likes->where('user_id', $user->id)->isNotEmpty() : false,
             'isSaved' => $user ? $activity->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
-            'commentsList' => [], // Separate comments for performance if needed
+            'commentsList' => $activity->comments ? array_fill(0, $activity->comments->count(), []) : [],
         ];
     }
 
@@ -352,7 +353,7 @@ class ActivityController extends Controller
             $lng = round($point['lng'] * 1e5);
             $d_lat = $lat - $last_lat;
             $d_lng = $lng - $last_lng;
-            $res .= $this->encodeSignedNumber($d_lat).$this->encodeSignedNumber($d_lng);
+            $res .= $this->encodeSignedNumber($d_lat) . $this->encodeSignedNumber($d_lng);
             $last_lat = $lat;
             $last_lng = $lng;
         }

@@ -195,6 +195,7 @@ class PollController extends Controller
             'isLiked' => $post->likes->where('user_id', $user->id)->isNotEmpty(),
             'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
             'isArchived' => (bool) ($post->is_archived ?? false),
+            'commentsList' => $post->comments ? array_fill(0, $post->comments->count(), []) : [],
         ];
     }
 }
