@@ -29,7 +29,8 @@ class Stories extends Component
     #[On('echo:timeline,story.posted')]
     public function refreshStories()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
 
 
@@ -67,7 +68,10 @@ class Stories extends Component
 
         $path = $this->photo->store('stories', 'public');
 
-        auth()->user()->stories()->create([
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        $user->stories()->create([
             'image_url' => asset('storage/' . $path),
             'expires_at' => now()->addHours(24),
         ]);
@@ -77,7 +81,7 @@ class Stories extends Component
 
         $this->dispatch('toast', type: 'success', message: 'Story postado com sucesso!');
 
-        broadcast(new \App\Events\StoryPosted(auth()->id()))->toOthers();
+        broadcast(new \App\Events\StoryPosted(\Illuminate\Support\Facades\Auth::id()))->toOthers();
     }
 
     public function render()
