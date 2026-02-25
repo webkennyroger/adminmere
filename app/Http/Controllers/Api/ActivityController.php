@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\Post;
+
 class ActivityController extends Controller
 {
     use \App\Traits\ResolvesActivityItems;
@@ -17,22 +19,126 @@ class ActivityController extends Controller
         $user = $request->user();
         $feed = $request->query('feed', 'personal');
 
-        $query = Activity::with(['user.profile', 'likes', 'savedItems', 'comments' => function ($q) {
+        // Activities Query
+        $activitiesQuery = Activity::with(['user.profile', 'likes', 'savedItems', 'comments' => function ($q) {
+            $q->whereNull('parent_id')->latest();
+        }]);
+
+        // Posts Query (Simple posts and polls)
+        $postsQuery = Post::with(['user.profile', 'likes', 'savedItems', 'pollOptions', 'pollVotes.user', 'comments' => function ($q) {
             $q->whereNull('parent_id')->latest();
         }]);
 
         if ($feed === 'timeline' || $feed === 'network' || $feed === 'community') {
-            $query->where('privacy', 'public');
+            $activitiesQuery->where('privacy', 'public');
+            if ($feed === 'community') {
+                $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+            } else {
+                $postsQuery->where('privacy', 'public');
+            }
         } elseif ($feed === 'personal') {
-            $query->where('user_id', $user->id);
+            $activitiesQuery->where('user_id', $user->id);
+            $postsQuery->where('user_id', $user->id);
         }
 
-        $activities = $query->latest('start_time')->limit(50)->get();
+        $activities = $activitiesQuery->latest('start_time')->limit(50)->get();
+        $posts = $postsQuery->latest()->limit(50)->get();
+
+        // Merge and sort
+        $merged = collect([])
+            ->merge($activities->map(fn ($a) => [
+                'type' => 'activity',
+                'item' => $a,
+                'date' => $a->start_time ?? $a->created_at,
+            ]))
+            ->merge($posts->map(fn ($p) => [
+                'type' => 'post',
+                'item' => $p,
+                'date' => $p->created_at,
+            ]))
+            ->sortByDesc('date')
+            ->values();
+
+        $formatted = $merged->map(function ($entry) use ($user) {
+            if ($entry['type'] === 'activity') {
+                return $this->formatActivity($entry['item'], $user);
+            } else {
+                $post = $entry['item'];
+                if ($post->type === 'poll') {
+                    return $this->formatPoll($post, $user);
+                } else {
+                    return $this->formatPost($post, $user);
+                }
+            }
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $activities->map(fn ($a) => $this->formatActivity($a, $user)),
+            'data' => $formatted,
         ]);
+    }
+
+    public function formatPost($post, $user)
+    {
+        return [
+            'id' => 'post_'.$post->id,
+            'type' => 'post',
+            'title' => $post->title,
+            'user_id' => (string) $post->user_id,
+            'userName' => $post->user->name,
+            'userAvatarUrl' => $post->user->image_url,
+            'createdAt' => $post->created_at->toIso8601String(),
+            'description' => $post->content,
+            'mediaPaths' => $post->media ?? [],
+            'likes' => $post->likes->count(),
+            'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
+            'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'isArchived' => (bool) ($post->is_archived ?? false),
+            'commentsList' => [],
+            'shares' => 0,
+            'privacy' => $post->privacy,
+        ];
+    }
+
+    public function formatPoll($post, $user)
+    {
+        $hasVoted = $user ? $post->pollVotes->where('user_id', $user->id)->isNotEmpty() : false;
+        $totalVotes = $post->pollVotes->count();
+
+        $meta = is_array($post->meta) ? $post->meta : [];
+        $pollData = [
+            'expiresAt' => $post->poll_expires_at ? $post->poll_expires_at->toIso8601String() : null,
+            'isMandatory' => (bool) $post->is_mandatory,
+            'isMultiple' => (bool) ($meta['isMultiple'] ?? false),
+            'isExpired' => $post->poll_expires_at && $post->poll_expires_at->isPast(),
+            'hasVoted' => $hasVoted,
+            'totalVotes' => $totalVotes,
+            'options' => $post->pollOptions->map(function ($opt) use ($user, $post, $totalVotes) {
+                return [
+                    'id' => (int) $opt->id,
+                    'text' => $opt->option_text,
+                    'votes' => (int) $opt->votes_count,
+                    'percentage' => $totalVotes > 0 ? round(($opt->votes_count / $totalVotes) * 100) : 0,
+                    'isUserVote' => $user ? $post->pollVotes->where('user_id', $user->id)->where('poll_option_id', $opt->id)->isNotEmpty() : false,
+                ];
+            })->values(),
+        ];
+
+        return [
+            'id' => 'poll_'.$post->id,
+            'type' => 'poll',
+            'title' => $post->title,
+            'description' => $post->content,
+            'user_id' => (string) $post->user_id,
+            'userName' => $post->user->name,
+            'userAvatarUrl' => $post->user->image_url,
+            'createdAt' => $post->created_at->toIso8601String(),
+            'pollData' => $pollData,
+            'likes' => $post->likes->count(),
+            'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
+            'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'isArchived' => (bool) ($post->is_archived ?? false),
+        ];
     }
 
     /**
@@ -177,7 +283,7 @@ class ActivityController extends Controller
                 'content' => $request->content ?? $request->description,
                 'privacy' => $request->privacy,
             ]);
-            $formatted = $item; 
+            $formatted = $this->formatPost($item, $user); 
         }
 
         return response()->json([
