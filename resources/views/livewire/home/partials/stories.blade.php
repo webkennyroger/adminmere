@@ -64,7 +64,8 @@
             @click="$refs.photoInput.click()">
 
             <!-- Hidden File Input -->
-            <input type="file" x-ref="photoInput" wire:model="photo" class="hidden" accept="image/*">
+            <input type="file" x-ref="photoInput" wire:model="photo" class="hidden"
+                accept="image/*,video/mp4,video/quicktime,video/webm">
 
             <div
                 class="w-28 h-36 flex-none rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-green-500 transition-all">
@@ -105,8 +106,14 @@
 
                     <div
                         class="w-full h-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 ring-2 {{ $story['has_story'] ? 'ring-green-500' : 'ring-transparent' }} group-hover:ring-green-400 transition-all">
-                        <img src="{{ $story['story_image'] }}" alt="Background"
-                            class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}" />
+                        @if(preg_match('/\.(mp4|mov|avi|webm)$/i', $story['story_image']))
+                            <video src="{{ $story['story_image'] }}"
+                                class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}"
+                                autoplay muted loop playsinline></video>
+                        @else
+                            <img src="{{ $story['story_image'] }}" alt="Background"
+                                class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}" />
+                        @endif
                     </div>
 
                     <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10">
@@ -179,9 +186,15 @@
                         </button>
                     </div>
 
-                    <!-- Main Image -->
+                    <!-- Main Image / Video -->
                     <div class="flex-1 flex items-center justify-center bg-zinc-900/50">
-                        <img :src="activeStory.story_image" class="w-full h-full object-contain">
+                        <template x-if="activeStory.story_image.match(/\.(mp4|mov|avi|webm)$/i)">
+                            <video :src="activeStory.story_image" class="w-full h-full object-contain" autoplay
+                                playsinline loop></video>
+                        </template>
+                        <template x-if="!activeStory.story_image.match(/\.(mp4|mov|avi|webm)$/i)">
+                            <img :src="activeStory.story_image" class="w-full h-full object-contain">
+                        </template>
                     </div>
 
                     <!-- Footer / Interaction Placeholder -->

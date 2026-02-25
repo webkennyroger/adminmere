@@ -29,11 +29,12 @@ class StoryController extends Controller
 
         $stories = $usersWithStories->map(function ($u) use ($user) {
             $userStories = $u->stories->map(function ($s) {
+                $isVideo = preg_match('/\.(mp4|mov|avi|webm)$/i', $s->image_url);
                 return [
                     'id' => $s->id,
                     'url' => $s->image_url,
-                    'type' => 'image', // Por enquanto apenas imagens
-                    'duration' => 5,
+                    'type' => $isVideo ? 'video' : 'image',
+                    'duration' => $isVideo ? 15 : 5,
                     'created_at' => $s->created_at,
                 ];
             });
@@ -60,7 +61,7 @@ class StoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|max:10240', // 10MB max
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi,webm|max:20480', // 20MB max
         ]);
 
         $user = $request->user();
@@ -82,7 +83,7 @@ class StoryController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'Nenhuma imagem enviada'
+            'message' => 'Nenhum arquivo enviado'
         ], 400);
     }
 }
