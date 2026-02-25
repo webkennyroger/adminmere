@@ -66,7 +66,8 @@
             <!-- Hidden File Input -->
             <input type="file" x-ref="photoInput" wire:model="photo" class="hidden" accept="image/*">
 
-            <div class="w-[104px] h-[136px] min-w-[104px] min-h-[136px] rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-brand-500 transition-all">
+            <div
+                class="w-28 h-36 flex-none rounded-xl relative shadow-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-transparent group-hover:ring-brand-500 transition-all">
                 <img src="{{ auth()->user()->image_url }}" alt="Background"
                     class="w-full h-full object-cover rounded-xl opacity-60 dark:opacity-40 group-hover:scale-110 transition-transform duration-500" />
 
@@ -81,9 +82,9 @@
                     </div>
                 </div>
 
-                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10">
                     <img src="{{ auth()->user()->image_url }}" alt="{{ auth()->user()->name }}"
-                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-900 object-cover bg-zinc-200 dark:bg-zinc-700 shadow-sm" />
+                        class="w-10 h-10 rounded-lg border-2 border-white dark:border-zinc-900 object-cover bg-zinc-200 dark:bg-zinc-700 shadow-sm" />
                 </div>
 
                 <!-- Loading State overlay -->
@@ -99,7 +100,7 @@
         @foreach($stories as $story)
             @continue($story['is_own'])
             <div class="flex flex-col items-center flex-shrink-0 min-w-0">
-                <div class="w-[104px] h-[136px] min-w-[104px] min-h-[136px] rounded-xl relative shadow-sm cursor-pointer group"
+                <div class="w-28 h-36 flex-none rounded-xl relative shadow-sm cursor-pointer group"
                     @click="{{ $story['has_story'] ? 'openStory(' . json_encode($story) . ')' : 'window.location.href=\'' . $story['profile_url'] . '\'' }}">
 
                     <div
@@ -108,9 +109,9 @@
                             class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}" />
                     </div>
 
-                    <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+                    <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10">
                         <img src="{{ $story['avatar'] }}" alt="{{ $story['name'] }}"
-                            class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-900 object-cover shadow-sm bg-zinc-200 dark:bg-zinc-700 pointer-events-none" />
+                            class="w-10 h-10 rounded-lg border-2 border-white dark:border-zinc-900 object-cover shadow-sm bg-zinc-200 dark:bg-zinc-700 pointer-events-none" />
 
                         <div
                             class="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-zinc-900 text-white text-[10px] px-2 py-0.5 rounded-md shadow-xl whitespace-nowrap z-10 pointer-events-none">
@@ -119,7 +120,7 @@
                     </div>
                 </div>
                 <span
-                    class="mt-5 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 truncate w-[104px] text-center">{{ $story['name'] }}</span>
+                    class="mt-5 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 truncate w-28 text-center">{{ $story['name'] }}</span>
             </div>
         @endforeach
 

@@ -10,10 +10,10 @@ class StoryController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         // IDs dos usuários que eu sigo
         $followingIds = $user->following()->pluck('following_id')->toArray();
-        
+
         // Incluir meu própro ID
         $followingIds[] = $user->id;
 
@@ -41,7 +41,7 @@ class StoryController extends Controller
             return [
                 'user_id' => $u->id,
                 'name' => $u->id === $user->id ? 'Seu story' : $u->name,
-                'nickname' => $u->profile->nickname ?? $u->name,
+                'nickname' => $u->profile?->nickname ?? $u->name,
                 'avatar' => $u->image_url,
                 'has_story' => true,
                 'is_own' => $u->id === $user->id,
@@ -67,7 +67,7 @@ class StoryController extends Controller
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('stories', 'public');
-            
+
             $story = $user->stories()->create([
                 'image_url' => asset('storage/' . $path),
                 'expires_at' => now()->addHours(24),

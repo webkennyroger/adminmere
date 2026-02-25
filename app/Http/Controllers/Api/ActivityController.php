@@ -29,13 +29,15 @@ class ActivityController extends Controller
             $q->whereNull('parent_id')->latest();
         }]);
 
-        if ($feed === 'timeline' || $feed === 'network' || $feed === 'community') {
+        if ($feed === 'timeline' || $feed === 'network') {
+            $followingIds = $user->following()->pluck('following_id')->toArray();
+            $followingIds[] = $user->id; // Incluir o próprio usuário
+
+            $activitiesQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
+            $postsQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
+        } elseif ($feed === 'community') {
             $activitiesQuery->where('privacy', 'public');
-            if ($feed === 'community') {
-                $postsQuery->where(fn($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
-            } else {
-                $postsQuery->where('privacy', 'public');
-            }
+            $postsQuery->where(fn($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
         } elseif ($feed === 'personal') {
             $activitiesQuery->where('user_id', $user->id);
             $postsQuery->where('user_id', $user->id);

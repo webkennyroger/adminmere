@@ -31,10 +31,10 @@ class UserController extends Controller
                 return [
                     'id' => $u->id,
                     'name' => $u->name,
-                    'nickname' => $u->profile->nickname ?? $u->id,
+                    'nickname' => $u->profile?->nickname ?? $u->id,
                     'avatar' => $u->image_url,
                     'status' => 'Em destaque', // Label from UI
-                    'city' => $u->profile->city ?? 'Brasil',
+                    'city' => $u->profile?->city ?? 'Brasil',
                 ];
             }),
         ]);
@@ -57,9 +57,9 @@ class UserController extends Controller
                 return [
                     'id' => $u->id,
                     'name' => $u->name,
-                    'nickname' => $u->profile->nickname ?? $u->id,
+                    'nickname' => $u->profile?->nickname ?? $u->id,
                     'avatar' => $u->image_url,
-                    'city' => $u->profile->city ?? 'Brasil',
+                    'city' => $u->profile?->city ?? 'Brasil',
                 ];
             }),
         ]);
@@ -218,7 +218,7 @@ class UserController extends Controller
 
         return [
             'total_count' => $user->activities()->count(),
-            'unlocked_count' => count(array_filter($achievements, fn ($a) => $a['unlocked'] ?? false)),
+            'unlocked_count' => count(array_filter($achievements, fn($a) => $a['unlocked'] ?? false)),
             'achievements' => $achievements,
         ];
     }
@@ -232,10 +232,10 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,'.$user->id,
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'image' => 'nullable|image|max:10240', // 10MB max
             'cover_image' => 'nullable|image|max:10240', // 10MB max
-            'nickname' => 'sometimes|string|max:30|alpha_dash|unique:profiles,nickname,'.$user->id.',user_id',
+            'nickname' => 'sometimes|string|max:30|alpha_dash|unique:profiles,nickname,' . $user->id . ',user_id',
             'bio' => 'nullable|string|max:500',
         ]);
 
