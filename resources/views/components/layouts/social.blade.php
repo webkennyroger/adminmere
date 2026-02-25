@@ -25,7 +25,7 @@
         class="sticky top-0 z-50 w-full bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 h-[70px] shadow-sm">
         <div class="h-full flex items-center justify-between px-4 lg:px-6 max-w-[1920px] mx-auto">
 
-            <!-- LEFT: Logo + Brand -->
+            <!-- LEFT: Logo + green -->
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sidebar Toggle (mobile) -->
                 <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
@@ -137,7 +137,7 @@
                         x-transition.opacity.duration.200ms>
                         <a href="{{ profile_url(auth()->user()) }}">
                             <img src="{{ auth()->user()->image_url }}"
-                                class="w-10 h-10 rounded-full object-cover ring-2 ring-brand-500/30 hover:ring-brand-500 transition-all cursor-pointer"
+                                class="w-10 h-10 rounded-full object-cover ring-2 ring-green-500/30 hover:ring-green-500 transition-all cursor-pointer"
                                 alt="{{ auth()->user()->name }}">
                         </a>
                     </div>
@@ -162,7 +162,7 @@
                             </a>
                         </li>
 
-                        <!-- Members -->
+                        <!-- Membros -->
                         <li>
                             <a href="{{ route('users.find') }}"
                                 class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
@@ -172,7 +172,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.49m-7.142 0A4.125 4.125 0 003 19.32a9.38 9.38 0 002.625-.372m0 0a9.337 9.337 0 004.121.952m0 0a9.337 9.337 0 004.121-.952m0 0A4.125 4.125 0 0015 19.128m0 0V18a2.25 2.25 0 00-2.25-2.25h-1.5A2.25 2.25 0 009 18v1.128m6-4.5A3.375 3.375 0 109 14.628v-1.128A3.375 3.375 0 1015 13.5v1.128z" />
                                 </svg>
-                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Members</span>
+                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Usuarios</span>
                             </a>
                         </li>
 
@@ -189,7 +189,7 @@
                             </a>
                         </li>
 
-                        <!-- Badges -->
+                        <!-- Desafios -->
                         <li>
                             <a href="{{ route('challenges.index') }}"
                                 class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
@@ -199,39 +199,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                                 </svg>
-                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Badges</span>
+                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Desafios</span>
                             </a>
                         </li>
-
-                        <!-- Message -->
-                        <li>
-                            <a href="{{ route('chat.index') }}"
-                                class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
-                                {{ request()->routeIs('chat.*') ? 'bg-[#3b5998] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:text-zinc-400' }}">
-                                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="1.75">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                </svg>
-                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Message</span>
-                            </a>
-                        </li>
-
-                        <!-- Shop -->
-                        <li>
-                            <a href="{{ route('billing.index') }}"
-                                class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
-                                {{ request()->routeIs('billing.*') ? 'bg-[#3b5998] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:text-zinc-400' }}">
-                                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="1.75">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                </svg>
-                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Shop</span>
-                            </a>
-                        </li>
-
-                        <!-- Courses -->
+                        <!-- Treinamentos -->
                         <li>
                             <a href="#"
                                 class="flex items-center w-full gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:text-zinc-400">
@@ -241,7 +212,7 @@
                                         d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
                                 </svg>
                                 <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
-                                    class="flex-1 text-left">Courses</span>
+                                    class="flex-1 text-left">Treinamentos</span>
                                 <svg x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
                                     class="w-4 h-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor" stroke-width="2">
@@ -249,6 +220,37 @@
                                 </svg>
                             </a>
                         </li>
+
+                        <!-- Chat -->
+                        <li>
+                            <a href="{{ route('chat.index') }}"
+                                class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
+                                {{ request()->routeIs('chat.*') ? 'bg-[#3b5998] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:text-zinc-400' }}">
+                                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="1.75">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                </svg>
+                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Chat</span>
+                            </a>
+                        </li>
+
+                        <!-- Assinaturas -->
+                        <li>
+                            <a href="{{ route('billing.index') }}"
+                                class="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all font-semibold text-[15px] whitespace-nowrap overflow-hidden
+                                {{ request()->routeIs('billing.*') ? 'bg-[#3b5998] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:text-zinc-400' }}">
+                                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="1.75">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                                <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">Assinatura</span>
+                            </a>
+                        </li>
+
+                        <!-- Courses -->
+                       
 
                         <!-- Levels -->
                         <li>
@@ -269,7 +271,7 @@
                 <div class="p-3 border-t border-zinc-200/80 dark:border-zinc-800">
                     <div class="flex items-center justify-around">
                         <a href="{{ route('home') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-600/10 transition-all">
+                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
@@ -277,7 +279,7 @@
                             </svg>
                         </a>
                         <a href="{{ route('users.find') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-600/10 transition-all">
+                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z">
@@ -285,14 +287,14 @@
                             </svg>
                         </a>
                         <a href="{{ route('challenges.index') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-600/10 transition-all">
+                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </a>
                         <a href="{{ route('profile') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-600/10 transition-all">
+                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -314,7 +316,7 @@
         class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
         <div class="flex items-center justify-around h-14">
             <a href="{{ route('home', ['feed' => 'timeline']) }}"
-                class="flex flex-col items-center justify-center w-full h-full {{ request()->get('feed', 'timeline') === 'timeline' ? 'text-brand-600 dark:text-brand-400' : 'text-zinc-400' }}">
+                class="flex flex-col items-center justify-center w-full h-full {{ request()->get('feed', 'timeline') === 'timeline' ? 'text-green-600 dark:text-green-400' : 'text-zinc-400' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
@@ -323,7 +325,7 @@
                 <span class="text-[10px] font-semibold mt-0.5">Início</span>
             </a>
             <a href="{{ route('users.find') }}"
-                class="flex flex-col items-center justify-center w-full h-full {{ request()->routeIs('users.find') ? 'text-brand-600 dark:text-brand-400' : 'text-zinc-400' }}">
+                class="flex flex-col items-center justify-center w-full h-full {{ request()->routeIs('users.find') ? 'text-green-600 dark:text-green-400' : 'text-zinc-400' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z">
@@ -332,7 +334,7 @@
                 <span class="text-[10px] font-semibold mt-0.5">Comunidade</span>
             </a>
             <a href="{{ route('chat.index') }}"
-                class="flex flex-col items-center justify-center w-full h-full relative {{ request()->routeIs('chat.*') ? 'text-brand-600 dark:text-brand-400' : 'text-zinc-400' }}">
+                class="flex flex-col items-center justify-center w-full h-full relative {{ request()->routeIs('chat.*') ? 'text-green-600 dark:text-green-400' : 'text-zinc-400' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
