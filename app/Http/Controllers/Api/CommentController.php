@@ -26,7 +26,7 @@ class CommentController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $comments->map(fn ($c) => $this->formatComment($c, $user->id)),
+            'data' => $comments->map(fn($c) => $this->formatComment($c, $user->id)),
         ]);
     }
 
@@ -62,7 +62,7 @@ class CommentController extends Controller
         $prefixedId = $id;
         if (! is_string($id) || ! str_contains($id, '_')) {
             $prefix = ($item instanceof \App\Models\Activity) ? 'activity_' : (($item->type === 'poll') ? 'poll_' : 'post_');
-            $prefixedId = $prefix.$item->id;
+            $prefixedId = $prefix . $item->id;
         }
 
         event(new \App\Events\CommentPosted($prefixedId, $formattedComment));
@@ -70,6 +70,35 @@ class CommentController extends Controller
         return response()->json([
             'success' => true,
             'data' => $this->formatComment($comment->load('user'), $user->id),
+        ]);
+    }
+
+    /**
+     * Update the specified comment.
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'body' => 'required|string',
+        ]);
+
+        $comment = Comment::findOrFail($id);
+
+        if ($comment->user_id !== $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        $comment->update([
+            'body' => $request->body,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment updated successfully',
+            'data' => $this->formatComment($comment->load('user'), $request->user()->id),
         ]);
     }
 

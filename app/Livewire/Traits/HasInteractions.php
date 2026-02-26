@@ -24,6 +24,10 @@ trait HasInteractions
 
     public $filteredUsers = [];
 
+    public $editingCommentId = null;
+
+    public $editCommentBody = '';
+
     // abstract protected function getInteractableModel(); // O model atual (Post, Activity, etc)
 
     public function confirmDelete($commentId)
@@ -44,10 +48,10 @@ trait HasInteractions
             $name = trim($matches[1]);
             $user = User::where('name', $name)->first();
             if ($user) {
-                return '<a href="'.profile_url($user).'" class="text-brand-600 font-bold hover:underline cursor-pointer">@'.$name.'</a>';
+                return '<a href="' . profile_url($user) . '" class="text-brand-600 font-bold hover:underline cursor-pointer">@' . $name . '</a>';
             }
 
-            return '@'.$name;
+            return '@' . $name;
         }, $escapedBody);
     }
 
@@ -130,6 +134,45 @@ trait HasInteractions
         $model->refresh();
     }
 
+    public function startEditingComment($commentId)
+    {
+        $comment = Comment::find($commentId);
+        $user = auth()->user();
+
+        if ($comment && ($comment->user_id == $user->id || $user->isAdmin())) {
+            $this->editingCommentId = $commentId;
+            $this->editCommentBody = $comment->body;
+        }
+    }
+
+    public function cancelEditingComment()
+    {
+        $this->editingCommentId = null;
+        $this->editCommentBody = '';
+    }
+
+    public function updateComment()
+    {
+        if (! $this->editingCommentId) return;
+
+        $this->validate([
+            'editCommentBody' => 'required|string|max:1000',
+        ]);
+
+        $comment = Comment::find($this->editingCommentId);
+        $user = auth()->user();
+
+        if ($comment && ($comment->user_id == $user->id || $user->isAdmin())) {
+            $comment->update([
+                'body' => $this->editCommentBody,
+            ]);
+        }
+
+        $this->editingCommentId = null;
+        $this->editCommentBody = '';
+        $this->getInteractableModel()->refresh();
+    }
+
     public function postComment()
     {
         $this->validate([
@@ -197,7 +240,7 @@ trait HasInteractions
     {
         $parts = explode(' ', $this->newComment);
         array_pop($parts);
-        $parts[] = '@'.$user['name'].' ';
+        $parts[] = '@' . $user['name'] . ' ';
         $this->newComment = implode(' ', $parts);
         $this->showMentions = false;
     }

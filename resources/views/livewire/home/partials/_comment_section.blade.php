@@ -18,7 +18,22 @@
                                     {{ $comment->user->name }}
                                 </a>
                                 <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                                    @if($editingCommentId === $comment->id)
+                                        <div class="mt-2">
+                                            <textarea wire:model="editCommentBody"
+                                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg p-2 text-sm focus:ring-brand-500 focus:border-brand-500"
+                                                rows="2"></textarea>
+                                            @error('editCommentBody') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                            <div class="flex gap-2 mt-2 justify-end">
+                                                <button wire:click="cancelEditingComment"
+                                                    class="text-xs text-zinc-500 hover:text-zinc-700 font-medium">Cancelar</button>
+                                                <button wire:click="updateComment"
+                                                    class="text-xs bg-brand-500 text-white px-3 py-1 rounded-full font-medium hover:bg-brand-600 transition">Salvar</button>
+                                            </div>
+                                        </div>
+                                    @else
                                     {!! $this->formatComment($comment->body) !!}
+                                @endif
                                 </p>
                                 @if($comment->media_url)
                                     <div class="mt-2 text-zinc-700 dark:text-zinc-300">
@@ -45,6 +60,10 @@
                                     Responder
                                 </button>
                                 @if(auth()->id() === $comment->user_id || auth()->id() === $item->user_id || auth()->user()->isAdmin())
+                                    <button wire:click="startEditingComment({{ $comment->id }})"
+                                        class="opacity-0 group-hover/comment:opacity-100 transition-opacity text-blue-600 hover:underline">
+                                        Editar
+                                    </button>
                                     <button wire:click="confirmDelete({{ $comment->id }})"
                                         class="opacity-0 group-hover/comment:opacity-100 transition-opacity text-red-600 hover:underline">
                                         Excluir
@@ -71,7 +90,23 @@
                                                         {{ $reply->user->name }}
                                                     </a>
                                                     <p class="text-xs text-zinc-700 dark:text-zinc-300">
+                                                        @if($editingCommentId === $reply->id)
+                                                            <div class="mt-2 text-sm">
+                                                                <textarea wire:model="editCommentBody"
+                                                                    class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg p-2 text-xs focus:ring-brand-500 focus:border-brand-500"
+                                                                    rows="2"></textarea>
+                                                                @error('editCommentBody') <span
+                                                                class="text-red-500 text-[10px]">{{ $message }}</span> @enderror
+                                                                <div class="flex gap-2 mt-2 justify-end">
+                                                                    <button wire:click="cancelEditingComment"
+                                                                        class="text-[10px] text-zinc-500 hover:text-zinc-700 font-medium">Cancelar</button>
+                                                                    <button wire:click="updateComment"
+                                                                        class="text-[10px] bg-brand-500 text-white px-2 py-1 rounded-full font-medium hover:bg-brand-600 transition">Salvar</button>
+                                                                </div>
+                                                            </div>
+                                                        @else
                                                         {!! $this->formatComment($reply->body) !!}
+                                                    @endif
                                                     </p>
                                                     @if($reply->media_url)
                                                         <div class="mt-2 text-zinc-700 dark:text-zinc-300">
@@ -93,6 +128,10 @@
                                                             class="text-[10px] font-semibold {{ $reply->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $reply->likes->count() }}</span>
                                                     </button>
                                                     @if(auth()->id() === $reply->user_id || auth()->id() === $item->user_id || auth()->user()->isAdmin())
+                                                        <button wire:click="startEditingComment({{ $reply->id }})"
+                                                            class="opacity-0 group-hover/reply:opacity-100 transition-opacity text-blue-600 hover:underline">
+                                                            Editar
+                                                        </button>
                                                         <button wire:click="confirmDelete({{ $reply->id }})"
                                                             class="opacity-0 group-hover/reply:opacity-100 transition-opacity text-red-600 hover:underline">
                                                             Excluir

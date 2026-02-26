@@ -88,6 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/activities/{id}/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
     Route::post('/activities/{id}/comment', [\App\Http\Controllers\Api\CommentController::class, 'store']);
     Route::post('/comments/{id}/like', [\App\Http\Controllers\Api\LikeController::class, 'toggleCommentLike']);
+    Route::put('/comments/{id}', [\App\Http\Controllers\Api\CommentController::class, 'update']);
     Route::delete('/comments/{id}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']);
 
     // User/Social API
