@@ -4,10 +4,15 @@ namespace App\Livewire\Traits;
 
 use App\Models\Comment;
 use App\Models\User;
+use Livewire\WithFileUploads;
 
 trait HasInteractions
 {
+    use WithFileUploads;
+
     public $newComment = '';
+
+    public $commentImage;
 
     public $replyingToCommentId = null;
 
@@ -128,7 +133,8 @@ trait HasInteractions
     public function postComment()
     {
         $this->validate([
-            'newComment' => 'required|string|max:1000',
+            'newComment' => 'required_without:commentImage|string|max:1000|nullable',
+            'commentImage' => 'nullable|image|max:10240', // up to 10MB
         ]);
 
         $model = $this->getInteractableModel();
@@ -136,13 +142,20 @@ trait HasInteractions
         // Ensure parent_id is null if not provided or empty
         $parentId = ! empty($this->replyingToCommentId) ? $this->replyingToCommentId : null;
 
+        $mediaPath = null;
+        if ($this->commentImage) {
+            $mediaPath = $this->commentImage->store('comments', 'public');
+        }
+
         $model->comments()->create([
             'user_id' => auth()->id(),
-            'body' => $this->newComment,
+            'body' => $this->newComment ?? '',
             'parent_id' => $parentId,
+            'media_path' => $mediaPath,
         ]);
 
         $this->newComment = '';
+        $this->commentImage = null;
         $this->replyingToCommentId = null;
         $this->showComments = true;
 

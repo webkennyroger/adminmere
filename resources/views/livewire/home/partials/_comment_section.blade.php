@@ -20,6 +20,15 @@
                                 <p class="text-sm text-zinc-700 dark:text-zinc-300">
                                     {!! $this->formatComment($comment->body) !!}
                                 </p>
+                                @if($comment->media_url)
+                                    <div class="mt-2 text-zinc-700 dark:text-zinc-300">
+                                        <a href="{{ $comment->media_url }}" target="_blank">
+                                            <img src="{{ $comment->media_url }}"
+                                                class="rounded-lg max-h-48 object-cover border border-zinc-200 dark:border-zinc-700"
+                                                alt="Imagem do comentário">
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
                                 <span>{{ $comment->created_at->diffForHumans() }}</span>
@@ -64,6 +73,15 @@
                                                     <p class="text-xs text-zinc-700 dark:text-zinc-300">
                                                         {!! $this->formatComment($reply->body) !!}
                                                     </p>
+                                                    @if($reply->media_url)
+                                                        <div class="mt-2 text-zinc-700 dark:text-zinc-300">
+                                                            <a href="{{ $reply->media_url }}" target="_blank">
+                                                                <img src="{{ $reply->media_url }}"
+                                                                    class="rounded-lg max-h-32 object-cover border border-zinc-200 dark:border-zinc-700"
+                                                                    alt="Imagem da resposta">
+                                                            </a>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                                 <div class="flex items-center gap-3 mt-1 ml-2 text-[10px] text-zinc-500">
                                                     <span>{{ $reply->created_at->diffForHumans() }}</span>
@@ -94,12 +112,49 @@
     </div>
 
     <!-- Comment Input -->
-    <div class="flex gap-2 items-center relative">
-        <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover">
-        <div class="flex-1 relative" x-data="{ showMentions: @entangle('showMentions') }">
-            <input type="text" x-ref="commentInput" wire:model.live="newComment" wire:keydown.enter="postComment"
-                placeholder="Escreva um comentário..."
-                class="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
+    <div class="flex gap-2 items-start relative mt-2">
+        <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover shrink-0 mt-1">
+        <div class="flex-1 relative bg-zinc-100 dark:bg-zinc-800 rounded-3xl p-1 px-2 border border-transparent focus-within:border-brand-500 focus-within:ring-1 focus-within:ring-brand-500"
+            x-data="{ showMentions: @entangle('showMentions') }">
+
+            @if($commentImage)
+                <div class="relative inline-block mt-2 mb-1 mx-2">
+                    <img src="{{ $commentImage->temporaryUrl() }}"
+                        class="h-20 rounded-md border border-zinc-200 dark:border-zinc-700 object-cover">
+                    <button wire:click="$set('commentImage', null)"
+                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow hover:bg-red-600 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
+                        </svg>
+                    </button>
+                    <!-- Loading Status -->
+                    <div wire:loading wire:target="commentImage"
+                        class="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center">
+                        <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="flex items-center gap-2">
+                <input type="text" x-ref="commentInput" wire:model.live="newComment" wire:keydown.enter="postComment"
+                    placeholder="Escreva um comentário..."
+                    class="flex-1 bg-transparent border-none px-3 py-2 text-sm focus:ring-0 text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
+
+                <div class="flex items-center justify-center shrink-0 pr-1">
+                    <input type="file" id="commentImage-{{ $item->id }}" wire:model="commentImage" class="hidden"
+                        accept="image/*">
+                    <label for="commentImage-{{ $item->id }}"
+                        class="cursor-pointer text-zinc-500 hover:text-brand-500 transition-colors p-1.5 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center"
+                        title="Adicionar imagem">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </label>
+                </div>
+            </div>
 
             <!-- Mentions Dropdown -->
             <div x-show="showMentions" x-cloak
