@@ -139,7 +139,7 @@
             <div class="flex items-center gap-2">
                 <input type="text" x-ref="commentInput" wire:model.live="newComment" wire:keydown.enter="postComment"
                     placeholder="Escreva um comentário..."
-                    class="flex-1 bg-transparent border-none px-3 py-2 text-sm focus:ring-0 text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
+                    class="flex-1 bg-transparent border-none border-transparent focus:outline-none focus:ring-0 focus:border-transparent px-3 py-2 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
 
                 <div class="flex items-center justify-center shrink-0 pr-1">
                     <input type="file" id="commentImage-{{ $item->id }}" wire:model="commentImage" class="hidden"
