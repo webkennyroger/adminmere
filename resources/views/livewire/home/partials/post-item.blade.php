@@ -35,11 +35,11 @@
             <!-- Bookmark Icon (Save Post) -->
             <button wire:click="toggleSave" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors group">
                 @if($post->savedItems->contains('user_id', auth()->id()))
-                    <svg class="w-5 h-5 text-green-600 fill-current" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-yellow-500 fill-current" viewBox="0 0 24 24">
                         <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
                     </svg>
                 @else
-                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-green-600 transition-colors" fill="none"
+                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-yellow-500 transition-colors" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
