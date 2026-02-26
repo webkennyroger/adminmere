@@ -36,16 +36,23 @@ class CommentController extends Controller
     public function store(Request $request, $id)
     {
         $request->validate([
-            'body' => 'required|string',
+            'body' => 'nullable|string',
             'parent_id' => 'nullable|exists:comments,id',
+            'image' => 'nullable|image|max:10240',
         ]);
 
         $item = $this->resolveItem($id);
         $user = $request->user();
 
+        $mediaPath = null;
+        if ($request->hasFile('image')) {
+            $mediaPath = $request->file('image')->store('comments/media', 'public');
+        }
+
         $comment = $item->comments()->create([
             'user_id' => $user->id,
-            'body' => $request->body,
+            'body' => $request->body ?? '',
+            'media_path' => $mediaPath,
             'parent_id' => ! empty($request->parent_id) ? $request->parent_id : null,
         ]);
 
@@ -102,6 +109,7 @@ class CommentController extends Controller
             'userName' => $comment->user->name,
             'userAvatarUrl' => $comment->user->image_url,
             'text' => $comment->body,
+            'mediaUrl' => $comment->media_url,
             'timestamp' => $comment->created_at->toIso8601String(),
             'parent_id' => (string) $comment->parent_id,
             'replies' => $comment->replies->map(function ($reply) use ($userId) {
