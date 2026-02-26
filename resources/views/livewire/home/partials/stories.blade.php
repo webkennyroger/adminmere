@@ -153,13 +153,15 @@
 
                     <div
                         class="w-full h-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 ring-2 {{ $story['has_story'] ? 'ring-green-500' : 'ring-transparent' }} group-hover:ring-green-400 transition-all">
-                        @if(preg_match('/\.(mp4|mov|avi|webm)$/i', $story['story_image']))
+                        @if(preg_match('/\.(mp4|mov|avi|webm)$/i', (string) $story['story_image']))
                             <video src="{{ $story['story_image'] }}"
                                 class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}"
                                 autoplay muted loop playsinline></video>
-                        @else
+                        @elseif($story['story_image'])
                             <img src="{{ $story['story_image'] }}" alt="Background"
                                 class="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 {{ $story['has_story'] ? '' : 'opacity-70 grayscale-[0.3]' }}" />
+                        @else
+                            <div class="w-full h-full bg-zinc-200 dark:bg-zinc-700 rounded-xl"></div>
                         @endif
                     </div>
 

@@ -48,11 +48,15 @@
                             <div class="flex items-center gap-3 mt-1 ml-3 text-xs text-zinc-500">
                                 <span>{{ $comment->created_at->diffForHumans() }}</span>
                                 <button wire:click="toggleCommentLike({{ $comment->id }})"
-                                    class="flex items-center gap-1 hover:scale-110 transition-transform">
+                                    class="flex items-center gap-1 hover:scale-110 transition-transform {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-brand-500' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300' }}">
+                                    <svg class="w-3.5 h-3.5 {{ $comment->likes->contains('user_id', auth()->id()) ? 'fill-current' : 'fill-none' }}"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                        </path>
+                                    </svg>
                                     <span
-                                        class="{{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-400' }}">❤️</span>
-                                    <span
-                                        class="text-[10px] font-semibold {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-red-500' : 'text-zinc-500' }}">{{ $comment->likes->count() }}</span>
+                                        class="text-[10px] font-semibold {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-brand-500' : 'text-zinc-500' }}">{{ $comment->likes->count() }}</span>
                                 </button>
                                 <button
                                     @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@' + '{{ $comment->user->name }} ' );"

@@ -176,9 +176,14 @@ trait HasInteractions
     public function postComment()
     {
         $this->validate([
-            'newComment' => 'required_without:commentImage|string|max:1000|nullable',
+            'newComment' => 'nullable|string|max:1000',
             'commentImage' => 'nullable|image|max:10240', // up to 10MB
         ]);
+
+        if (empty($this->newComment) && empty($this->commentImage)) {
+            $this->addError('newComment', 'Escreva um comentário ou selecione uma imagem.');
+            return;
+        }
 
         $model = $this->getInteractableModel();
 

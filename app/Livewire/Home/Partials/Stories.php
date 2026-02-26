@@ -47,18 +47,18 @@ class Stories extends Component
 
         // 3. Map to stories array
         $this->stories = $users->map(function ($u) {
+            $latestStoryUrl = $u->latestStory ? $u->latestStory->image_url : null;
             return [
                 'user_id' => $u->id,
                 'name' => $u->profile->nickname ?? $u->name,
                 'avatar' => $u->image_url,
-                'story_image' => $u->latestStory->image_url,
+                'story_image' => $latestStoryUrl,
                 'is_own' => false,
                 'has_story' => true,
                 'profile_url' => $u->profile_url,
             ];
         })->values();
     }
-
 
     public function updatedPhoto()
     {
