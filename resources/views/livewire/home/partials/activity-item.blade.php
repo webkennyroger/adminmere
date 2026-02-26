@@ -127,9 +127,19 @@
             @if(!empty($activity->polylines))
                 @php
                     $poly = null;
+                    $pathString = null;
                     if (is_array($activity->polylines)) {
                         // Extract summary_polyline from the polylines array
-                        $poly = $activity->polylines['summary_polyline'] ?? null;
+                        if (isset($activity->polylines['summary_polyline'])) {
+                            $poly = $activity->polylines['summary_polyline'];
+                        } elseif (isset($activity->polylines[0]['lat'])) {
+                            $coords = collect($activity->polylines)->take(60)->map(function ($pt) {
+                                return $pt['lat'] . ',' . $pt['lng'];
+                            })->implode('|');
+                            if (!empty($coords)) {
+                                $pathString = 'color:0xff0000ff|weight:4|' . $coords;
+                            }
+                        }
                     } else {
                         // If it's a string, use it directly
                         $poly = $activity->polylines;
@@ -139,6 +149,11 @@
                 @if($poly)
                     <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden">
                         <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
+                            class="w-full h-full object-cover" alt="Mapa da atividade" loading="lazy">
+                    </div>
+                @elseif($pathString)
+                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden">
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path={{ urlencode($pathString) }}&key={{ config('services.google.maps_key') }}"
                             class="w-full h-full object-cover" alt="Mapa da atividade" loading="lazy">
                     </div>
                 @else

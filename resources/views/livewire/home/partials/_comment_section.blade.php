@@ -142,9 +142,9 @@
                     class="flex-1 bg-transparent border-none border-transparent focus:outline-none focus:ring-0 focus:border-transparent px-3 py-2 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
 
                 <div class="flex items-center justify-center shrink-0 pr-1">
-                    <input type="file" id="commentImage-{{ $item->id }}" wire:model="commentImage" class="hidden"
-                        accept="image/*">
-                    <label for="commentImage-{{ $item->id }}"
+                    <input type="file" id="commentImage-{{ class_basename($item) }}-{{ $item->id }}"
+                        wire:model="commentImage" class="hidden" accept="image/*">
+                    <label for="commentImage-{{ class_basename($item) }}-{{ $item->id }}"
                         class="cursor-pointer text-zinc-500 hover:text-brand-500 transition-colors p-1.5 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center"
                         title="Adicionar imagem">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,6 +155,9 @@
                     </label>
                 </div>
             </div>
+
+            @error('newComment') <span class="text-red-500 text-xs mt-1 block px-2">{{ $message }}</span> @enderror
+            @error('commentImage') <span class="text-red-500 text-xs mt-1 block px-2">{{ $message }}</span> @enderror
 
             <!-- Mentions Dropdown -->
             <div x-show="showMentions" x-cloak
