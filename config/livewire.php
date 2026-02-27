@@ -130,7 +130,7 @@ return [
 
     'temporary_file_upload' => [
         'disk' => 'local',
-        'rules' => ['required', 'file', 'mimes:jpg,jpeg,png,gif,webp,bmp', 'max:10240'],
+        'rules' => ['required', 'file', 'max:10240'],
         'directory' => null,
         'middleware' => null,
         'preview_mimes' => [
