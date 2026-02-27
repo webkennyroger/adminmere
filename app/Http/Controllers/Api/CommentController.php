@@ -26,7 +26,7 @@ class CommentController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $comments->map(fn($c) => $this->formatComment($c, $user->id)),
+            'data' => $comments->map(fn ($c) => $this->formatComment($c, $user->id)),
         ]);
     }
 
@@ -62,10 +62,15 @@ class CommentController extends Controller
         $prefixedId = $id;
         if (! is_string($id) || ! str_contains($id, '_')) {
             $prefix = ($item instanceof \App\Models\Activity) ? 'activity_' : (($item->type === 'poll') ? 'poll_' : 'post_');
-            $prefixedId = $prefix . $item->id;
+            $prefixedId = $prefix.$item->id;
         }
 
-        event(new \App\Events\CommentPosted($prefixedId, $formattedComment));
+        try {
+            event(new \App\Events\CommentPosted($prefixedId, $formattedComment));
+        } catch (\Throwable $e) {
+            // Broadcast failure should not prevent comment creation
+            \Illuminate\Support\Facades\Log::warning('CommentPosted broadcast failed: '.$e->getMessage());
+        }
 
         return response()->json([
             'success' => true,
