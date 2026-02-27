@@ -16,6 +16,8 @@ trait HasInteractions
 
     public $replyingToCommentId = null;
 
+    public $replyingToUserName = null;
+
     public $confirmingCommentDeletion = null;
 
     public $showComments = false;
@@ -208,6 +210,7 @@ trait HasInteractions
         $this->newComment = '';
         $this->commentImage = null;
         $this->replyingToCommentId = null;
+        $this->replyingToUserName = null;
         $this->showComments = true;
 
         $model->refresh();

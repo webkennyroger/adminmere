@@ -60,7 +60,7 @@
                                         class="text-[10px] font-semibold {{ $comment->likes->contains('user_id', auth()->id()) ? 'text-green-500' : 'text-zinc-500' }}">{{ $comment->likes->count() }}</span>
                                 </button>
                                 <button
-                                    @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $refs.commentInput.focus(); $wire.set('newComment', '@' + '{{ $comment->user->name }} ' );"
+                                    @click="$wire.set('replyingToCommentId', {{ $comment->id }}); $wire.set('replyingToUserName', '{{ $comment->user->name }}'); $refs.commentInput.focus();"
                                     class="font-semibold hover:underline">
                                     Responder
                                 </button>
@@ -161,6 +161,23 @@
     </div>
 
     <!-- Comment Input -->
+    @if($replyingToUserName)
+        <div
+            class="flex items-center gap-2 px-2 py-1.5 mb-1 bg-brand-50 dark:bg-zinc-800 rounded-xl border border-brand-200 dark:border-zinc-700 text-xs text-zinc-600 dark:text-zinc-300">
+            <svg class="w-3.5 h-3.5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+            </svg>
+            <span>Respondendo a <span class="font-semibold text-brand-600 dark:text-brand-400">@{{ $replyingToUserName
+                    }}</span></span>
+            <button wire:click="$set('replyingToCommentId', null); $set('replyingToUserName', null);"
+                class="ml-auto text-zinc-400 hover:text-red-500 transition-colors" title="Cancelar resposta">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    @endif
     <div class="flex gap-2 items-start relative mt-2">
         <img src="{{ auth()->user()->image_url }}" class="w-8 h-8 rounded-full object-cover shrink-0 mt-1">
         <div class="flex-1 relative bg-zinc-100 dark:bg-zinc-800 rounded-3xl p-1 px-2 border border-transparent focus-within:border-brand-500 focus-within:ring-1 focus-within:ring-brand-500"
