@@ -178,7 +178,7 @@
                         @if(str_contains($mediaItems[0], '.mp4'))
                             <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
                         @else
-                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
+                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
                         @endif
                     </div>
                 @elseif($mediaCount === 2)
@@ -189,7 +189,7 @@
                                 @if(str_contains($media, '.mp4'))
                                     <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
                                 @else
-                                    <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
+                                    <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
                                 @endif
                             </div>
                         @endforeach
@@ -198,13 +198,13 @@
                     <!-- Three Images Grid -->
                     <div class="grid grid-cols-2 gap-0.5">
                         <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover" alt="Post image">
+                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
                         </div>
                         <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover" alt="Post image">
+                            <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
                         </div>
                         <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover" alt="Post image">
+                            <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
                         </div>
                     </div>
                 @else
@@ -213,9 +213,9 @@
                         @foreach($mediaItems as $index => $media)
                             @if($index < 4)
                                 <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                                    <img src="{{ $media }}" class="w-full h-full object-cover" alt="Post image">
+                                    <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
                                     @if($index === 3 && $mediaCount > 4)
-                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 3 })'>
                                             <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
                                         </div>
                                     @endif
@@ -277,12 +277,12 @@
                     <!-- Like Button -->
                     <button wire:click="toggleLike" class="flex items-center gap-2 group">
                         @if($activity->likes->contains('user_id', auth()->id()))
-                            <svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-green-500 fill-current" viewBox="0 0 24 24">
                                 <path
                                     d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                             </svg>
                         @else
-                            <svg class="w-6 h-6 text-zinc-500 group-hover:text-red-500 transition-colors" fill="none"
+                            <svg class="w-6 h-6 text-zinc-500 group-hover:text-green-500 transition-colors" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

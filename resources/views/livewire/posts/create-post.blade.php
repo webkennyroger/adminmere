@@ -2,7 +2,7 @@
     class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 transition-all hover:shadow-md">
 
     {{-- Avatar + placeholder clicável --}}
-    <div class="flex items-center gap-3 mb-4">
+    <div class="flex items-center gap-3 mb-3">
         @if(auth()->user()->image_url)
             <img src="{{ auth()->user()->image_url }}"
                 class="w-10 h-10 rounded-full border border-zinc-100 dark:border-zinc-700 object-cover shrink-0">
@@ -13,60 +13,52 @@
             </div>
         @endif
         <button type="button" @click="modalFoto = true"
-            class="flex-1 text-left bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-full px-5 py-2.5 text-sm text-zinc-400 transition-colors cursor-pointer">
+            class="flex-1 text-left bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full px-5 py-2.5 text-[15px] text-zinc-500 dark:text-zinc-400 transition-colors cursor-pointer">
             O que você está pensando, {{ auth()->user()->name }}?
         </button>
     </div>
 
     {{-- Toolbar com 4 botões --}}
-    <div class="flex flex-wrap items-center gap-1 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+    <div class="flex items-center justify-between pt-3 border-t border-zinc-200 dark:border-zinc-800">
 
         {{-- FOTO --}}
         <button type="button" @click="modalFoto = true"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-            <div class="p-1 rounded bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </div>
-            <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Foto</span>
+            class="flex flex-1 items-center justify-center gap-2 px-2 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+            <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-[14px] font-semibold text-zinc-600 dark:text-zinc-400">Foto</span>
         </button>
 
         {{-- VÍDEO --}}
         <button type="button" @click="modalVideo = true"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-            <div class="p-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" />
-                </svg>
-            </div>
-            <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Vídeo</span>
-        </button>
-
-        {{-- EVENTO --}}
-        <button type="button" @click="modalEvento = true"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-            <div class="p-1 rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </div>
-            <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Evento</span>
+            class="flex flex-1 items-center justify-center gap-2 px-2 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+            <svg class="w-6 h-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" />
+            </svg>
+            <span class="text-[14px] font-semibold text-zinc-600 dark:text-zinc-400">Vídeo</span>
         </button>
 
         {{-- ENQUETE --}}
         <button type="button" @click="modalEnquete = true"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-            <div class="p-1 rounded bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-            </div>
-            <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Enquete</span>
+            class="flex flex-1 items-center justify-center gap-2 px-2 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+            <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span class="text-[14px] font-semibold text-zinc-600 dark:text-zinc-400">Enquete</span>
+        </button>
+
+        {{-- EVENTO --}}
+        <button type="button" @click="modalEvento = true"
+            class="flex flex-1 items-center justify-center gap-2 px-2 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+            <svg class="w-6 h-6 text-[#8b5cf6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-[14px] font-semibold text-zinc-600 dark:text-zinc-400">Evento</span>
         </button>
 
     </div>

@@ -37,11 +37,12 @@
                                 </p>
                                 @if($comment->media_url)
                                     <div class="mt-2 text-zinc-700 dark:text-zinc-300">
-                                        <a href="{{ $comment->media_url }}" target="_blank">
+                                        <div x-on:click='$dispatch("open-lightbox", { images: ["{{ $comment->media_url }}"], index: 0 })'
+                                            class="cursor-pointer inline-block">
                                             <img src="{{ $comment->media_url }}"
-                                                class="rounded-lg max-h-48 object-cover border border-zinc-200 dark:border-zinc-700"
+                                                class="rounded-lg max-h-48 object-cover border border-zinc-200 dark:border-zinc-700 hover:opacity-90 transition-opacity"
                                                 alt="Imagem do comentário">
-                                        </a>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -114,11 +115,12 @@
                                                     </p>
                                                     @if($reply->media_url)
                                                         <div class="mt-2 text-zinc-700 dark:text-zinc-300">
-                                                            <a href="{{ $reply->media_url }}" target="_blank">
+                                                            <div x-on:click='$dispatch("open-lightbox", { images: ["{{ $reply->media_url }}"], index: 0 })'
+                                                                class="cursor-pointer inline-block">
                                                                 <img src="{{ $reply->media_url }}"
-                                                                    class="rounded-lg max-h-32 object-cover border border-zinc-200 dark:border-zinc-700"
+                                                                    class="rounded-lg max-h-32 object-cover border border-zinc-200 dark:border-zinc-700 hover:opacity-90 transition-opacity"
                                                                     alt="Imagem da resposta">
-                                                            </a>
+                                                            </div>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -188,7 +190,7 @@
                     placeholder="Escreva um comentário..."
                     class="flex-1 bg-transparent border-none border-transparent focus:outline-none focus:ring-0 focus:border-transparent px-3 py-2 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400">
 
-                <div class="flex items-center justify-center shrink-0 pr-1">
+                <div class="flex items-center justify-center shrink-0 pr-1 gap-1">
                     <input type="file" id="commentImage-{{ class_basename($item) }}-{{ $item->id }}"
                         wire:model="commentImage" class="hidden" accept="image/*">
                     <label for="commentImage-{{ class_basename($item) }}-{{ $item->id }}"
@@ -200,6 +202,16 @@
                             </path>
                         </svg>
                     </label>
+
+                    <button wire:click="postComment"
+                        class="text-zinc-500 hover:text-brand-500 transition-colors p-1.5 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center"
+                        title="Enviar comentário">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8">
+                            </path>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
