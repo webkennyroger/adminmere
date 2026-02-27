@@ -38,7 +38,7 @@ class CommentController extends Controller
         $request->validate([
             'body' => 'nullable|string',
             'parent_id' => 'nullable|exists:comments,id',
-            'image' => 'nullable|image|max:10240',
+            'image' => 'nullable|file|max:10240', // Permite todos arquivos no app para evitar bloqueio MIME
         ]);
 
         $item = $this->resolveItem($id);
