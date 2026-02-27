@@ -48,10 +48,10 @@ trait HasInteractions
             $name = trim($matches[1]);
             $user = User::where('name', $name)->first();
             if ($user) {
-                return '<a href="' . profile_url($user) . '" class="text-brand-600 font-bold hover:underline cursor-pointer">@' . $name . '</a>';
+                return '<a href="'.profile_url($user).'" class="text-brand-600 font-bold hover:underline cursor-pointer">@'.$name.'</a>';
             }
 
-            return '@' . $name;
+            return '@'.$name;
         }, $escapedBody);
     }
 
@@ -153,7 +153,9 @@ trait HasInteractions
 
     public function updateComment()
     {
-        if (! $this->editingCommentId) return;
+        if (! $this->editingCommentId) {
+            return;
+        }
 
         $this->validate([
             'editCommentBody' => 'required|string|max:1000',
@@ -177,11 +179,12 @@ trait HasInteractions
     {
         $this->validate([
             'newComment' => 'nullable|string|max:1000',
-            'commentImage' => 'nullable|image|max:10240', // up to 10MB
+            'commentImage' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp|max:10240',
         ]);
 
         if (empty($this->newComment) && empty($this->commentImage)) {
             $this->addError('newComment', 'Escreva um comentário ou selecione uma imagem.');
+
             return;
         }
 
@@ -245,7 +248,7 @@ trait HasInteractions
     {
         $parts = explode(' ', $this->newComment);
         array_pop($parts);
-        $parts[] = '@' . $user['name'] . ' ';
+        $parts[] = '@'.$user['name'].' ';
         $this->newComment = implode(' ', $parts);
         $this->showMentions = false;
     }
