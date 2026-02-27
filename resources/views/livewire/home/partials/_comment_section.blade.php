@@ -168,8 +168,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
             </svg>
-            <span>Respondendo a <span class="font-semibold text-brand-600 dark:text-brand-400">@{{ $replyingToUserName
-                    }}</span></span>
+            <span>Respondendo a <span
+                    class="font-semibold text-brand-600 dark:text-brand-400">{{ '@' . $replyingToUserName }}</span></span>
             <button wire:click="$set('replyingToCommentId', null); $set('replyingToUserName', null);"
                 class="ml-auto text-zinc-400 hover:text-red-500 transition-colors" title="Cancelar resposta">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
