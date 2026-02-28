@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class MessageController extends Controller
@@ -19,17 +18,18 @@ class MessageController extends Controller
         if ($authUser->id == $userId) {
             return response()->json(['error' => 'Operação inválida'], 403);
         }
-        $messages = Message::where(function($query) use ($authUser, $userId) {
-                $query->where(function($q) use ($authUser, $userId) {
-                    $q->where('sender_id', $authUser->id)
-                      ->where('receiver_id', $userId);
-                })->orWhere(function($q) use ($authUser, $userId) {
-                    $q->where('sender_id', $userId)
-                      ->where('receiver_id', $authUser->id);
-                });
-            })
+        $messages = Message::where(function ($query) use ($authUser, $userId) {
+            $query->where(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $authUser->id)
+                    ->where('receiver_id', $userId);
+            })->orWhere(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $userId)
+                    ->where('receiver_id', $authUser->id);
+            });
+        })
             ->orderBy('created_at', 'asc')
             ->get();
+
         return response()->json(['success' => true, 'data' => $messages]);
     }
 
@@ -37,9 +37,9 @@ class MessageController extends Controller
     public function sendMessage(Request $request)
     {
         $authUser = Auth::user();
-        
+
         $validator = Validator::make($request->all(), [
-            'recipient_id' => 'required|exists:users,id|different:' . $authUser->id,
+            'recipient_id' => 'required|exists:users,id|different:'.$authUser->id,
             'content' => 'nullable|string|max:2000',
             'type' => 'nullable|string|in:text,image,video,audio,document',
             'file' => 'nullable|file|max:10240', // 10MB max
@@ -54,11 +54,11 @@ class MessageController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = 'messages/' . $type . 's';
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $path = 'messages/'.$type.'s';
             $file->move(public_path($path), $fileName);
-            $filePath = $path . '/' . $fileName;
-            
+            $filePath = $path.'/'.$fileName;
+
             if ($type === 'text') {
                 $type = 'document'; // Fallback if file provided but type is text
             }
@@ -72,6 +72,9 @@ class MessageController extends Controller
             'file_path' => $filePath,
         ]);
 
+        // Broadcast a mensagem em tempo real
+        broadcast(new MessageSent($message))->toOthers();
+
         return response()->json(['success' => true, 'data' => $message], 201);
     }
 
@@ -83,6 +86,7 @@ class MessageController extends Controller
             ->where('receiver_id', $authUser->id)
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
+
         return response()->json(['success' => true]);
     }
 
@@ -105,7 +109,9 @@ class MessageController extends Controller
 
         foreach ($userIds as $userId) {
             $user = User::find($userId);
-            if (!$user) continue;
+            if (! $user) {
+                continue;
+            }
 
             $lastMessage = Message::where(function ($q) use ($authUser, $userId) {
                 $q->where('sender_id', $authUser->id)->where('receiver_id', $userId);
