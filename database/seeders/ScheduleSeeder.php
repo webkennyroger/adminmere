@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Schedule;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ScheduleSeeder extends Seeder
 {
@@ -27,7 +27,7 @@ class ScheduleSeeder extends Seeder
                 'description' => 'Corrida leve no parque',
                 'event_date' => now()->addDays(1),
                 'event_time' => '07:00:00',
-                'color' => 'Primary'
+                'color' => 'Primary',
             ]);
         }
     }

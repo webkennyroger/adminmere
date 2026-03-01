@@ -2,37 +2,44 @@
 
 namespace App\Livewire\Chat;
 
-use Livewire\Component;
-use App\Models\User;
-use App\Models\ChatPreference;
-
-use App\Models\Message;
-use Illuminate\Support\Facades\Auth;
-
 use App\Models\ChatGroup;
+use App\Models\ChatPreference;
+use App\Models\Message;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 // Class start
 class ChatSidebar extends Component
 {
     public $users;
+
     public $groups; // List of groups
 
     public $showArchived = false;
+
     public $search = '';
 
     // Create Group Modal State
     public $showCreateGroupModal = false;
+
     public $newGroupName = '';
+
     public $selectedUsersForGroup = [];
 
     // New Chat Modal State
     public $showNewChatModal = false;
+
     public $searchUser = '';
+
     public $filteredUsers = [];
 
     public $showBlockedUsersModal = false;
+
     public $blockedUsersList = [];
+
     public $isNotificationsDisabled = false;
+
     public $isMessageSoundsDisabled = false;
 
     protected $rules = [
@@ -43,6 +50,7 @@ class ChatSidebar extends Component
     public function getListeners()
     {
         $authId = Auth::id();
+
         return [
             "echo-private:chat.{$authId},.message.sent" => 'updateList',
             'refresh-chat-sidebar' => 'updateList',
@@ -73,7 +81,7 @@ class ChatSidebar extends Component
             ['user_id' => Auth::id(), 'peer_id' => $userId]
         );
 
-        $pref->is_archived = !$pref->is_archived;
+        $pref->is_archived = ! $pref->is_archived;
         $pref->save();
 
         $this->loadUsers();
@@ -81,7 +89,7 @@ class ChatSidebar extends Component
 
     public function toggleArchived()
     {
-        $this->showArchived = !$this->showArchived;
+        $this->showArchived = ! $this->showArchived;
         $this->loadUsers();
         $this->loadGroups();
     }
@@ -118,7 +126,7 @@ class ChatSidebar extends Component
     {
         $authId = Auth::id();
         $this->filteredUsers = User::where('id', '!=', $authId)
-            ->where('name', 'like', '%' . $this->searchUser . '%')
+            ->where('name', 'like', '%'.$this->searchUser.'%')
             ->limit(10)
             ->get();
     }
@@ -160,7 +168,7 @@ class ChatSidebar extends Component
             $member = $group->members()->where('user_id', Auth::id())->first();
             if ($member) {
                 $group->members()->updateExistingPivot(Auth::id(), [
-                    'is_archived' => !$member->pivot->is_archived
+                    'is_archived' => ! $member->pivot->is_archived,
                 ]);
                 $this->loadGroups();
             }
@@ -186,11 +194,11 @@ class ChatSidebar extends Component
                 return [
                     'id' => $group->id,
                     'name' => $group->name,
-                    'image' => $group->image ?? "https://ui-avatars.com/api/?name=" . urlencode($group->name),
+                    'image' => $group->image ?? 'https://ui-avatars.com/api/?name='.urlencode($group->name),
                     'count' => $group->members->count(),
-                    'members' => $group->members->map(fn($m) => [
+                    'members' => $group->members->map(fn ($m) => [
                         'id' => $m->id,
-                        'image' => $m->profile?->image ? \Illuminate\Support\Facades\Storage::url($m->profile->image) : $m->image_url
+                        'image' => $m->profile?->image ? \Illuminate\Support\Facades\Storage::url($m->profile->image) : $m->image_url,
                     ])->toArray(),
 
                     'time' => $lastMsg ? $lastMsg->created_at->format('H:i') : '',
@@ -213,7 +221,7 @@ class ChatSidebar extends Component
         // Carregar usuários: admins, managers, histórico de chat OU que sigo
         $this->users = User::where('id', '!=', $authId)
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
+                $query->where('name', 'like', '%'.$this->search.'%');
             })
             ->where(function ($query) use ($authId, $followingIds) {
                 $query->whereHas('profile', function ($q) {
@@ -244,12 +252,13 @@ class ChatSidebar extends Component
                     ->count();
                 $pref = ChatPreference::where('user_id', $authId)->where('peer_id', $user->id)->first();
                 $user->is_archived = $pref ? $pref->is_archived : false;
+
                 return $user;
             })
             ->filter(function ($user) {
-                return $this->showArchived ? $user->is_archived : !$user->is_archived;
+                return $this->showArchived ? $user->is_archived : ! $user->is_archived;
             })
-            ->sortByDesc(fn($user) => $user->last_message?->created_at ?? $user->created_at)
+            ->sortByDesc(fn ($user) => $user->last_message?->created_at ?? $user->created_at)
             ->values();
     }
 
@@ -264,13 +273,13 @@ class ChatSidebar extends Component
 
     public function toggleNotifications()
     {
-        $this->isNotificationsDisabled = !$this->isNotificationsDisabled;
+        $this->isNotificationsDisabled = ! $this->isNotificationsDisabled;
         $this->updateProfileSetting('disable_notifications', $this->isNotificationsDisabled);
     }
 
     public function toggleMessageSounds()
     {
-        $this->isMessageSoundsDisabled = !$this->isMessageSoundsDisabled;
+        $this->isMessageSoundsDisabled = ! $this->isMessageSoundsDisabled;
         $this->updateProfileSetting('disable_sounds', $this->isMessageSoundsDisabled);
     }
 

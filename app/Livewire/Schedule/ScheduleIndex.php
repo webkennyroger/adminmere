@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Schedule;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\Schedule;
+use Livewire\Component;
 
 class ScheduleIndex extends Component
 {
@@ -22,7 +21,7 @@ class ScheduleIndex extends Component
                         'calendar' => $event->color ?? 'Primary',
                         'description' => $event->description,
                         'photo' => $event->photo,
-                    ]
+                    ],
                 ];
             })
             ->values()
@@ -47,7 +46,7 @@ class ScheduleIndex extends Component
     public function updateEvent($eventId, $title, $startDate, $endDate, $eventLevel)
     {
         $event = Schedule::where('user_id', auth()->id())->findOrFail($eventId);
-        
+
         $event->update([
             'title' => $title,
             'event_date' => $startDate,

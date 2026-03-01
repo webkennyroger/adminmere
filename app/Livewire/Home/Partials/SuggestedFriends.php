@@ -10,6 +10,7 @@ use Livewire\Component;
 class SuggestedFriends extends Component
 {
     public $suggestions;
+
     public $maxSuggestions = 3;
 
     public function mount()
@@ -20,7 +21,7 @@ class SuggestedFriends extends Component
     public function loadSuggestions()
     {
         $dismissed = Session::get('dismissed_suggestions', []);
-        
+
         $user = Auth::user();
 
         // Get users who are NOT me, NOT already followed, and NOT dismissed
@@ -43,10 +44,10 @@ class SuggestedFriends extends Component
 
         if ($userToFollow) {
             Auth::user()->follow($userToFollow);
-            
+
             // Reload suggestions to replace the followed user
             $this->loadSuggestions();
-            
+
             // Dispatch event for other components (optional)
             $this->dispatch('friend-followed');
         }

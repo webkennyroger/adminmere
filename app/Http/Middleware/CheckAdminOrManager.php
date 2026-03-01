@@ -15,11 +15,11 @@ class CheckAdminOrManager
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
-        if (!auth()->user()->isAdmin() && !auth()->user()->isManager()) {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
             abort(403, 'Acesso negado. Você não tem permissão para acessar esta página.');
         }
 

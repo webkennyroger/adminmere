@@ -17,12 +17,12 @@ class HandleCors
     {
         // Permitir requisições de qualquer origem
         $response = $next($request);
-        
+
         $response->header('Access-Control-Allow-Origin', '*');
         $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
         $response->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         $response->header('Access-Control-Max-Age', '3600');
-        
+
         return $response;
     }
 }

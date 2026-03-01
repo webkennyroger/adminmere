@@ -2,16 +2,14 @@
 
 namespace App\Livewire\Profile;
 
-use Livewire\Attributes\Validate;
-use Livewire\Component;
-use Livewire\WithFileUploads;
-use Illuminate\Validation\Rule;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class UserProfile extends Component
 {
     public $user;
+
     public $name;
 
     public $activeTab = 'overview';
@@ -27,7 +25,7 @@ class UserProfile extends Component
             $this->user = auth()->user();
         }
 
-        if (!$this->user) {
+        if (! $this->user) {
             abort(404);
         }
     }
@@ -47,8 +45,8 @@ class UserProfile extends Component
             ->get();
 
         return collect([])
-            ->merge($activities->map(fn($item) => ['type' => 'activity', 'item' => $item, 'date' => $item->start_time]))
-            ->merge($posts->map(fn($item) => ['type' => 'post', 'item' => $item, 'date' => $item->created_at]))
+            ->merge($activities->map(fn ($item) => ['type' => 'activity', 'item' => $item, 'date' => $item->start_time]))
+            ->merge($posts->map(fn ($item) => ['type' => 'post', 'item' => $item, 'date' => $item->created_at]))
             ->sortByDesc('date')
             ->take(20)
             ->values();
@@ -105,7 +103,7 @@ class UserProfile extends Component
     {
         return view('livewire.profile.user-profile', [
             'activities' => $this->activities,
-            'stats' => $this->stats
+            'stats' => $this->stats,
         ])->layout('components.layouts.app'); // Ensure it uses the main layout
     }
 }

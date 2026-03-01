@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\SubscriptionPlan;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
@@ -37,17 +35,17 @@ class SubscriptionController extends Controller
     public function status(Request $request)
     {
         $user = $request->user();
-        
-        if (!$user->subscribed('default')) {
+
+        if (! $user->subscribed('default')) {
             return response()->json([
                 'subscribed' => false,
                 'plan' => null,
             ]);
         }
-        
+
         $subscription = $user->subscription('default'); // Default subscription name
         $stripeSubscription = $subscription->asStripeSubscription();
-        
+
         // Find the internal plan info if possible mainly for name display
         $planId = $stripeSubscription->items->data[0]->price->id;
         $localPlan = SubscriptionPlan::where('stripe_plan_id', $planId)->first();
@@ -61,8 +59,8 @@ class SubscriptionController extends Controller
             ],
             'ends_at' => $subscription->ends_at,
             'on_grace_period' => $subscription->onGracePeriod(),
-            'renews_at' => $stripeSubscription->current_period_end 
-                ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_end)->toIso8601String() 
+            'renews_at' => $stripeSubscription->current_period_end
+                ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_end)->toIso8601String()
                 : null,
         ]);
     }
@@ -86,19 +84,19 @@ class SubscriptionController extends Controller
         }
 
         try {
-            // Create the subscription. Cashier will create it in 'incomplete' state 
+            // Create the subscription. Cashier will create it in 'incomplete' state
             // and return the logic needed to confirm it.
             // For mobile, we often just need the payment intent or setup intent.
             // Cashier's `newSubscription` followed by `create` usually charges immediately if method is present.
             // For mobile "PaymentSheet", we want to pass the latest_invoice.payment_intent.client_secret
-            
+
             $subscription = $user->newSubscription('default', $plan->stripe_plan_id)
                 ->create(null, [], [
                     'payment_behavior' => 'default_incomplete',
                     'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
                     'expand' => ['latest_invoice.payment_intent'],
                 ]);
-            
+
             $invoice = $subscription->latestInvoice;
             $paymentIntent = $invoice->payment_intent;
 

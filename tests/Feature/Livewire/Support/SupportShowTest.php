@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\Livewire\Support;
 
-use App\Models\User;
 use App\Models\Support;
-use Livewire\Livewire;
-use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class SupportShowTest extends TestCase
 {
@@ -20,7 +19,7 @@ class SupportShowTest extends TestCase
             'subject' => 'Test Ticket',
             'message' => 'Message content',
             'status' => 'pending',
-            'priority' => 'low'
+            'priority' => 'low',
         ]);
 
         $this->actingAs($user)
@@ -38,7 +37,7 @@ class SupportShowTest extends TestCase
             'subject' => 'Other Ticket',
             'message' => 'Message content',
             'status' => 'pending',
-            'priority' => 'low'
+            'priority' => 'low',
         ]);
 
         $this->actingAs($user)
@@ -49,7 +48,7 @@ class SupportShowTest extends TestCase
     public function test_404_for_non_existent_ticket()
     {
         $user = User::factory()->create();
-        
+
         $this->actingAs($user)
             ->get(route('support.show', 99999))
             ->assertNotFound();

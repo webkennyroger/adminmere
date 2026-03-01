@@ -12,12 +12,19 @@ class ChallengeCreate extends Component
     use WithFileUploads;
 
     public $title;
+
     public $description;
+
     public $start_date;
+
     public $end_date;
+
     public $goal_km;
+
     public $category_id;
+
     public $image;
+
     public $is_active = true;
 
     protected $rules = [
@@ -65,14 +72,14 @@ class ChallengeCreate extends Component
         ]);
 
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
-        
+
         return redirect()->route('challenges.index');
     }
 
     public function render()
     {
         return view('livewire.challenges.challenge-create', [
-            'categories' => Category::where('is_active', true)->get()
+            'categories' => Category::where('is_active', true)->get(),
         ]);
     }
 }

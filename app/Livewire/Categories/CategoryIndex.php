@@ -3,10 +3,10 @@
 namespace App\Livewire\Categories;
 
 use App\Models\Category;
-use Livewire\Component;
-use Livewire\Attributes\On;
-use Livewire\WithPagination;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class CategoryIndex extends Component
 {
@@ -14,17 +14,21 @@ class CategoryIndex extends Component
 
     // Propriedades para o formulário de criação/edição
     public ?Category $editing = null;
-    public string $name = '';
-    public string $color = 'zinc';
 
+    public string $name = '';
+
+    public string $color = 'zinc';
 
     // Controle dos modais
     public bool $showModal = false;
+
     public bool $confirmingDeletion = false;
+
     public ?Category $categoryToDelete = null;
 
     // Propriedades para busca e paginação
     public string $search = '';
+
     public int $perPage = 10;
 
     public function updatedPerPage()
@@ -34,6 +38,7 @@ class CategoryIndex extends Component
 
     // Propriedades para seleção
     public $selected = [];
+
     public bool $selectAll = false;
 
     // Cores disponíveis para seleção
@@ -62,27 +67,27 @@ class CategoryIndex extends Component
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'color' => ['required', 'string', 'in:' . implode(',', array_keys($this->availableColors))],
+            'color' => ['required', 'string', 'in:'.implode(',', array_keys($this->availableColors))],
         ];
-        
+
         // Generate slug from name to validate it
         $slug = \Illuminate\Support\Str::slug($this->name);
-        
+
         // Add unique rule for name and slug, ignoring current record if editing
         $uniqueNameRule = \Illuminate\Validation\Rule::unique('categories', 'name');
         $uniqueSlugRule = \Illuminate\Validation\Rule::unique('categories', 'slug')
             ->where(function ($query) use ($slug) {
                 $query->where('slug', $slug);
             });
-            
+
         if ($this->editing) {
             $uniqueNameRule->ignore($this->editing->id);
             $uniqueSlugRule->ignore($this->editing->id);
         }
-        
+
         $rules['name'][] = $uniqueNameRule;
         $rules['name'][] = $uniqueSlugRule;
-        
+
         return $rules;
     }
 
@@ -91,24 +96,26 @@ class CategoryIndex extends Component
         'name.unique' => 'Já existe uma categoria com este nome',
         'color.required' => 'Selecione uma cor para a categoria',
     ];
+
     private function getCategoriesQuery()
     {
         $query = Category::withCount('challenges');
         if ($this->search) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%'.$this->search.'%');
         }
+
         return $query->latest();
     }
 
     public function toggleSelectAll()
     {
         // Ensure $selected is always an array
-        if (!is_array($this->selected)) {
+        if (! is_array($this->selected)) {
             $this->selected = [];
         }
-        
+
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-        
+
         if (count($this->selected) > 0) {
             // If any are selected, deselect all
             $this->selected = [];
@@ -127,17 +134,17 @@ class CategoryIndex extends Component
     {
         $count = count($this->selected);
         Category::whereIn('id', $this->selected)->delete();
-        
-        $message = $count === 1 
-            ? 'A categoria selecionada foi excluída com sucesso!' 
+
+        $message = $count === 1
+            ? 'A categoria selecionada foi excluída com sucesso!'
             : "{$count} categorias foram excluídas com sucesso!";
-            
+
         $this->dispatch('toast', [
-            'type' => 'error', 
+            'type' => 'error',
             'message' => $message,
-            'title' => 'Exclusão realizada'
+            'title' => 'Exclusão realizada',
         ]);
-        
+
         $this->selected = [];
         $this->selectAll = false;
     }
@@ -171,16 +178,16 @@ class CategoryIndex extends Component
         if ($this->editing) {
             $this->editing->update($data);
             $this->dispatch('toast', [
-                'type' => 'info', 
-                'message' => 'As alterações na categoria "' . $this->name . '" foram salvas com sucesso!',
-                'title' => 'Categoria atualizada'
+                'type' => 'info',
+                'message' => 'As alterações na categoria "'.$this->name.'" foram salvas com sucesso!',
+                'title' => 'Categoria atualizada',
             ]);
         } else {
             Category::create($data);
             $this->dispatch('toast', [
-                'type' => 'success', 
-                'message' => 'A categoria "' . $this->name . '" foi criada e está disponível para uso!',
-                'title' => 'Nova categoria criada'
+                'type' => 'success',
+                'message' => 'A categoria "'.$this->name.'" foi criada e está disponível para uso!',
+                'title' => 'Nova categoria criada',
             ]);
         }
 
@@ -200,12 +207,12 @@ class CategoryIndex extends Component
             $categoryName = $this->categoryToDelete->name;
             $this->categoryToDelete->delete();
             $this->dispatch('toast', [
-                'type' => 'error', 
-                'message' => 'A categoria "' . $categoryName . '" foi removida do sistema!',
-                'title' => 'Categoria excluída'
+                'type' => 'error',
+                'message' => 'A categoria "'.$categoryName.'" foi removida do sistema!',
+                'title' => 'Categoria excluída',
             ]);
         }
-        
+
         $this->confirmingDeletion = false;
         $this->categoryToDelete = null;
     }
@@ -223,7 +230,7 @@ class CategoryIndex extends Component
     {
         if ($this->perPage == -1) {
             $categories = $this->getCategoriesQuery()->get();
-            
+
             $categories = new \Illuminate\Pagination\LengthAwarePaginator(
                 $categories,
                 $categories->count(),

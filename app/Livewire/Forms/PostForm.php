@@ -7,11 +7,17 @@ use Livewire\Form;
 class PostForm extends Form
 {
     public $title = '';
+
     public $content = '';
+
     public $photos = [];
+
     public $videos = [];
+
     public $feedType = 'personal';
+
     public $location = '';
+
     public $privacy = 'public';
 
     public function rules(): array

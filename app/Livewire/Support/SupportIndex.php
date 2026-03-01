@@ -2,15 +2,17 @@
 
 namespace App\Livewire\Support;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
 use App\Models\Support;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('components.layouts.app', ['title' => 'Suporte e Ajuda'])]
 class SupportIndex extends Component
 {
     public $subject;
+
     public $priority = 'low';
+
     public $message;
 
     protected $rules = [
@@ -26,8 +28,8 @@ class SupportIndex extends Component
             'data' => [
                 'subject' => $this->subject,
                 'priority' => $this->priority,
-                'message' => $this->message
-            ]
+                'message' => $this->message,
+            ],
         ]);
 
         $this->validate();
@@ -47,7 +49,7 @@ class SupportIndex extends Component
         }
 
         $this->reset();
-        
+
         // Redirecionar para a lista após criar para confirmar visualização
         return redirect()->route('support.list')->with('status', 'Ticket criado com sucesso!');
     }

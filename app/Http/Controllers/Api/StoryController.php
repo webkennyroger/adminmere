@@ -30,6 +30,7 @@ class StoryController extends Controller
         $stories = $usersWithStories->map(function ($u) use ($user) {
             $userStories = $u->stories->map(function ($s) {
                 $isVideo = preg_match('/\.(mp4|mov|avi|webm)$/i', $s->image_url);
+
                 return [
                     'id' => $s->id,
                     'url' => $s->image_url,
@@ -54,7 +55,7 @@ class StoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $stories
+            'data' => $stories,
         ]);
     }
 
@@ -70,20 +71,20 @@ class StoryController extends Controller
             $path = $request->file('image')->store('stories', 'public');
 
             $story = $user->stories()->create([
-                'image_url' => asset('storage/' . $path),
+                'image_url' => asset('storage/'.$path),
                 'expires_at' => now()->addHours(24),
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Story criado com sucesso',
-                'data' => $story
+                'data' => $story,
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Nenhum arquivo enviado'
+            'message' => 'Nenhum arquivo enviado',
         ], 400);
     }
 }

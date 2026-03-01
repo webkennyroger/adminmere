@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Livewire\Support;
 
-use App\Models\User;
 use App\Models\Support;
+use App\Models\User;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -36,13 +36,13 @@ class SupportListTest extends TestCase
             'user_id' => $user->id,
             'subject' => 'Pending Ticket',
             'status' => 'pending',
-            'message' => 'msg', 'priority' => 'low'
+            'message' => 'msg', 'priority' => 'low',
         ]);
         Support::create([
             'user_id' => $user->id,
             'subject' => 'Solved Ticket',
             'status' => 'solved',
-            'message' => 'msg', 'priority' => 'low'
+            'message' => 'msg', 'priority' => 'low',
         ]);
 
         Livewire::actingAs($user)
@@ -58,12 +58,12 @@ class SupportListTest extends TestCase
         Support::create([
             'user_id' => $user->id,
             'subject' => 'Find Me',
-            'message' => 'msg', 'priority' => 'low', 'status' => 'open'
+            'message' => 'msg', 'priority' => 'low', 'status' => 'open',
         ]);
         Support::create([
             'user_id' => $user->id,
             'subject' => 'Hide Me',
-            'message' => 'msg', 'priority' => 'low', 'status' => 'open'
+            'message' => 'msg', 'priority' => 'low', 'status' => 'open',
         ]);
 
         Livewire::actingAs($user)

@@ -16,7 +16,7 @@ class CategorySeeder extends Seeder
             ['name' => 'Corrida', 'color' => 'red'],
             ['name' => 'Caminhada', 'color' => 'green'],
             ['name' => 'Ciclismo', 'color' => 'blue'],
-            ['name' => 'Natação', 'color' => 'cyan'], 
+            ['name' => 'Natação', 'color' => 'cyan'],
             ['name' => 'Yoga', 'color' => 'purple'],
             ['name' => 'Musculação', 'color' => 'orange'],
             ['name' => 'Misto', 'color' => 'zinc'],
@@ -31,7 +31,6 @@ class CategorySeeder extends Seeder
                 ]
             );
         }
-
 
     }
 }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            if (!Schema::hasColumn('posts', 'is_mandatory')) {
+            if (! Schema::hasColumn('posts', 'is_mandatory')) {
                 $table->boolean('is_mandatory')->default(false)->after('type');
             }
         });

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Activity;
 use App\Models\Story;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class ContentSeeder extends Seeder
 {
@@ -52,13 +52,13 @@ class ContentSeeder extends Seeder
                 'calories' => 150,
                 'description' => 'Relaxando as pernas.',
                 'start_time' => Carbon::now()->subDays(rand(0, 2))->subHours(rand(12, 14)),
-            ]
+            ],
         ];
 
         foreach ($activities as $data) {
             Activity::create([
                 'user_id' => $user->id,
-                'app_id' => 'mere_generated_' . uniqid(),
+                'app_id' => 'mere_generated_'.uniqid(),
                 'title' => $data['title'],
                 'sport_type' => $data['sport_type'],
                 'start_time' => $data['start_time'],
@@ -78,7 +78,7 @@ class ContentSeeder extends Seeder
         for ($i = 0; $i < 3; $i++) {
             Story::create([
                 'user_id' => $user->id,
-                'image_url' => 'https://picsum.photos/seed/' . $user->id . $i . '/1080/1920', // Vertical layout
+                'image_url' => 'https://picsum.photos/seed/'.$user->id.$i.'/1080/1920', // Vertical layout
                 'expires_at' => Carbon::now()->addHours(rand(4, 24)), // Valid for next 24h
                 'created_at' => Carbon::now()->subMinutes(rand(10, 300)), // Posted recently
             ]);

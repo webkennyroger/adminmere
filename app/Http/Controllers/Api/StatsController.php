@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
 use App\Models\Challenge;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class StatsController extends Controller
 {
@@ -17,44 +17,44 @@ class StatsController extends Controller
         $user = $request->user();
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
-        
+
         // Get today's activities
         $todayActivities = $user->activities()
             ->whereDate('start_time', $today)
             ->get();
-        
+
         // Calculate today's stats
         $todayDistance = $todayActivities->sum('distance') / 1000; // km
         $todayDuration = $todayActivities->sum('duration'); // seconds
         $todayCalories = $todayActivities->sum('calories');
-        
+
         // Daily goal (example: 10km)
         $dailyGoal = 10; // km
         $dailyProgress = min(($todayDistance / $dailyGoal) * 100, 100);
-        
+
         // Get this month's activities
         $monthActivities = $user->activities()
             ->where('start_time', '>=', $startOfMonth)
             ->get();
-        
+
         // Calculate month stats
         $monthDistance = $monthActivities->sum('distance') / 1000; // km
         $monthDuration = $monthActivities->sum('duration'); // seconds
         $monthCalories = $monthActivities->sum('calories');
-        
+
         // Calculate average speed
-        $avgSpeed = $monthDuration > 0 
-            ? ($monthDistance / ($monthDuration / 3600)) 
+        $avgSpeed = $monthDuration > 0
+            ? ($monthDistance / ($monthDuration / 3600))
             : 0;
-        
+
         // Get calendar data for current month
         $calendarData = $this->getMonthCalendar($user, $startOfMonth);
-        
+
         // Get conquered challenges count
         $conqueredChallenges = $user->challenges()
             ->wherePivot('completed', true)
             ->count();
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -74,10 +74,10 @@ class StatsController extends Controller
                 ],
                 'calendar' => $calendarData,
                 'conquered_challenges' => $conqueredChallenges,
-            ]
+            ],
         ]);
     }
-    
+
     /**
      * Get calendar data for a month
      */
@@ -86,13 +86,13 @@ class StatsController extends Controller
         $days = [];
         $today = Carbon::today();
         $startOfWeek = $today->copy()->startOfWeek(Carbon::SUNDAY);
-        
+
         for ($i = 0; $i < 7; $i++) {
             $date = $startOfWeek->copy()->addDays($i);
             $dayActivities = $user->activities()
                 ->whereDate('start_time', $date)
                 ->get();
-            
+
             $days[] = [
                 'date' => $date->format('Y-m-d'),
                 'day_name' => strtoupper($date->locale('pt_BR')->translatedFormat('D')),
@@ -101,35 +101,35 @@ class StatsController extends Controller
                 'is_today' => $date->isToday(),
             ];
         }
-        
+
         return [
             'month' => strtoupper($startDate->locale('pt_BR')->monthName),
             'year' => $startDate->year,
             'days' => $days,
         ];
     }
-    
+
     /**
      * Get user's active challenges with progress (challenges they have joined)
      */
     public function activeChallenges(Request $request)
     {
         $user = $request->user();
-        
+
         $challenges = $user->challenges()
             ->wherePivot('completed', false)
             ->where('end_date', '>=', Carbon::now())
             ->with('category')
             ->get()
-            ->map(function($challenge) use ($user) {
+            ->map(function ($challenge) use ($user) {
                 // Calculate progress
                 $userProgress = $user->activities()
                     ->where('start_time', '>=', $challenge->start_date)
                     ->where('start_time', '<=', $challenge->end_date)
                     ->sum('distance') / 1000; // km
-                
+
                 $progress = min(($userProgress / $challenge->goal_km) * 100, 100);
-                
+
                 return [
                     'id' => $challenge->id,
                     'title' => $challenge->title,
@@ -144,10 +144,10 @@ class StatsController extends Controller
                     'is_joined' => true,
                 ];
             });
-        
+
         return response()->json([
             'success' => true,
-            'data' => $challenges
+            'data' => $challenges,
         ]);
     }
 
@@ -158,13 +158,13 @@ class StatsController extends Controller
     {
         $user = $request->user();
         $userChallengeIds = $user->challenges()->pluck('challenges.id')->toArray();
-        
+
         $challenges = Challenge::where('end_date', '>=', Carbon::now())
             ->with('category')
             ->get()
-            ->map(function($challenge) use ($user, $userChallengeIds) {
+            ->map(function ($challenge) use ($user, $userChallengeIds) {
                 $isJoined = in_array($challenge->id, $userChallengeIds);
-                
+
                 $data = [
                     'id' => $challenge->id,
                     'title' => $challenge->title,
@@ -182,7 +182,7 @@ class StatsController extends Controller
                         ->where('start_time', '>=', $challenge->start_date)
                         ->where('start_time', '<=', $challenge->end_date)
                         ->sum('distance') / 1000; // km
-                    
+
                     $progress = min(($userProgress / $challenge->goal_km) * 100, 100);
                     $data['current_km'] = round($userProgress, 1);
                     $data['progress'] = round($progress, 0);
@@ -195,26 +195,26 @@ class StatsController extends Controller
 
                 return $data;
             });
-        
+
         return response()->json([
             'success' => true,
-            'data' => $challenges
+            'data' => $challenges,
         ]);
     }
-    
+
     /**
      * Get user's tier/level information
      */
     public function userTier(Request $request)
     {
         $user = $request->user();
-        
+
         // Calculate total activities count
         $totalActivities = $user->activities()->count();
-        
+
         // Determine tier based on activities
         $tier = $this->calculateTier($totalActivities);
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -228,10 +228,10 @@ class StatsController extends Controller
                     ['name' => 'OURO', 'unlocked' => $totalActivities >= 50],
                     ['name' => 'PLATINA', 'unlocked' => $totalActivities >= 100],
                 ],
-            ]
+            ],
         ]);
     }
-    
+
     /**
      * Calculate user tier based on activities
      */
@@ -246,19 +246,25 @@ class StatsController extends Controller
         } elseif ($count >= 10) {
             return ['current' => 'BRONZE', 'next' => 'PRATA'];
         }
+
         return ['current' => null, 'next' => 'BRONZE'];
     }
-    
+
     /**
      * Get tier based on progress percentage
      */
     private function getTier($progress)
     {
-        if ($progress >= 70) return 'ATIVO';
-        if ($progress >= 50) return 'NÍVEL OURO';
+        if ($progress >= 70) {
+            return 'ATIVO';
+        }
+        if ($progress >= 50) {
+            return 'NÍVEL OURO';
+        }
+
         return 'PADRÃO';
     }
-    
+
     /**
      * Format duration in seconds to HH:MM:SS
      */
@@ -266,9 +272,10 @@ class StatsController extends Controller
     {
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);
+
         return sprintf('%02d:%02d', $hours, $minutes);
     }
-    
+
     /**
      * Get time remaining until date
      */
@@ -276,12 +283,13 @@ class StatsController extends Controller
     {
         $end = Carbon::parse($endDate);
         $now = Carbon::now();
-        
+
         if ($now->greaterThan($end)) {
             return '00:00:00';
         }
-        
+
         $diff = $now->diff($end);
+
         return sprintf('%02d:%02d:%02d', $diff->h, $diff->i, $diff->s);
     }
 }

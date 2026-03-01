@@ -2,15 +2,19 @@
 
 namespace App\Livewire\Profile;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class HeaderCard extends Component
 {
     public $user;
+
     public string $name = '';
+
     public string $phone = '';
+
     public string $email = '';
+
     public $image;
 
     public function mount(): void

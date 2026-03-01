@@ -3,15 +3,15 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationDropdown extends Component
 {
     public $activeTab = 'all';
+
     public $isOpen = false;
 
     // Listeners for real-time updates (optional, if using broadcasting in future)
-    // protected $listeners = ['notificationReceived' => '$refresh']; 
+    // protected $listeners = ['notificationReceived' => '$refresh'];
 
     public function mount()
     {
@@ -22,7 +22,7 @@ class NotificationDropdown extends Component
     {
         // Fetch unread notifications or all notifications depending on requirement.
         // Usually dropdown shows recent notifications.
-        return auth()->user()->notifications()->latest()->take(20)->get(); 
+        return auth()->user()->notifications()->latest()->take(20)->get();
     }
 
     public function getFilteredNotificationsProperty()
@@ -50,21 +50,21 @@ class NotificationDropdown extends Component
     public function getNotificationStatusProperty()
     {
         $user = auth()->user();
-        
+
         // Check for unread notifications
         $unreadCount = $user->unreadNotifications()->count();
-        
+
         if ($unreadCount > 0) {
             return 'new'; // Orange - has unread notifications
         }
-        
+
         // Check if user has any notifications at all
         $hasNotifications = $user->notifications()->exists();
-        
-        if (!$hasNotifications) {
+
+        if (! $hasNotifications) {
             return 'empty'; // Gray - no notifications
         }
-        
+
         // If has notifications but all are read
         return 'responded'; // Green - all responded/read
     }
@@ -74,7 +74,7 @@ class NotificationDropdown extends Component
      */
     public function getBadgeColorProperty()
     {
-        return match($this->notificationStatus) {
+        return match ($this->notificationStatus) {
             'new' => 'bg-orange-500',
             'responded' => 'bg-green-500',
             'empty' => 'bg-gray-400',
@@ -96,11 +96,11 @@ class NotificationDropdown extends Component
             // Delete only interactions of this type
             // Since we can't easily query by JSON key in delete() without raw query in some DBs,
             // we iterate and delete.
-            $this->filteredNotifications->each(function($n) {
+            $this->filteredNotifications->each(function ($n) {
                 $n->delete();
             });
         }
-        
+
         $this->dispatch('notifications-updated'); // Optional hint
     }
 
@@ -114,9 +114,9 @@ class NotificationDropdown extends Component
 
     public function toggle()
     {
-        $this->isOpen = !$this->isOpen;
-        
-        // Optional: Mark all as read when opening? 
+        $this->isOpen = ! $this->isOpen;
+
+        // Optional: Mark all as read when opening?
         // if ($this->isOpen) { auth()->user()->unreadNotifications->markAsRead(); }
     }
 

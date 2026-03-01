@@ -35,11 +35,11 @@ class FindFriends extends Component
         return User::query()
             ->where('id', '!=', Auth::id())
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
+                $query->where('name', 'like', '%'.$this->search.'%');
             })
             ->when($this->city, function ($query) {
                 $query->whereHas('profile', function ($q) {
-                    $q->where('city', 'like', '%' . $this->city . '%');
+                    $q->where('city', 'like', '%'.$this->city.'%');
                 });
             })
             ->with(['profile'])

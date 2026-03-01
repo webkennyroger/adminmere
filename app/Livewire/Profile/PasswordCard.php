@@ -2,17 +2,21 @@
 
 namespace App\Livewire\Profile;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Livewire\Component;
 
 class PasswordCard extends Component
 {
     public $user;
+
     public string $current_password = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
+
     public bool $twoFactorEnabled = false;
 
     public function mount()

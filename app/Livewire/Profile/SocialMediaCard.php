@@ -2,17 +2,23 @@
 
 namespace App\Livewire\Profile;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class SocialMediaCard extends Component
 {
     public $user;
+
     public string $instagram = '';
+
     public string $facebook = '';
+
     public string $x = '';
+
     public string $youtube = '';
+
     public string $tiktok = '';
+
     public string $mere = '';
 
     public function mount(): void

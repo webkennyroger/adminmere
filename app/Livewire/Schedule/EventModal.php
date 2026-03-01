@@ -2,26 +2,34 @@
 
 namespace App\Livewire\Schedule;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\Schedule;
 use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class EventModal extends Component
 {
     use WithFileUploads;
 
     public $showModal = false;
+
     public $editMode = false;
+
     public $eventId = null;
 
     // Event properties
     public $title = '';
+
     public $description = '';
+
     public $event_date = '';
+
     public $event_time = '';
+
     public $color = '#3b82f6';
+
     public $photo;
+
     public $existingPhoto = null;
 
     protected function rules()
@@ -50,7 +58,7 @@ class EventModal extends Component
     public function openEditModal($eventId)
     {
         $event = Schedule::findOrFail($eventId);
-        
+
         $this->eventId = $event->id;
         $this->title = $event->title;
         $this->description = $event->description;
@@ -58,7 +66,7 @@ class EventModal extends Component
         $this->event_time = $event->event_time;
         $this->color = $event->color;
         $this->existingPhoto = $event->photo;
-        
+
         $this->editMode = true;
         $this->showModal = true;
     }
@@ -84,16 +92,16 @@ class EventModal extends Component
             $event = Schedule::findOrFail($this->eventId);
             $event->update($data);
             $this->dispatch('toast', [
-                'type' => 'info', 
+                'type' => 'info',
                 'message' => 'Evento atualizado com sucesso!',
-                'title' => 'Evento Atualizado'
+                'title' => 'Evento Atualizado',
             ]);
         } else {
             Schedule::create($data);
             $this->dispatch('toast', [
-                'type' => 'success', 
+                'type' => 'success',
                 'message' => 'Evento criado com sucesso!',
-                'title' => 'Evento Criado'
+                'title' => 'Evento Criado',
             ]);
         }
 
@@ -118,13 +126,13 @@ class EventModal extends Component
         if ($this->eventId) {
             $event = Schedule::findOrFail($this->eventId);
             $event->delete();
-            
+
             $this->dispatch('toast', [
-                'type' => 'error', 
+                'type' => 'error',
                 'message' => 'O evento foi removido do sistema!',
-                'title' => 'Evento Excluído'
+                'title' => 'Evento Excluído',
             ]);
-            
+
             $this->closeModal();
             $this->dispatch('eventSaved');
         }

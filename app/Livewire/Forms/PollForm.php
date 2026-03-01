@@ -7,9 +7,13 @@ use Livewire\Form;
 class PollForm extends Form
 {
     public $title = '';
+
     public $content = '';
+
     public $options = ['', ''];
+
     public $isMultiple = false;
+
     public $duration = 7;
 
     public function rules(): array

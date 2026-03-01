@@ -14,9 +14,9 @@ class ActivityFactory extends Factory
     {
         $sportTypes = ['run', 'bike', 'hike', 'walk', 'swim'];
         $sportType = $this->faker->randomElement($sportTypes);
-        
+
         // Distance varies by sport type
-        $distance = match($sportType) {
+        $distance = match ($sportType) {
             'run' => $this->faker->numberBetween(3000, 21000), // 3-21km
             'bike' => $this->faker->numberBetween(10000, 100000), // 10-100km
             'hike' => $this->faker->numberBetween(5000, 20000), // 5-20km
@@ -24,13 +24,13 @@ class ActivityFactory extends Factory
             'swim' => $this->faker->numberBetween(500, 5000), // 0.5-5km
             default => $this->faker->numberBetween(3000, 15000),
         };
-        
+
         // Duration based on distance and average pace
-        $duration = (int)($distance / 1000 * $this->faker->numberBetween(300, 600)); // 5-10 min/km
-        
+        $duration = (int) ($distance / 1000 * $this->faker->numberBetween(300, 600)); // 5-10 min/km
+
         // Calories based on distance
-        $calories = (int)($distance / 1000 * $this->faker->numberBetween(60, 100));
-        
+        $calories = (int) ($distance / 1000 * $this->faker->numberBetween(60, 100));
+
         $mediaOptions = [
             null, // No media
             ['https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&auto=format&fit=crop&q=60'], // Single image

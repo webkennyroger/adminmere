@@ -4,25 +4,36 @@ namespace App\Livewire\Challenges;
 
 use App\Models\Category;
 use App\Models\Challenge;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 
 class ChallengeEdit extends Component
 {
     use WithFileUploads;
 
     public Challenge $challenge;
+
     public $title;
+
     public $description;
+
     public $start_date;
+
     public $end_date;
+
     public $goal_km;
+
     public $category_id;
+
     public $image;
+
     public $existing_image;
+
     public $is_active;
+
     public $confirmingDeletion = false;
+
     public $confirmingImageRemoval = false;
 
     protected $rules = [
@@ -86,17 +97,17 @@ class ChallengeEdit extends Component
         if ($this->existing_image) {
             // Deleta a imagem do storage
             Storage::disk('public')->delete($this->existing_image);
-            
+
             // Atualiza o banco de dados
             $this->challenge->update(['image' => null]);
-            
+
             // Limpa as variáveis locais
             $this->existing_image = null;
             $this->image = null;
-            
+
             // Fecha o modal
             $this->confirmingImageRemoval = false;
-            
+
             $this->dispatch('toast', ['type' => 'success', 'message' => 'Imagem removida com sucesso!']);
         }
     }
@@ -131,7 +142,7 @@ class ChallengeEdit extends Component
         $this->challenge->delete();
 
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio excluído com sucesso!']);
-        
+
         return redirect()->route('challenges.index');
     }
 
@@ -150,7 +161,7 @@ class ChallengeEdit extends Component
             if ($this->existing_image) {
                 Storage::disk('public')->delete($this->existing_image);
             }
-            
+
             // Salva a nova imagem
             $imagePath = $this->image->store('challenges', 'public');
         }
@@ -168,7 +179,7 @@ class ChallengeEdit extends Component
         ]);
 
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio atualizado com sucesso!']);
-        
+
         return redirect()->route('challenges.index');
     }
 
@@ -186,7 +197,7 @@ class ChallengeEdit extends Component
     public function render()
     {
         return view('livewire.challenges.challenge-edit', [
-            'categories' => Category::where('is_active', true)->get()
+            'categories' => Category::where('is_active', true)->get(),
         ]);
     }
 }

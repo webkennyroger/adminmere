@@ -36,7 +36,7 @@ class PollController extends Controller
         $user = $request->user();
 
         // Create Poll (as a Post with type='poll')
-        $poll = (new \App\Actions\Posts\CreatePost())->execute([
+        $poll = (new \App\Actions\Posts\CreatePost)->execute([
             'user_id' => $user->id,
             'title' => $request->question,
             'content' => $request->description ?? '',
@@ -83,7 +83,7 @@ class PollController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $item = (new \App\Actions\Posts\UpdatePost())->execute($item, [
+        $item = (new \App\Actions\Posts\UpdatePost)->execute($item, [
             'title' => $request->question,
             'content' => $request->description,
             'privacy' => $request->privacy,
@@ -109,7 +109,7 @@ class PollController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        (new \App\Actions\Posts\DeletePost())->execute($item);
+        (new \App\Actions\Posts\DeletePost)->execute($item);
 
         return response()->json([
             'success' => true,
@@ -182,7 +182,7 @@ class PollController extends Controller
         ];
 
         return [
-            'id' => 'poll_' . $post->id,
+            'id' => 'poll_'.$post->id,
             'type' => 'poll',
             'title' => $post->title,
             'description' => $post->content,

@@ -9,7 +9,7 @@ class MenuHelper
         $items = [];
 
         // Regular users see their profile as main page
-        if (auth()->check() && !auth()->user()->isAdmin() && !auth()->user()->isManager()) {
+        if (auth()->check() && ! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
             $items[] = [
                 'icon' => 'home',
                 'name' => 'Página Inicial',
@@ -117,7 +117,6 @@ class MenuHelper
                 'path' => '/users',
             ];
 
-
             $items[] = [
                 'name' => 'Categorias',
                 'icon' => 'forms',
@@ -147,12 +146,12 @@ class MenuHelper
         return [
             [
                 'title' => 'Menu',
-                'items' => self::getMainNavItems()
+                'items' => self::getMainNavItems(),
             ],
             [
                 'title' => 'Outros',
-                'items' => self::getOthersItems()
-            ]
+                'items' => self::getOthersItems(),
+            ],
         ];
     }
 

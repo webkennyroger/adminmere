@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Add type column to posts if not exists
-        if (!Schema::hasColumn('posts', 'type')) {
+        if (! Schema::hasColumn('posts', 'type')) {
             Schema::table('posts', function (Blueprint $table) {
                 $table->string('type')->default('post')->after('user_id'); // 'post', 'poll'
                 $table->timestamp('poll_expires_at')->nullable()->after('privacy');
@@ -45,7 +45,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('poll_votes');
         Schema::dropIfExists('poll_options');
-        
+
         if (Schema::hasColumn('posts', 'type')) {
             Schema::table('posts', function (Blueprint $table) {
                 $table->dropColumn(['type', 'poll_expires_at']);

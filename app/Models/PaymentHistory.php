@@ -28,6 +28,6 @@ class PaymentHistory extends Model
 
     public function getFormattedAmountAttribute()
     {
-        return 'R$ ' . number_format($this->amount / 100, 2, ',', '.');
+        return 'R$ '.number_format($this->amount / 100, 2, ',', '.');
     }
 }

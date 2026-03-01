@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Support extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'ticket_id',

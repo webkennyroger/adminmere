@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Goal extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'title',
         'metric',

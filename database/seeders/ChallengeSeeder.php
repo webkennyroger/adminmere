@@ -74,7 +74,9 @@ class ChallengeSeeder extends Seeder
                 'end_date' => now()->addDays(30),
             ]);
 
-            if ($admin) $admin->notify(new ChallengeCreated($challenge));
+            if ($admin) {
+                $admin->notify(new ChallengeCreated($challenge));
+            }
         }
 
         // 2. Random Data (4 items) to reach 10 - DISABLED FOR PRODUCTION

@@ -27,11 +27,11 @@ class ChallengeFactory extends Factory
             'Super Desafio Fitness',
             'Corrida das Estrelas',
             'Desafio Run for Fun',
-            'Meta 150km'
+            'Meta 150km',
         ];
 
         return [
-            'title' => $this->faker->randomElement($titles) . ' ' . $this->faker->year(),
+            'title' => $this->faker->randomElement($titles).' '.$this->faker->year(),
             'description' => $this->faker->paragraph(3),
             'start_date' => $startDate,
             'end_date' => $endDate,

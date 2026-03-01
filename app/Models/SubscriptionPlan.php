@@ -26,12 +26,12 @@ class SubscriptionPlan extends Model
     {
         return $query->where('is_active', true);
     }
-    
+
     /**
      * Get price formatted
      */
     public function getFormattedPriceAttribute()
     {
-        return 'R$ ' . number_format($this->price / 100, 2, ',', '.');
+        return 'R$ '.number_format($this->price / 100, 2, ',', '.');
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
 use App\Livewire\Posts\CreatePost;
-use App\Models\User;
 use App\Models\Post;
+use App\Models\User;
 use Livewire\Livewire;
 
 it('can create a post', function () {

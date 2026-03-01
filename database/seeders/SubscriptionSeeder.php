@@ -27,12 +27,12 @@ class SubscriptionSeeder extends Seeder
             );
 
             // ...existing code...
-            if (!$user->profile) {
+            if (! $user->profile) {
                 Profile::create([
                     'user_id' => $user->id,
                     'role' => 'user',
                     'plan' => ['monthly', 'annual'][rand(0, 1)],
-                    'phone' => "(11) 9" . rand(1000, 9999) . "-" . rand(1000, 9999),
+                    'phone' => '(11) 9'.rand(1000, 9999).'-'.rand(1000, 9999),
                 ]);
             } else {
                 // Force update to ensuring they are subscribers if they already existed

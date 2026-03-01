@@ -2,28 +2,36 @@
 
 namespace App\Livewire\Goals;
 
-use Livewire\Component;
-
-use Livewire\WithPagination;
 use App\Models\Goal;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class GoalIndex extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $perPage = 10;
-    
+
     public $showCreateModal = false;
+
     public $showEditModal = false;
+
     public $showDeleteModal = false;
-    
+
     public $goalId;
+
     public $title;
+
     public $metric = 'users'; // default
+
     public $period = 'monthly'; // default
+
     public $target_value;
+
     public $start_date;
+
     public $end_date;
 
     protected $rules = [
@@ -36,6 +44,7 @@ class GoalIndex extends Component
     ];
 
     public $selected = [];
+
     public $selectAll = false;
 
     public function updatedAppPage($value)
@@ -48,12 +57,12 @@ class GoalIndex extends Component
     public function toggleSelectAll()
     {
         // Ensure $selected is always an array
-        if (!is_array($this->selected)) {
+        if (! is_array($this->selected)) {
             $this->selected = [];
         }
-        
+
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-        
+
         if (count($this->selected) > 0) {
             // If any are selected, deselect all
             $this->selected = [];
@@ -67,22 +76,22 @@ class GoalIndex extends Component
             $this->selectAll = true;
         }
     }
-    
+
     public function deleteSelected()
     {
         $count = count($this->selected);
         Goal::whereIn('id', $this->selected)->delete();
         $this->selected = [];
         $this->selectAll = false;
-        
-        $message = $count === 1 
-            ? 'A meta selecionada foi excluída com sucesso!' 
+
+        $message = $count === 1
+            ? 'A meta selecionada foi excluída com sucesso!'
             : "{$count} metas foram excluídas do sistema!";
-            
+
         $this->dispatch('toast', [
-            'type' => 'error', 
+            'type' => 'error',
             'message' => $message,
-            'title' => 'Exclusão realizada'
+            'title' => 'Exclusão realizada',
         ]);
     }
 
@@ -92,7 +101,7 @@ class GoalIndex extends Component
         $this->selected = [];
         $this->selectAll = false;
     }
-    
+
     public function updatedPerPage()
     {
         $this->resetPage();
@@ -127,9 +136,9 @@ class GoalIndex extends Component
 
         $this->showCreateModal = false;
         $this->dispatch('toast', [
-            'type' => 'success', 
-            'message' => 'A meta "' . $this->title . '" foi criada e está disponível!',
-            'title' => 'Nova meta criada'
+            'type' => 'success',
+            'message' => 'A meta "'.$this->title.'" foi criada e está disponível!',
+            'title' => 'Nova meta criada',
         ]);
     }
 
@@ -167,9 +176,9 @@ class GoalIndex extends Component
 
         $this->showEditModal = false;
         $this->dispatch('toast', [
-            'type' => 'info', 
-            'message' => 'As alterações na meta "' . $this->title . '" foram salvas!',
-            'title' => 'Meta atualizada'
+            'type' => 'info',
+            'message' => 'As alterações na meta "'.$this->title.'" foram salvas!',
+            'title' => 'Meta atualizada',
         ]);
     }
 
@@ -191,18 +200,18 @@ class GoalIndex extends Component
         $goal->delete();
         $this->showDeleteModal = false;
         $this->dispatch('toast', [
-            'type' => 'error', 
-            'message' => 'A meta "' . $goalTitle . '" foi removida do sistema!',
-            'title' => 'Meta excluída'
+            'type' => 'error',
+            'message' => 'A meta "'.$goalTitle.'" foi removida do sistema!',
+            'title' => 'Meta excluída',
         ]);
     }
-    
+
     private function getGoalsQuery()
     {
         return Goal::query()
             ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%')
-                    ->orWhere('metric', 'like', '%' . $this->search . '%');
+                $query->where('title', 'like', '%'.$this->search.'%')
+                    ->orWhere('metric', 'like', '%'.$this->search.'%');
             })
             ->latest();
     }
@@ -211,7 +220,7 @@ class GoalIndex extends Component
     {
         if ($this->perPage === -1) {
             $goals = $this->getGoalsQuery()->get();
-            
+
             $goals = new \Illuminate\Pagination\LengthAwarePaginator(
                 $goals,
                 $goals->count(),
@@ -224,7 +233,7 @@ class GoalIndex extends Component
         }
 
         return view('livewire.goals.goal-index', [
-            'goals' => $goals
+            'goals' => $goals,
         ])->layout('components.layouts.app');
     }
 }

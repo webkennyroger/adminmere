@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class FollowersSeeder extends Seeder
 {
@@ -12,11 +12,13 @@ class FollowersSeeder extends Seeder
         // 1. Get the Main Admin User
         $admin = User::where('email', 'webkennyroger@gmail.com')->first();
 
-        if (!$admin) {
+        if (! $admin) {
             $admin = User::first(); // Fallback if explicit admin not found
         }
 
-        if (!$admin) return; // Safety check
+        if (! $admin) {
+            return;
+        } // Safety check
 
         // 2. Get all other users (excluding admin)
         $allUsers = User::where('id', '!=', $admin->id)->get();

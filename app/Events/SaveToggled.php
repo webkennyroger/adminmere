@@ -13,7 +13,9 @@ class SaveToggled implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $id;
+
     public $is_saved;
+
     public $user_id;
 
     /**

@@ -2,23 +2,23 @@
 
 namespace App\Livewire\Chat;
 
-use Livewire\Component;
-use App\Models\User;
-use App\Models\ChatPreference;
-use App\Models\Report;
-use App\Models\Message;
-use Illuminate\Support\Facades\Auth;
-use App\Models\ChatGroup;
-use App\Models\GroupMessage;
-use Livewire\WithFileUploads;
 use App\Events\MessageSent;
-use Livewire\Attributes\On;
+use App\Models\ChatGroup;
+use App\Models\ChatPreference;
+use App\Models\GroupMessage;
+use App\Models\Message;
+use App\Models\Report;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ChatBox extends Component
 {
     use WithFileUploads;
 
     public $isMuted = false;
+
     public $isArchived = false;
 
     public function loadPreferences()
@@ -32,10 +32,13 @@ class ChatBox extends Component
                 $this->isArchived = false;
                 $this->isMuted = false;
             }
+
             return;
         }
 
-        if (!$this->selectedUser) return;
+        if (! $this->selectedUser) {
+            return;
+        }
 
         $pref = ChatPreference::where('user_id', Auth::id())
             ->where('peer_id', $this->selectedUser->id)
@@ -52,13 +55,15 @@ class ChatBox extends Component
 
     public function toggleMute()
     {
-        if (!$this->selectedUser) return;
+        if (! $this->selectedUser) {
+            return;
+        }
 
         $pref = ChatPreference::firstOrCreate(
             ['user_id' => Auth::id(), 'peer_id' => $this->selectedUser->id]
         );
 
-        $pref->is_muted = !$pref->is_muted;
+        $pref->is_muted = ! $pref->is_muted;
         $pref->save();
 
         $this->isMuted = $pref->is_muted;
@@ -69,9 +74,9 @@ class ChatBox extends Component
         if ($this->selectedGroup) {
             $member = $this->selectedGroup->members()->where('user_id', Auth::id())->first();
             if ($member) {
-                $newState = !$member->pivot->is_archived;
+                $newState = ! $member->pivot->is_archived;
                 $this->selectedGroup->members()->updateExistingPivot(Auth::id(), [
-                    'is_archived' => $newState
+                    'is_archived' => $newState,
                 ]);
                 $this->isArchived = $newState;
             }
@@ -80,7 +85,7 @@ class ChatBox extends Component
                 ['user_id' => Auth::id(), 'peer_id' => $this->selectedUser->id]
             );
 
-            $pref->is_archived = !$pref->is_archived;
+            $pref->is_archived = ! $pref->is_archived;
             $pref->save();
 
             $this->isArchived = $pref->is_archived;
@@ -97,13 +102,15 @@ class ChatBox extends Component
 
     public function reportUser($reason = 'spam')
     {
-        if (!$this->selectedUser) return;
+        if (! $this->selectedUser) {
+            return;
+        }
 
         Report::create([
             'reporter_id' => Auth::id(),
             'reported_user_id' => $this->selectedUser->id,
             'reason' => $reason,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         $this->dispatch('notify', message: 'Usuário denunciado com sucesso.');
@@ -121,14 +128,20 @@ class ChatBox extends Component
     }
 
     public $isOpen = false;
-    public $isMinimized = false;
-    public $selectedUser;
-    public $selectedGroup;
-    public $chatMessages = [];
-    public $content = '';
-    public $attachments = [];
-    public $audioAttachment;
 
+    public $isMinimized = false;
+
+    public $selectedUser;
+
+    public $selectedGroup;
+
+    public $chatMessages = [];
+
+    public $content = '';
+
+    public $attachments = [];
+
+    public $audioAttachment;
 
     public function sendAudioMessage()
     {
@@ -136,7 +149,9 @@ class ChatBox extends Component
             'audioAttachment' => 'required|file|mimes:mp3,wav,ogg,webm|max:10240',
         ]);
 
-        if (!$this->selectedUser && !$this->selectedGroup) return;
+        if (! $this->selectedUser && ! $this->selectedGroup) {
+            return;
+        }
 
         $path = $this->audioAttachment->store('chat-attachments', 'public');
 
@@ -181,7 +196,6 @@ class ChatBox extends Component
         $this->dispatch('refresh-chat-sidebar');
     }
 
-
     public function mount()
     {
         if (session()->has('chat_isOpen') && session('chat_isOpen')) {
@@ -201,6 +215,7 @@ class ChatBox extends Component
     public function getListeners()
     {
         $authId = Auth::id();
+
         return [
             "echo-private:chat.{$authId},.message.sent" => 'receiveMessage',
             'open-chat-box' => 'openChat',
@@ -211,7 +226,9 @@ class ChatBox extends Component
     public function receiveMessage($event)
     {
         $messageData = $event['message'] ?? $event;
-        if (!isset($messageData['id'])) return;
+        if (! isset($messageData['id'])) {
+            return;
+        }
 
         $message = Message::find($messageData['id']);
 
@@ -237,7 +254,7 @@ class ChatBox extends Component
             session([
                 'chat_isOpen' => true,
                 'chat_selectedUserId' => $this->selectedUser->id,
-                'chat_isMinimized' => false
+                'chat_isMinimized' => false,
             ]);
 
             Message::where('sender_id', $this->selectedUser->id)
@@ -266,17 +283,16 @@ class ChatBox extends Component
             'chat_isOpen' => true,
             'chat_selectedGroupId' => $groupId,
             'chat_selectedUserId' => null,
-            'chat_isMinimized' => false
+            'chat_isMinimized' => false,
         ]);
 
         $this->loadPreferences();
         $this->dispatch('scroll-chat-to-bottom');
     }
 
-
     public function minimizeChat()
     {
-        $this->isMinimized = !$this->isMinimized;
+        $this->isMinimized = ! $this->isMinimized;
         session(['chat_isMinimized' => $this->isMinimized]);
     }
 
@@ -300,10 +316,13 @@ class ChatBox extends Component
                 ->orderBy('created_at', 'asc')
                 ->limit(100)
                 ->get();
+
             return;
         }
 
-        if (!$this->selectedUser) return;
+        if (! $this->selectedUser) {
+            return;
+        }
 
         $authId = Auth::id();
 
@@ -325,7 +344,9 @@ class ChatBox extends Component
     {
         $message = Message::find($messageId);
 
-        if (!$message) return;
+        if (! $message) {
+            return;
+        }
 
         $authId = Auth::id();
 
@@ -346,7 +367,9 @@ class ChatBox extends Component
 
     public function deleteConversation()
     {
-        if (!$this->selectedUser) return;
+        if (! $this->selectedUser) {
+            return;
+        }
 
         $authId = Auth::id();
 
@@ -372,7 +395,9 @@ class ChatBox extends Component
 
     public function markAsUnread()
     {
-        if (!$this->selectedUser) return;
+        if (! $this->selectedUser) {
+            return;
+        }
 
         $authId = Auth::id();
 
@@ -396,11 +421,13 @@ class ChatBox extends Component
             'attachments.*' => 'nullable|file|max:10240', // Validate each file in the array
         ]);
 
-        if (!$this->selectedUser && !$this->selectedGroup) return;
+        if (! $this->selectedUser && ! $this->selectedGroup) {
+            return;
+        }
 
         $attachmentsData = [];
 
-        if (!empty($this->attachments)) {
+        if (! empty($this->attachments)) {
             foreach ($this->attachments as $attachment) {
                 $path = $attachment->store('chat-attachments', 'public');
                 $attachmentsData[] = [
@@ -417,7 +444,7 @@ class ChatBox extends Component
                 'chat_group_id' => $this->selectedGroup->id,
                 'user_id' => Auth::id(),
                 'content' => $this->content ?? '',
-                'attachments' => !empty($attachmentsData) ? $attachmentsData : null,
+                'attachments' => ! empty($attachmentsData) ? $attachmentsData : null,
             ]);
 
             // Reload to get relations like sender
@@ -436,7 +463,7 @@ class ChatBox extends Component
                 'sender_id' => Auth::id(),
                 'receiver_id' => $this->selectedUser->id,
                 'content' => $this->content ?? '',
-                'attachments' => !empty($attachmentsData) ? $attachmentsData : null,
+                'attachments' => ! empty($attachmentsData) ? $attachmentsData : null,
             ]);
 
             // Broadcast
@@ -463,7 +490,8 @@ class ChatBox extends Component
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
-        return round($bytes, $precision) . ' ' . $units[$pow];
+
+        return round($bytes, $precision).' '.$units[$pow];
     }
 
     public function render()

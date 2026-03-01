@@ -30,7 +30,7 @@ class PostController extends Controller
 
         $user = $request->user();
 
-        $post = (new \App\Actions\Posts\CreatePost())->execute([
+        $post = (new \App\Actions\Posts\CreatePost)->execute([
             'user_id' => $user->id,
             'title' => $request->title,
             'content' => $request->input('content') ?? '',
@@ -71,7 +71,7 @@ class PostController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $item = (new \App\Actions\Posts\UpdatePost())->execute($item, [
+        $item = (new \App\Actions\Posts\UpdatePost)->execute($item, [
             'title' => $request->title,
             'content' => $request->input('content') ?? $request->input('notes') ?? $request->input('description'),
             'privacy' => $request->privacy,
@@ -96,7 +96,7 @@ class PostController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        (new \App\Actions\Posts\DeletePost())->execute($item);
+        (new \App\Actions\Posts\DeletePost)->execute($item);
 
         return response()->json([
             'success' => true,
@@ -107,7 +107,7 @@ class PostController extends Controller
     public function formatPost($post, $user)
     {
         return [
-            'id' => 'post_' . $post->id,
+            'id' => 'post_'.$post->id,
             'type' => 'post',
             'title' => $post->title,
             'user_id' => (string) $post->user_id,

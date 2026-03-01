@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\SubscriptionPlan;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BillingController extends Controller
@@ -16,7 +16,7 @@ class BillingController extends Controller
         $user = Auth::user();
         $plans = SubscriptionPlan::active()->get();
         // $paymentMethods = $user->paymentMethods(); // If we want to list saved cards
-        
+
         return view('billing.index', compact('user', 'plans'));
     }
 
@@ -26,13 +26,14 @@ class BillingController extends Controller
     public function subscribe(Request $request, SubscriptionPlan $plan)
     {
         $user = Auth::user();
-        
+
         // Ensure user is not already subscribed to this plan
         if ($user->subscribed('default')) {
-             // Handle switch logic or error
-             // For simple MVP: Swap
-             $user->subscription('default')->swap($plan->stripe_plan_id);
-             return redirect()->route('billing.index')->with('success', 'Plano alterado com sucesso.');
+            // Handle switch logic or error
+            // For simple MVP: Swap
+            $user->subscription('default')->swap($plan->stripe_plan_id);
+
+            return redirect()->route('billing.index')->with('success', 'Plano alterado com sucesso.');
         }
 
         // Initialize checkout
@@ -49,6 +50,7 @@ class BillingController extends Controller
     public function cancel()
     {
         Auth::user()->subscription('default')->cancel();
+
         return redirect()->route('billing.index')->with('success', 'Assinatura cancelada. Você ainda tem acesso até o fim do período.');
     }
 
@@ -58,6 +60,7 @@ class BillingController extends Controller
     public function resume()
     {
         Auth::user()->subscription('default')->resume();
+
         return redirect()->route('billing.index')->with('success', 'Assinatura reativada!');
     }
 

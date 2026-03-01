@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\User;
-use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -40,7 +40,7 @@ class MessageController extends Controller
         $authUser = Auth::user();
 
         $validator = Validator::make($request->all(), [
-            'recipient_id' => 'required|exists:users,id|different:' . $authUser->id,
+            'recipient_id' => 'required|exists:users,id|different:'.$authUser->id,
             'content' => 'nullable|string|max:2000',
             'type' => 'nullable|string|in:text,image,video,audio,document',
             'file' => 'nullable|file|max:10240', // 10MB max
@@ -55,10 +55,10 @@ class MessageController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = 'messages/' . $type . 's';
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $path = 'messages/'.$type.'s';
             $file->move(public_path($path), $fileName);
-            $filePath = $path . '/' . $fileName;
+            $filePath = $path.'/'.$fileName;
 
             if ($type === 'text') {
                 $type = 'document'; // Fallback if file provided but type is text
@@ -110,7 +110,7 @@ class MessageController extends Controller
 
         foreach ($userIds as $userId) {
             $user = User::find($userId);
-            if (!$user) {
+            if (! $user) {
                 continue;
             }
 

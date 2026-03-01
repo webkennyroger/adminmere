@@ -2,25 +2,32 @@
 
 namespace App\Livewire\Plans;
 
-use Livewire\Component;
-
 use App\Models\SubscriptionPlan;
-use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 class PlanIndex extends Component
 {
     public $showModal = false;
+
     public $isEditMode = false;
+
     public $confirmingDeletion = false;
+
     public $planToDelete;
 
     // Form fields
     public $planId;
+
     public $name;
+
     public $price;
+
     public $stripe_plan_id;
+
     public $billing_period = 'monthly';
+
     public $features;
+
     public $is_active = true;
 
     protected $rules = [
@@ -35,6 +42,7 @@ class PlanIndex extends Component
     public function render()
     {
         $plans = SubscriptionPlan::all();
+
         return view('livewire.plans.plan-index', compact('plans'));
     }
 
@@ -58,8 +66,8 @@ class PlanIndex extends Component
             'features' => 'nullable|string',
         ]);
 
-        $slug = \Str::slug($this->name . '-' . $this->billing_period);
-        
+        $slug = \Str::slug($this->name.'-'.$this->billing_period);
+
         SubscriptionPlan::create([
             'name' => $this->name,
             'slug' => $slug,
@@ -72,9 +80,9 @@ class PlanIndex extends Component
 
         $this->showModal = false;
         $this->dispatch('toast', [
-            'type' => 'success', 
+            'type' => 'success',
             'message' => 'Plano criado com sucesso!',
-            'title' => 'Plano Criado'
+            'title' => 'Plano Criado',
         ]);
     }
 
@@ -98,14 +106,14 @@ class PlanIndex extends Component
     {
         $this->validate([
             'name' => 'required',
-            'stripe_plan_id' => 'required|unique:subscription_plans,stripe_plan_id,' . $this->planId,
+            'stripe_plan_id' => 'required|unique:subscription_plans,stripe_plan_id,'.$this->planId,
             'price' => 'required|integer',
             'billing_period' => 'required|in:monthly,yearly',
             'features' => 'nullable|string',
         ]);
 
         $plan = SubscriptionPlan::findOrFail($this->planId);
-        
+
         $plan->update([
             'name' => $this->name,
             'stripe_plan_id' => $this->stripe_plan_id,
@@ -117,9 +125,9 @@ class PlanIndex extends Component
 
         $this->showModal = false;
         $this->dispatch('toast', [
-            'type' => 'success', 
+            'type' => 'success',
             'message' => 'Plano atualizado com sucesso!',
-            'title' => 'Plano Atualizado'
+            'title' => 'Plano Atualizado',
         ]);
     }
 
@@ -134,9 +142,9 @@ class PlanIndex extends Component
         if ($this->planToDelete) {
             $this->planToDelete->delete();
             $this->dispatch('toast', [
-                'type' => 'warning', 
+                'type' => 'warning',
                 'message' => 'Plano removido com sucesso!',
-                'title' => 'Plano Excluído'
+                'title' => 'Plano Excluído',
             ]);
         }
         $this->confirmingDeletion = false;

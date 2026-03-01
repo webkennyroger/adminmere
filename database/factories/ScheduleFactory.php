@@ -18,7 +18,7 @@ class ScheduleFactory extends Factory
     {
         $eventDate = fake()->dateTimeBetween('now', '+3 months');
         $colors = ['#3788d8', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
-        
+
         $titles = [
             'Reunião de Equipe',
             'Apresentação de Projeto',
@@ -29,7 +29,7 @@ class ScheduleFactory extends Factory
             'Atendimento ao Cliente',
             'Sessão de Brainstorming',
             'Conferência Online',
-            'Evento de Networking'
+            'Evento de Networking',
         ];
 
         // Get first user or create one

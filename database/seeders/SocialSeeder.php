@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SocialSeeder extends Seeder
@@ -16,7 +15,7 @@ class SocialSeeder extends Seeder
         // Ensure we have users
         if (\App\Models\User::count() < 10) {
             // \App\Models\User::factory(10)->create();
-            $this->command->info("Skipping user factory generation in production.");
+            $this->command->info('Skipping user factory generation in production.');
         }
 
         $me = \App\Models\User::first();
@@ -28,7 +27,7 @@ class SocialSeeder extends Seeder
         // Make sure I follow someone
         $others = \App\Models\User::where('id', '!=', $me->id)->take(5)->get();
         foreach ($others as $other) {
-            if (!$me->following()->where('following_id', $other->id)->exists()) {
+            if (! $me->following()->where('following_id', $other->id)->exists()) {
                 $me->following()->attach($other->id);
                 $this->command->info("Followed: {$other->name}");
             }
@@ -45,7 +44,7 @@ class SocialSeeder extends Seeder
                     'duration' => 1800,
                     'calories' => 300,
                     'privacy' => 'public',
-                    'polylines' => []
+                    'polylines' => [],
                 ]);
             }
         }
@@ -53,7 +52,7 @@ class SocialSeeder extends Seeder
         // Make sure someone follows me
         $fans = \App\Models\User::where('id', '!=', $me->id)->skip(5)->take(3)->get();
         foreach ($fans as $fan) {
-            if (!$fan->following()->where('following_id', $me->id)->exists()) {
+            if (! $fan->following()->where('following_id', $me->id)->exists()) {
                 $fan->following()->attach($me->id);
                 $this->command->info("New Fan: {$fan->name}");
             }

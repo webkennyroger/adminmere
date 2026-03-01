@@ -29,7 +29,7 @@ class SupportSeeder extends Seeder
                 'subject' => 'Problema com login',
                 'message' => 'Não consigo acessar minha conta premium.',
                 'status' => 'open',
-                'priority' => 'high'
+                'priority' => 'high',
             ]);
 
             Support::create([
@@ -37,7 +37,7 @@ class SupportSeeder extends Seeder
                 'subject' => 'Dúvida sobre planos',
                 'message' => 'Quais as formas de pagamento aceitas?',
                 'status' => 'pending',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ]);
         }
 

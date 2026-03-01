@@ -42,7 +42,7 @@ class CreatePost
                 foreach ($data['poll_options'] as $optionText) {
                     if (trim($optionText)) {
                         $post->pollOptions()->create([
-                            'option_text' => trim($optionText)
+                            'option_text' => trim($optionText),
                         ]);
                     }
                 }

@@ -41,9 +41,9 @@ class TwoFactorCard extends Component
         abort_unless(Features::enabled(Features::twoFactorAuthentication()), Response::HTTP_FORBIDDEN);
 
         if (Fortify::confirmsTwoFactorAuthentication() && is_null(auth()->user()->two_factor_confirmed_at)) {
-             if ($disableTwoFactorAuthentication) {
+            if ($disableTwoFactorAuthentication) {
                 $disableTwoFactorAuthentication(auth()->user());
-             }
+            }
         }
 
         $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();

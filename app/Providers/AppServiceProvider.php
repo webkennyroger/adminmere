@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\App;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,31 +28,31 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('pt_BR');
         setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'portuguese');
 
-        if($this->app->environment('production')) {
+        if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
         \Illuminate\Support\Facades\Gate::define('access-admin-panel', function (\App\Models\User $user) {
-             return $user->isAdmin() || $user->isManager();
+            return $user->isAdmin() || $user->isManager();
         });
 
         \Illuminate\Support\Facades\Gate::define('access-goals', function (\App\Models\User $user) {
-             return $user->isAdmin() || !$user->isManager();
+            return $user->isAdmin() || ! $user->isManager();
         });
 
         \Illuminate\Support\Facades\Gate::define('access-subscriptions', function (\App\Models\User $user) {
-             return $user->isAdmin() || !$user->isManager();
+            return $user->isAdmin() || ! $user->isManager();
         });
 
         \Illuminate\Support\Facades\Gate::define('manage-subscriptions', function (\App\Models\User $user) {
-             return $user->isSuperAdmin();
+            return $user->isSuperAdmin();
         });
 
-         \Illuminate\Support\Facades\Gate::define('manage-roles', function (\App\Models\User $user) {
-             return $user->isSuperAdmin();
+        \Illuminate\Support\Facades\Gate::define('manage-roles', function (\App\Models\User $user) {
+            return $user->isSuperAdmin();
         });
 
         \Illuminate\Support\Facades\Gate::define('manage-everything', function (\App\Models\User $user) {
-             return $user->isSuperAdmin();
+            return $user->isSuperAdmin();
         });
     }
 }

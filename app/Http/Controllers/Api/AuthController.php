@@ -46,13 +46,14 @@ class AuthController extends Controller
         if (config('app.env') === 'local') {
             // Se tentar logar com 'admin@dev.com', loga como o admin
             if ($request->email === 'admin@dev.com') {
-                $user = User::whereHas('profile', fn($q) => $q->where('role', 'admin'))->first();
+                $user = User::whereHas('profile', fn ($q) => $q->where('role', 'admin'))->first();
             } else {
                 $user = User::where('email', $request->email)->first();
             }
 
             if ($user) {
                 $token = $user->createToken('auth_token')->plainTextToken;
+
                 return response()->json([
                     'access_token' => $token,
                     'token_type' => 'Bearer',
@@ -61,7 +62,7 @@ class AuthController extends Controller
             }
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['Credenciais inválidas'],
             ]);
@@ -86,21 +87,21 @@ class AuthController extends Controller
         try {
             // In a real mobile app interacton, the app gets the token from Google SDK
             // and sends it to the backend. We use Socialite to verify it.
-            // Note: 'google-one-tap' or standard 'google' provider might need 
+            // Note: 'google-one-tap' or standard 'google' provider might need
             // stateless() depending on flow.
-            
+
             $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->access_token);
-            
-            if (!$googleUser) {
+
+            if (! $googleUser) {
                 return response()->json([
                     'message' => 'Falha ao validar token do Google. Token inválido ou expirado.',
-                    'error' => 'invalid_token'
+                    'error' => 'invalid_token',
                 ], 401);
             }
-            
+
             $user = User::where('email', $googleUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
                 $user = User::create([
                     'email' => $googleUser->getEmail(),
                     'name' => $googleUser->getName(),
@@ -126,12 +127,12 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             \Log::error('Google Login Error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'message' => 'Falha ao fazer login com Google. Verifique o token ou tente novamente.',
-                'error' => 'google_auth_failed'
+                'error' => 'google_auth_failed',
             ], 401);
         }
     }

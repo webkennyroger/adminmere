@@ -2,22 +2,27 @@
 
 namespace App\Livewire\Profile;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class PersonalInfoCard extends Component
 {
     use WithFileUploads;
 
     public $user;
+
     public string $name = '';
+
     public string $last_name = '';
+
     public string $nickname = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public $image;
 
     public function mount(): void
@@ -42,12 +47,12 @@ class PersonalInfoCard extends Component
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($this->user->id)],
             'last_name' => ['nullable', 'string', 'max:255'],
             'nickname' => [
-                'nullable', 
-                'string', 
-                'max:30', 
+                'nullable',
+                'string',
+                'max:30',
                 'min:3',
-                'regex:/^[a-zA-Z0-9_.]+$/', 
-                Rule::unique('profiles', 'nickname')->ignore($this->user->profile?->id)
+                'regex:/^[a-zA-Z0-9_.]+$/',
+                Rule::unique('profiles', 'nickname')->ignore($this->user->profile?->id),
             ],
             'phone' => ['nullable', 'string', 'max:20'],
             'image' => ['nullable', 'image', 'max:1024'], // 1MB Max

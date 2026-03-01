@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Home;
 
-use Livewire\Component;
-
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
 class UserHome extends Component
 {
@@ -19,7 +18,7 @@ class UserHome extends Component
     public function render()
     {
         return view('livewire.home.user-home', [
-            'feed' => $this->feed
+            'feed' => $this->feed,
         ])->layout('components.layouts.social');
     }
 }

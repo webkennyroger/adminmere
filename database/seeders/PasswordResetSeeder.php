@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Console\Command;
 
 class PasswordResetSeeder extends Seeder
 {
@@ -13,7 +12,7 @@ class PasswordResetSeeder extends Seeder
     {
         $email = 'webkennyroger@gmail.com';
         $user = User::where('email', $email)->first();
-        
+
         if ($user) {
             $user->password = Hash::make('12345678');
             $user->save();

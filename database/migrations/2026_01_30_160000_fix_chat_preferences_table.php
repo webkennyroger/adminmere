@@ -25,7 +25,7 @@ return new class extends Migration
 
             // Ensure unique combination of user_id and peer_id
             $table->unique(['user_id', 'peer_id'], 'unique_user_peer');
-            
+
             // Index for faster queries
             $table->index('user_id');
             $table->index('peer_id');

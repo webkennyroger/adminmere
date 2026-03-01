@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('privacy')->default('public'); // public, friends, private
             $table->timestamps();
-            
+
             $table->index('user_id');
             $table->index('feed_type');
             $table->index('created_at');

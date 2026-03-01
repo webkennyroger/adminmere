@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
-
-use App\Models\Post;
 
 class ActivityController extends Controller
 {
@@ -37,7 +36,7 @@ class ActivityController extends Controller
             $postsQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
         } elseif ($feed === 'community') {
             $activitiesQuery->where('privacy', 'public');
-            $postsQuery->where(fn($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+            $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
         } elseif ($feed === 'personal') {
             $activitiesQuery->where('user_id', $user->id);
             $postsQuery->where('user_id', $user->id);
@@ -48,12 +47,12 @@ class ActivityController extends Controller
 
         // Merge and sort
         $merged = collect([])
-            ->merge($activities->map(fn($a) => [
+            ->merge($activities->map(fn ($a) => [
                 'type' => 'activity',
                 'item' => $a,
                 'date' => $a->start_time ?? $a->created_at,
             ]))
-            ->merge($posts->map(fn($p) => [
+            ->merge($posts->map(fn ($p) => [
                 'type' => 'post',
                 'item' => $p,
                 'date' => $p->created_at,
@@ -83,7 +82,7 @@ class ActivityController extends Controller
     public function formatPost($post, $user)
     {
         return [
-            'id' => 'post_' . $post->id,
+            'id' => 'post_'.$post->id,
             'type' => 'post',
             'title' => $post->title,
             'user_id' => (string) $post->user_id,
@@ -127,7 +126,7 @@ class ActivityController extends Controller
         ];
 
         return [
-            'id' => 'poll_' . $post->id,
+            'id' => 'poll_'.$post->id,
             'type' => 'poll',
             'title' => $post->title,
             'description' => $post->content,
@@ -272,7 +271,7 @@ class ActivityController extends Controller
         }
 
         if ($item instanceof \App\Models\Activity) {
-            $action = new \App\Actions\Activities\UpdateActivity();
+            $action = new \App\Actions\Activities\UpdateActivity;
             $item = $action->execute($item, [
                 'title' => $request->activityTitle ?? $request->title,
                 'description' => $request->description ?? $request->content,
@@ -280,7 +279,7 @@ class ActivityController extends Controller
             ]);
             $formatted = $this->formatActivity($item, $user);
         } else {
-            $action = new \App\Actions\Posts\UpdatePost();
+            $action = new \App\Actions\Posts\UpdatePost;
             $item = $action->execute($item, [
                 'title' => $request->title ?? $request->activityTitle,
                 'content' => $request->content ?? $request->description,
@@ -305,9 +304,9 @@ class ActivityController extends Controller
         }
 
         if ($item instanceof \App\Models\Activity) {
-            (new \App\Actions\Activities\DeleteActivity())->execute($item);
+            (new \App\Actions\Activities\DeleteActivity)->execute($item);
         } else {
-            (new \App\Actions\Posts\DeletePost())->execute($item);
+            (new \App\Actions\Posts\DeletePost)->execute($item);
         }
 
         return response()->json(['success' => true]);
@@ -321,7 +320,7 @@ class ActivityController extends Controller
         }
 
         return [
-            'id' => 'activity_' . $activity->id,
+            'id' => 'activity_'.$activity->id,
             'user_id' => (string) $activity->user_id,
             'userName' => $activity->user->name,
             'userAvatarUrl' => $activity->user->image_url,
@@ -355,7 +354,7 @@ class ActivityController extends Controller
             $lng = round($point['lng'] * 1e5);
             $d_lat = $lat - $last_lat;
             $d_lng = $lng - $last_lng;
-            $res .= $this->encodeSignedNumber($d_lat) . $this->encodeSignedNumber($d_lng);
+            $res .= $this->encodeSignedNumber($d_lat).$this->encodeSignedNumber($d_lng);
             $last_lat = $lat;
             $last_lng = $lng;
         }

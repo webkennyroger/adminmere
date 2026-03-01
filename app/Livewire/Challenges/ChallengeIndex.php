@@ -2,47 +2,58 @@
 
 namespace App\Livewire\Challenges;
 
-use App\Models\Challenge;
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\Category;
+use App\Models\Challenge;
 use App\Notifications\ChallengeCreated;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class ChallengeIndex extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public $search = '';
+
     public $perPage = 10;
+
     public $selected = [];
+
     public $selectAll = false;
+
     public $isEmbedded = false;
 
     // Modal states
     public $showViewModal = false;
+
     public $showEditModal = false;
+
     public $showCreateModal = false;
+
     public $confirmingDeletion = false;
-    
+
     // Challenge data
     public $selectedChallenge = null;
 
     public $challengeId;
-    public $title;
-    public $description;
-    public $start_date;
-    public $end_date;
-    public $goal_km;
-    public $category_id;
-    public $image;
-    public $existing_image;
-    public $is_featured = false;
 
+    public $title;
+
+    public $description;
+
+    public $start_date;
+
+    public $end_date;
+
+    public $goal_km;
+
+    public $category_id;
+
+    public $image;
+
+    public $existing_image;
+
+    public $is_featured = false;
 
     protected $queryString = ['search'];
 
@@ -50,8 +61,8 @@ class ChallengeIndex extends Component
     {
         return Challenge::with('category')
             ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%')
-                    ->orWhere('description', 'like', '%' . $this->search . '%');
+                $query->where('title', 'like', '%'.$this->search.'%')
+                    ->orWhere('description', 'like', '%'.$this->search.'%');
             })
             ->latest();
     }
@@ -59,12 +70,12 @@ class ChallengeIndex extends Component
     public function toggleSelectAll()
     {
         // Ensure $selected is always an array
-        if (!is_array($this->selected)) {
+        if (! is_array($this->selected)) {
             $this->selected = [];
         }
-        
+
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-        
+
         if (count($this->selected) > 0) {
             // If any are selected, deselect all
             $this->selected = [];
@@ -127,7 +138,7 @@ class ChallengeIndex extends Component
     public function edit($id)
     {
         $challenge = Challenge::findOrFail($id);
-        
+
         $this->challengeId = $challenge->id;
         $this->title = $challenge->title;
         $this->description = $challenge->description;
@@ -139,7 +150,6 @@ class ChallengeIndex extends Component
         $this->is_featured = $challenge->is_featured;
         $this->existing_image = $challenge->image;
 
-        
         $this->showEditModal = true;
     }
 
@@ -165,14 +175,14 @@ class ChallengeIndex extends Component
         }
 
         if ($this->is_featured) {
-             Challenge::where('id', '!=', $challenge->id)->update(['is_featured' => false]);
+            Challenge::where('id', '!=', $challenge->id)->update(['is_featured' => false]);
         }
-        
+
         $challenge->update($data);
 
         $this->showEditModal = false;
         $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_featured']);
-        
+
         $this->dispatch('toast', ['type' => 'info', 'message' => 'Desafio atualizado com sucesso!']);
     }
 
@@ -196,9 +206,9 @@ class ChallengeIndex extends Component
             $this->confirmingDeletion = false;
             $this->challengeId = null;
             $this->dispatch('toast', [
-                'type' => 'error', 
+                'type' => 'error',
                 'message' => 'O desafio foi removido do sistema!',
-                'title' => 'Desafio excluído'
+                'title' => 'Desafio excluído',
             ]);
         }
     }
@@ -235,7 +245,7 @@ class ChallengeIndex extends Component
         }
 
         if ($this->is_featured) {
-             Challenge::where('id', '>', 0)->update(['is_featured' => false]);
+            Challenge::where('id', '>', 0)->update(['is_featured' => false]);
         }
 
         $challenge = Challenge::create($data);
@@ -244,7 +254,7 @@ class ChallengeIndex extends Component
 
         $this->showCreateModal = false;
         $this->reset(['challengeId', 'title', 'description', 'start_date', 'end_date', 'goal_km', 'category_id', 'image', 'existing_image', 'is_featured']);
-        
+
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
     }
 
@@ -259,7 +269,7 @@ class ChallengeIndex extends Component
 
         if ($this->perPage == -1) {
             $challenges = $this->getChallengesQuery()->get();
-            
+
             $challenges = new \Illuminate\Pagination\LengthAwarePaginator(
                 $challenges,
                 $challenges->count(),

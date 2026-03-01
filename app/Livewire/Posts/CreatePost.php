@@ -3,25 +3,26 @@
 namespace App\Livewire\Posts;
 
 use App\Actions\Posts\CreatePost as CreatePostAction;
-use App\Livewire\Forms\PostForm;
 use App\Livewire\Forms\PollForm;
+use App\Livewire\Forms\PostForm;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Log;
 
 class CreatePost extends Component
 {
     use WithFileUploads;
 
     public PostForm $postForm;
+
     public PollForm $pollForm;
-    
+
     public $isPoll = false;
+
     public $feedType = 'personal';
 
     public function togglePoll()
     {
-        $this->isPoll = !$this->isPoll;
+        $this->isPoll = ! $this->isPoll;
     }
 
     public function addPollOption()
@@ -52,15 +53,15 @@ class CreatePost extends Component
         // Single implementation of media handling
         if ($this->postForm->photos) {
             foreach ($this->postForm->photos as $photo) {
-                $path = $photo->store('posts/' . auth()->id(), 'public');
-                $media[] = url('storage/' . $path);
+                $path = $photo->store('posts/'.auth()->id(), 'public');
+                $media[] = url('storage/'.$path);
             }
         }
 
         if ($this->postForm->videos) {
             foreach ($this->postForm->videos as $video) {
-                $path = $video->store('posts/' . auth()->id() . '/videos', 'public');
-                $media[] = url('storage/' . $path);
+                $path = $video->store('posts/'.auth()->id().'/videos', 'public');
+                $media[] = url('storage/'.$path);
             }
         }
 
@@ -74,8 +75,8 @@ class CreatePost extends Component
             'privacy' => 'public',
             'type' => $this->isPoll ? 'poll' : 'post',
             'poll_options' => $this->isPoll ? $this->pollForm->options : [],
-            'poll_expires_at' => $this->isPoll ? now()->addDays((int)$this->pollForm->duration) : null,
-            'meta' => $this->isPoll ? ['isMultiple' => (bool)$this->pollForm->isMultiple] : null,
+            'poll_expires_at' => $this->isPoll ? now()->addDays((int) $this->pollForm->duration) : null,
+            'meta' => $this->isPoll ? ['isMultiple' => (bool) $this->pollForm->isMultiple] : null,
         ]);
 
         $this->reset(['isPoll']);
@@ -83,7 +84,7 @@ class CreatePost extends Component
         $this->pollForm->reset();
 
         session()->flash('message', 'Publicado com sucesso! 🎉');
-        
+
         $this->dispatch('post-created');
         $this->dispatch('refresh-feed');
     }

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::table('poll_votes', function (Blueprint $table) {
             // Add a temporary index for user_id so the foreign key can use it
             $table->index('user_id');
-            
+
             // Drop old unique index
             $table->dropUnique(['user_id', 'post_id']);
-            
+
             // Add new unique index: user can only vote once PER OPTION
             $table->unique(['user_id', 'poll_option_id']);
         });

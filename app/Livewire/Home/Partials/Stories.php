@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Home\Partials;
 
-use Livewire\Component;
 use Livewire\Attributes\Lazy;
-
 use Livewire\Attributes\On;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Lazy]
@@ -14,6 +13,7 @@ class Stories extends Component
     use WithFileUploads;
 
     public $stories;
+
     public $photo;
 
     public function placeholder()
@@ -32,8 +32,6 @@ class Stories extends Component
         /** @var \App\Models\User $user */
         $user = \Illuminate\Support\Facades\Auth::user();
 
-
-
         // 1. Get IDs of users being followed
         $followingIds = $user->following()->pluck('following_id')->toArray();
 
@@ -48,6 +46,7 @@ class Stories extends Component
         // 3. Map to stories array
         $this->stories = $users->map(function ($u) {
             $latestStoryUrl = $u->latestStory ? $u->latestStory->image_url : null;
+
             return [
                 'user_id' => $u->id,
                 'name' => $u->profile->nickname ?? $u->name,
@@ -72,7 +71,7 @@ class Stories extends Component
         $user = \Illuminate\Support\Facades\Auth::user();
 
         $user->stories()->create([
-            'image_url' => asset('storage/' . $path),
+            'image_url' => asset('storage/'.$path),
             'expires_at' => now()->addHours(24),
         ]);
 

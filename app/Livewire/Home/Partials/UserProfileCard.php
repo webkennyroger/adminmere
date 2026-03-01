@@ -14,7 +14,7 @@ class UserProfileCard extends Component
             'user' => $user,
             'followingCount' => $user->following()->count(),
             'followersCount' => $user->followers()->count(),
-            'activitiesCount' => $user->activities()->count()
+            'activitiesCount' => $user->activities()->count(),
         ]);
     }
 }

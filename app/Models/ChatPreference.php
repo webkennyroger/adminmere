@@ -10,9 +10,9 @@ class ChatPreference extends Model
         'user_id',
         'peer_id',
         'is_muted',
-        'is_archived'
+        'is_archived',
     ];
-    
+
     protected $casts = [
         'is_muted' => 'boolean',
         'is_archived' => 'boolean',

@@ -22,12 +22,15 @@ class PollOption extends Model
     {
         return $this->hasMany(PollVote::class);
     }
-    
+
     // Helper to calculate percentage
     public function getPercentageAttribute()
     {
         $totalVotes = $this->post->poll_votes_count ?? $this->post->total_votes;
-        if ($totalVotes == 0) return 0;
+        if ($totalVotes == 0) {
+            return 0;
+        }
+
         return round(($this->votes_count / $totalVotes) * 100);
     }
 }

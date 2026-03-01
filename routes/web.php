@@ -256,5 +256,3 @@ Route::middleware(['auth'])->group(function () {
 
 // Maintenance Route (Temporary for Initial Seeding)
 Route::get('/maintenance/seed', [App\Http\Controllers\MaintenanceController::class, 'seed']);
-
-

@@ -7,6 +7,7 @@ use Livewire\Component;
 class SocialMediaStats extends Component
 {
     public $stats = [];
+
     public $overallGrowth = 3.3;
 
     public function mount()
@@ -75,7 +76,7 @@ class SocialMediaStats extends Component
         // Simula atualização de dados
         // Em produção, isso chamaria as APIs novamente
         $this->overallGrowth = 3.3 + (rand(-5, 5) / 10);
-        
+
         foreach ($this->stats as &$stat) {
             $stat['growth'] = max(0, $stat['growth'] + rand(-1, 1));
         }

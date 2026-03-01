@@ -2,20 +2,19 @@
 
 namespace App\Livewire\Layouts\Header;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Notifications\DatabaseNotification;
+use Livewire\Component;
 
 class NotificationDropdown extends Component
 {
     public $isOpen = false;
+
     public $activeTab = 'all';
 
     public function getListeners()
     {
         return [
-            'echo-private:App.Models.User.' . Auth::id() . ',.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated' => 'broadcastNotificationReceived',
+            'echo-private:App.Models.User.'.Auth::id().',.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated' => 'broadcastNotificationReceived',
             'refreshNotifications' => '$refresh',
         ];
     }
@@ -36,26 +35,26 @@ class NotificationDropdown extends Component
      */
     public function getNotificationStatusProperty()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return 'empty';
         }
 
         $user = Auth::user();
-        
+
         // Check for unread notifications
         $unreadCount = $user->unreadNotifications()->count();
-        
+
         if ($unreadCount > 0) {
             return 'new'; // Orange - has unread notifications
         }
-        
+
         // Check if user has any notifications at all
         $hasNotifications = $user->notifications()->exists();
-        
-        if (!$hasNotifications) {
+
+        if (! $hasNotifications) {
             return 'empty'; // Gray - no notifications
         }
-        
+
         // If has notifications but all are read
         return 'responded'; // Green - all responded/read
     }
@@ -65,7 +64,7 @@ class NotificationDropdown extends Component
      */
     public function getBadgeColorProperty()
     {
-        return match($this->notificationStatus) {
+        return match ($this->notificationStatus) {
             'new' => 'bg-orange-500',
             'responded' => 'bg-green-500',
             'empty' => 'bg-gray-400',
@@ -75,7 +74,7 @@ class NotificationDropdown extends Component
 
     public function getFilteredNotificationsProperty()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return collect();
         }
 
@@ -84,7 +83,7 @@ class NotificationDropdown extends Component
         if ($this->activeTab !== 'all') {
             switch ($this->activeTab) {
                 case 'message':
-                    $query->where('type', 'App\Notifications\MessageSent'); 
+                    $query->where('type', 'App\Notifications\MessageSent');
                     // Adjust Notification Class Name as per your project
                     break;
                 case 'challenges':
@@ -98,7 +97,7 @@ class NotificationDropdown extends Component
                     break;
                 case 'security':
                     $query->where('type', 'App\Notifications\SecurityAlert');
-                     // Adjust Notification Class Name as per your project
+                    // Adjust Notification Class Name as per your project
                     break;
             }
         }
@@ -122,10 +121,10 @@ class NotificationDropdown extends Component
             $this->dispatch('refreshNotifications');
         }
     }
-    
+
     public function archiveItem($notificationId)
     {
-         $this->markAsRead($notificationId);
+        $this->markAsRead($notificationId);
     }
 
     public function archiveAll()

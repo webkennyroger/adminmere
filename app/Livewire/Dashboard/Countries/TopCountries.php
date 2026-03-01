@@ -28,9 +28,9 @@ class TopCountries extends Component
             ['name' => 'Espanha', 'flag' => 'spain.svg', 'users' => 501, 'trend' => 'up'],
             ['name' => 'Itália', 'flag' => 'italy.svg', 'users' => 466, 'trend' => 'up'],
         ];
-        
+
         // Sort by users descending
-        usort($this->countries, function($a, $b) {
+        usort($this->countries, function ($a, $b) {
             return $b['users'] <=> $a['users'];
         });
     }

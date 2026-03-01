@@ -2,15 +2,19 @@
 
 namespace App\Livewire\Profile;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class AddressCard extends Component
 {
     public $user;
+
     public string $address = '';
+
     public string $city = '';
+
     public string $state = '';
+
     public string $zip_code = '';
 
     public function mount(): void
@@ -32,7 +36,7 @@ class AddressCard extends Component
         if (strlen($cep) === 8) {
             $response = \Illuminate\Support\Facades\Http::get("https://viacep.com.br/ws/{$cep}/json/");
 
-            if ($response->successful() && !isset($response['erro'])) {
+            if ($response->successful() && ! isset($response['erro'])) {
                 $data = $response->json();
                 $this->address = $data['logradouro'] ?? $this->address;
                 $this->city = $data['localidade'] ?? $this->city;

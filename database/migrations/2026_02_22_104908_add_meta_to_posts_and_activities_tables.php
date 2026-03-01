@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            if (!Schema::hasColumn('posts', 'meta')) {
+            if (! Schema::hasColumn('posts', 'meta')) {
                 $table->json('meta')->nullable()->after('privacy');
             }
         });
 
         Schema::table('activities', function (Blueprint $table) {
-            if (!Schema::hasColumn('activities', 'meta')) {
+            if (! Schema::hasColumn('activities', 'meta')) {
                 $table->json('meta')->nullable()->after('media');
             }
         });

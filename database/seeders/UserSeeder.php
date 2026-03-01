@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        if (!$admin->profile) {
+        if (! $admin->profile) {
             Profile::create([
                 'user_id' => $admin->id,
                 'role' => 'admin',
@@ -43,17 +43,21 @@ class UserSeeder extends Seeder
                 ]
             );
 
-            if (!$user->profile) {
+            if (! $user->profile) {
                 // Distribute plans: 4 Free, 3 Monthly, 3 Annual
                 $plan = 'free';
-                if ($i > 4 && $i <= 7) $plan = 'monthly';
-                if ($i > 7) $plan = 'annual';
+                if ($i > 4 && $i <= 7) {
+                    $plan = 'monthly';
+                }
+                if ($i > 7) {
+                    $plan = 'annual';
+                }
 
                 Profile::create([
                     'user_id' => $user->id,
                     'role' => 'user',
                     'plan' => $plan,
-                    'phone' => "(11) 9" . rand(1000, 9999) . "-" . rand(1000, 9999),
+                    'phone' => '(11) 9'.rand(1000, 9999).'-'.rand(1000, 9999),
                 ]);
             }
         }

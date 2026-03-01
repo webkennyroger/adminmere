@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
 class GenerateNicknames extends Command
@@ -27,7 +27,7 @@ class GenerateNicknames extends Command
      */
     public function handle()
     {
-        $users = User::whereHas('profile', function($q) {
+        $users = User::whereHas('profile', function ($q) {
             $q->whereNull('nickname');
         })->orWhereDoesntHave('profile')->get();
 
@@ -41,12 +41,12 @@ class GenerateNicknames extends Command
 
             // Ensure uniqueness
             while (\App\Models\Profile::where('nickname', $nickname)->exists()) {
-                $nickname = $baseName . $counter;
+                $nickname = $baseName.$counter;
                 $counter++;
             }
 
             // Create or update profile
-            if (!$user->profile) {
+            if (! $user->profile) {
                 $user->profile()->create([
                     'nickname' => $nickname,
                     'role' => 'user',

@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -53,7 +54,7 @@ return new class extends Migration
         // Make sure activities table exists before running this part (it does in previous migrations)
         if (Schema::hasTable('activities')) {
             Schema::table('activities', function (Blueprint $table) {
-                if (!Schema::hasColumn('activities', 'tagged_users')) {
+                if (! Schema::hasColumn('activities', 'tagged_users')) {
                     $table->json('tagged_users')->nullable()->after('media'); // List of user IDs or names
                 }
             });
@@ -66,11 +67,11 @@ return new class extends Migration
     public function down(): void
     {
         if (Schema::hasTable('activities')) {
-             Schema::table('activities', function (Blueprint $table) {
+            Schema::table('activities', function (Blueprint $table) {
                 $table->dropColumn('tagged_users');
             });
         }
-        
+
         Schema::dropIfExists('likes');
         Schema::dropIfExists('comments');
         Schema::dropIfExists('followers');

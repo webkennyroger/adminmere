@@ -9,7 +9,7 @@ class RightSidebar extends Component
     public function render()
     {
         $user = auth()->user();
-        
+
         // Challenges the user has joined (participating)
         $myChallenges = $user->challenges()
             ->withCount('users')
@@ -19,7 +19,7 @@ class RightSidebar extends Component
 
         return view('livewire.home.partials.right-sidebar', [
             'myChallenges' => $myChallenges,
-            'isPremium' => $user->subscribed('default') // Assuming Cashier
+            'isPremium' => $user->subscribed('default'), // Assuming Cashier
         ]);
     }
 }

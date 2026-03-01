@@ -4,15 +4,16 @@ namespace App\Livewire\Users;
 
 use App\Models\User;
 use Livewire\Component;
-use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class UserIndex extends Component
 {
-    use WithPagination;
     use WithFileUploads;
+    use WithPagination;
 
     public $search = '';
+
     public $perPage = 10;
 
     public function updatedPerPage()
@@ -21,35 +22,51 @@ class UserIndex extends Component
     }
 
     public $showModal = false;
+
     public $isEditMode = false;
+
     public $userId;
 
     public $selected = [];
+
     public $selectAll = false;
 
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $phone = '';
+
     public $city = '';
+
     public $state = '';
+
     public $image;
+
     public $currentImage;
-    
+
     // Social Media
     public $mere = '';
+
     public $instagram = '';
+
     public $x = '';
+
     public $facebook = '';
+
     public $youtube = '';
+
     public $role = 'user';
+
     public $plan = 'free';
 
     protected function rules()
     {
         return [
             'name' => 'required|string|min:3',
-            'email' => 'required|email|unique:users,email,' . $this->userId,
+            'email' => 'required|email|unique:users,email,'.$this->userId,
             'password' => $this->isEditMode ? 'nullable|min:6' : 'required|min:6',
             'phone' => 'nullable|string',
             'city' => 'nullable|string',
@@ -71,15 +88,15 @@ class UserIndex extends Component
         User::whereIn('id', $this->selected)->delete();
         $this->selected = [];
         $this->selectAll = false;
-        
-        $message = $count === 1 
-            ? 'O usuário selecionado foi excluído do sistema!' 
+
+        $message = $count === 1
+            ? 'O usuário selecionado foi excluído do sistema!'
             : "{$count} usuários foram excluídos com sucesso!";
-            
+
         $this->dispatch('toast', [
-            'type' => 'error', 
+            'type' => 'error',
             'message' => $message,
-            'title' => 'Exclusão realizada'
+            'title' => 'Exclusão realizada',
         ]);
     }
 
@@ -87,20 +104,20 @@ class UserIndex extends Component
     {
         return User::with('profile')
             ->where(function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
+                $query->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             });
     }
 
     public function toggleSelectAll()
     {
         // Ensure $selected is always an array
-        if (!is_array($this->selected)) {
+        if (! is_array($this->selected)) {
             $this->selected = [];
         }
-        
+
         $perPage = $this->perPage == -1 ? 100000 : $this->perPage;
-        
+
         if (count($this->selected) > 0) {
             // If any are selected, deselect all
             $this->selected = [];
@@ -130,14 +147,14 @@ class UserIndex extends Component
         $this->userId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
-        
+
         // Profile Data
         $profile = $user->profile;
         $this->phone = $profile?->phone;
         $this->city = $profile?->city;
         $this->state = $profile?->state;
         $this->currentImage = $profile?->image ? \Storage::url($profile->image) : null;
-        
+
         $this->mere = $profile?->mere;
         $this->instagram = $profile?->instagram;
         $this->x = $profile?->x;
@@ -186,9 +203,9 @@ class UserIndex extends Component
 
         $this->showModal = false;
         $this->dispatch('toast', [
-            'type' => 'success', 
-            'message' => 'O usuário "' . $this->name . '" foi cadastrado com sucesso!',
-            'title' => 'Novo usuário criado'
+            'type' => 'success',
+            'message' => 'O usuário "'.$this->name.'" foi cadastrado com sucesso!',
+            'title' => 'Novo usuário criado',
         ]);
     }
 
@@ -235,13 +252,14 @@ class UserIndex extends Component
 
         $this->showModal = false;
         $this->dispatch('toast', [
-            'type' => 'info', 
-            'message' => 'Os dados do usuário "' . $this->name . '" foram atualizados!',
-            'title' => 'Usuário atualizado'
+            'type' => 'info',
+            'message' => 'Os dados do usuário "'.$this->name.'" foram atualizados!',
+            'title' => 'Usuário atualizado',
         ]);
     }
 
     public $confirmingDeletion = false;
+
     public $userToDelete;
 
     public function confirmDelete($id)
@@ -255,39 +273,38 @@ class UserIndex extends Component
         if ($this->userToDelete) {
             $userName = $this->userToDelete->name;
             $this->userToDelete->delete();
-            
+
             $this->dispatch('toast', [
-                'type' => 'error', 
-                'message' => 'O usuário "' . $userName . '" foi removido do sistema!',
-                'title' => 'Usuário excluído'
+                'type' => 'error',
+                'message' => 'O usuário "'.$userName.'" foi removido do sistema!',
+                'title' => 'Usuário excluído',
             ]);
         }
-        
+
         $this->confirmingDeletion = false;
         $this->userToDelete = null;
     }
-
 
     public function toggleStatus($id)
     {
         $user = User::with('profile')->findOrFail($id);
         if ($user->profile) {
-             $newStatus = $user->profile->status === 'active' ? 'inactive' : 'active';
-             $user->profile->status = $newStatus;
-             $user->profile->save();
-             
-             $statusText = $newStatus === 'active' ? 'ativado' : 'desativado';
-             $this->dispatch('toast', [
-                'type' => 'info', 
-                'message' => 'O usuário "' . $user->name . '" foi ' . $statusText . ' com sucesso!',
-                'title' => 'Status atualizado'
+            $newStatus = $user->profile->status === 'active' ? 'inactive' : 'active';
+            $user->profile->status = $newStatus;
+            $user->profile->save();
+
+            $statusText = $newStatus === 'active' ? 'ativado' : 'desativado';
+            $this->dispatch('toast', [
+                'type' => 'info',
+                'message' => 'O usuário "'.$user->name.'" foi '.$statusText.' com sucesso!',
+                'title' => 'Status atualizado',
             ]);
         } else {
             $user->profile()->create(['status' => 'active']);
             $this->dispatch('toast', [
-                'type' => 'success', 
-                'message' => 'Perfil criado e ativado para "' . $user->name . '"!',
-                'title' => 'Perfil criado'
+                'type' => 'success',
+                'message' => 'Perfil criado e ativado para "'.$user->name.'"!',
+                'title' => 'Perfil criado',
             ]);
         }
     }
@@ -302,7 +319,7 @@ class UserIndex extends Component
         if ($this->perPage == -1) {
             // Show all without pagination
             $users = $this->getUsersQuery()->get();
-            
+
             // Create a manual paginator for compatibility with the view
             $users = new \Illuminate\Pagination\LengthAwarePaginator(
                 $users,
