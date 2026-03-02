@@ -18,14 +18,17 @@ class StoryController extends Controller
         $followingIds[] = $user->id;
 
         // Buscar usuários com stories ativos
+        $now = now()->toDateTimeString();
         $usersWithStories = \App\Models\User::whereIn('id', $followingIds)
-            ->whereHas('stories', function ($query) {
-                $query->where('expires_at', '>', now());
+            ->whereHas('stories', function ($query) use ($now) {
+                $query->where('expires_at', '>', $now);
             })
-            ->with(['stories' => function ($query) {
-                $query->where('expires_at', '>', now())->orderBy('created_at', 'asc');
+            ->with(['stories' => function ($query) use ($now) {
+                $query->where('expires_at', '>', $now)->orderBy('created_at', 'asc');
             }, 'profile'])
             ->get();
+
+        \Illuminate\Support\Facades\Log::info("Stories fetch (API) at $now: Found " . $usersWithStories->count() . " users with stories.");
 
         $stories = $usersWithStories->map(function ($u) use ($user) {
             $userStories = $u->stories->map(function ($s) {

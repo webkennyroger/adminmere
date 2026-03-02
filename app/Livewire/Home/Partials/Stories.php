@@ -37,13 +37,14 @@ class Stories extends Component
         $followingIds[] = $user->id; // Include self
 
         // 2. Fetch users with active stories
+        $now = now()->toDateTimeString();
         $users = \App\Models\User::whereIn('id', $followingIds)
-            ->whereHas('stories', function ($query) {
-                $query->where('expires_at', '>', now());
+            ->whereHas('stories', function ($query) use ($now) {
+                $query->where('expires_at', '>', $now);
             })
             ->with([
-                'stories' => function ($query) {
-                    $query->where('expires_at', '>', now())->orderBy('created_at', 'asc');
+                'stories' => function ($query) use ($now) {
+                    $query->where('expires_at', '>', $now)->orderBy('created_at', 'asc');
                 },
                 'profile',
             ])
