@@ -1,173 +1,173 @@
 @auth
- <div class="relative" x-data="{
- dropdownOpen: false,
- toggleDropdown() {
- this.dropdownOpen = !this.dropdownOpen;
- },
- closeDropdown() {
- this.dropdownOpen = false;
- }
- }" @click.away="closeDropdown()">
- <!-- User Button -->
- <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
- <span class="mr-3 overflow-hidden h-11 w-11">
- <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
- </span>
- </button>
+    <div class="relative" x-data="{
+                                    dropdownOpen: false,
+                                    toggleDropdown() {
+                                        this.dropdownOpen = !this.dropdownOpen;
+                                    },
+                                    closeDropdown() {
+                                        this.dropdownOpen = false;
+                                    }
+                                }" @click.away="closeDropdown()">
+        <!-- User Button -->
+        <button class="flex items-center text-zinc-700 dark:text-zinc-400" @click.prevent="toggleDropdown()" type="button">
+            <span class="mr-3 overflow-hidden rounded-lg h-11 w-11">
+                <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
+            </span>
+        </button>
 
- <!-- Dropdown Start -->
- <div x-show="dropdownOpen" x-transition:enter="transition ease-out duration-100"
- x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
- x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100"
- x-transition:leave-end="transform opacity-0 scale-95"
- class="absolute right-0 mt-[17px] flex w-[260px] flex-col border border-zinc-20 bg-white px-5 py-7 dark:bg-zinc-700 shadow-theme-lg dark:border-zinc-800 z-50"
- style="display: none;">
- <!-- User Info -->
- <div class="flex items-center gap-3">
- <span class="overflow-hidden h-11 w-11">
- <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
- </span>
- <div>
- <span
- class="block font-medium text-zinc-700 text-theme-sm dark:text-zinc-400">{{ Auth::user()->name }}</span>
- <span
- class="mt-0.5 block text-theme-xs text-zinc-500 dark:text-zinc-400">{{ Auth::user()->email }}</span>
- </div>
- </div>
+        <!-- Dropdown Start -->
+        <div x-show="dropdownOpen" x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100"
+            x-transition:leave-end="transform opacity-0 scale-95"
+            class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-zinc-20 bg-white px-5 py-7 dark:bg-zinc-700 shadow-theme-lg dark:border-zinc-800 z-50"
+            style="display: none;">
+            <!-- User Info -->
+            <div class="flex items-center gap-3">
+                <span class="overflow-hidden rounded-lg h-11 w-11">
+                    <img class="h-full w-full object-cover" src="{{ Auth::user()->image_url }}" alt="User" />
+                </span>
+                <div>
+                    <span
+                        class="block font-medium text-zinc-700 text-theme-sm dark:text-zinc-400">{{ Auth::user()->name }}</span>
+                    <span
+                        class="mt-0.5 block text-theme-xs text-zinc-500 dark:text-zinc-400">{{ Auth::user()->email }}</span>
+                </div>
+            </div>
 
- <!-- Menu Items -->
- <ul class="flex flex-col gap-1 pt-4 pb-3 border-b border-zinc-200 dark:border-zinc-800">
- <li>
- <a href="{{ route('profile.edit') }}"
- class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
- <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path fill-rule="evenodd" clip-rule="evenodd"
- d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z"
- fill="currentColor" />
- </svg>
- </span>
- Editar perfil
- </a>
- </li>
- <li>
- <a href="{{ route('chat.index') }}"
- class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path fill-rule="evenodd" clip-rule="evenodd"
- d="M3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12ZM12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11.0991 7.52507C11.0991 8.02213 11.5021 8.42507 11.9991 8.42507H12.0001C12.4972 8.42507 12.9001 8.02213 12.9001 7.52507C12.9001 7.02802 12.4972 6.62507 12.0001 6.62507H11.9991C11.5021 6.62507 11.0991 7.02802 11.0991 7.52507ZM12.0001 17.3714C11.5859 17.3714 11.2501 17.0356 11.2501 16.6214V10.9449C11.2501 10.5307 11.5859 10.1949 12.0001 10.1949C12.4143 10.1949 12.7501 10.5307 12.7501 10.9449V16.6214C12.7501 17.0356 12.4143 17.3714 12.0001 17.3714Z"
- fill="currentColor" />
- </svg>
- Suporte
- </a>
+            <!-- Menu Items -->
+            <ul class="flex flex-col gap-1 pt-4 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+                <li>
+                    <a href="{{ route('profile.edit') }}"
+                        class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+                        <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z"
+                                    fill="currentColor" />
+                            </svg>
+                        </span>
+                        Editar perfil
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('chat.index') }}"
+                        class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12ZM12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11.0991 7.52507C11.0991 8.02213 11.5021 8.42507 11.9991 8.42507H12.0001C12.4972 8.42507 12.9001 8.02213 12.9001 7.52507C12.9001 7.02802 12.4972 6.62507 12.0001 6.62507H11.9991C11.5021 6.62507 11.0991 7.02802 11.0991 7.52507ZM12.0001 17.3714C11.5859 17.3714 11.2501 17.0356 11.2501 16.6214V10.9449C11.2501 10.5307 11.5859 10.1949 12.0001 10.1949C12.4143 10.1949 12.7501 10.5307 12.7501 10.9449V16.6214C12.7501 17.0356 12.4143 17.3714 12.0001 17.3714Z"
+                                fill="currentColor" />
+                        </svg>
+                        Suporte
+                    </a>
 
- <li>
- <a href="{{ route('terms.show') }}"
- class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
- <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
- <!-- Icon for Terms -->
- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path
- d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
- stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
- <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
- stroke-linejoin="round" />
- <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
- stroke-linejoin="round" />
- <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
- stroke-linejoin="round" />
- <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
- stroke-linejoin="round" />
- </svg>
- </span>
- Termos de Uso
- </a>
- </li>
- <li>
- <a href="{{ route('policy.show') }}"
- class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
- <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
- <!-- Icon for Privacy -->
- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor"
- stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
- </svg>
- </span>
- Privacidade
- </a>
- </li>
- <li>
- <a href="#"
- class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
- <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
- <!-- Icon for About/Info -->
- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path
- d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
- stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
- <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
- stroke-linejoin="round" />
- <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
- stroke-linejoin="round" />
- </svg>
- </span>
- Sobre
- </a>
- </li>
- </ul>
+                <li>
+                    <a href="{{ route('terms.show') }}"
+                        class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+                        <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
+                            <!-- Icon for Terms -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        Termos de Uso
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('policy.show') }}"
+                        class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+                        <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
+                            <!-- Icon for Privacy -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        Privacidade
+                    </a>
+                </li>
+                <li>
+                    <a href="#"
+                        class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+                        <span class="text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
+                            <!-- Icon for About/Info -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        Sobre
+                    </a>
+                </li>
+            </ul>
 
- <!-- Sign Out -->
- <form method="POST" action="{{ route('logout') }}" class="mt-4">
- @csrf
- <a href="{{ route('logout') }}"
- class="flex items-center justify-center w-full gap-3 px-3 py-2.5 font-bold text-white bg-red-500 group text-theme-sm hover:bg-red-600 transition-all shadow-md shadow-red-200 dark:shadow-none active:scale-[0.98]"
- onclick="event.preventDefault(); this.closest('form').submit();">
- <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
- d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
- </path>
- </svg>
- Sair da Conta
- </a>
- </form>
+            <!-- Sign Out -->
+            <form method="POST" action="{{ route('logout') }}" class="mt-4">
+                @csrf
+                <a href="{{ route('logout') }}"
+                    class="flex items-center justify-center w-full gap-3 px-3 py-2.5 font-bold text-white bg-red-500 rounded-xl group text-theme-sm hover:bg-red-600 transition-all shadow-md shadow-red-200 dark:shadow-none active:scale-[0.98]"
+                    onclick="event.preventDefault(); this.closest('form').submit();">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    Sair da Conta
+                </a>
+            </form>
 
- <!-- Divider -->
- <div class="my-6 border-t border-zinc-200 dark:border-zinc-800/50"></div>
+            <!-- Divider -->
+            <div class="my-6 border-t border-zinc-200 dark:border-zinc-800/50"></div>
 
- <!-- Theme Switcher (Manual + Flux Sync) -->
- <div class="flex flex-col items-center gap-3 pb-2" x-data="{ 
- theme: localStorage.getItem('theme') || 'system',
- applyTheme(val) {
- this.theme = val;
- localStorage.setItem('theme', val);
- if (val === 'dark' || (val === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
- document.documentElement.classList.add('dark');
- } else {
- document.documentElement.classList.remove('dark');
- }
- if (window.$flux) window.$flux.appearance = val;
- }
- }">
- <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aparência</span>
- <div class="flex w-full p-1 bg-zinc-100 dark:bg-zinc-800 ">
- <button @click="applyTheme('light')"
- :class="theme === 'light' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
- class="flex-1 flex justify-center py-1.5 transition-all">
- <flux:icon.sun class="w-5 h-5" />
- </button>
- <button @click="applyTheme('dark')"
- :class="theme === 'dark' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
- class="flex-1 flex justify-center py-1.5 transition-all">
- <flux:icon.moon class="w-5 h-5" />
- </button>
- <button @click="applyTheme('system')"
- :class="theme === 'system' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
- class="flex-1 flex justify-center py-1.5 transition-all">
- <flux:icon.computer-desktop class="w-5 h-5" />
- </button>
- </div>
- </div>
- </div>
- <!-- Dropdown End -->
- </div>
+            <!-- Theme Switcher (Manual + Flux Sync) -->
+            <div class="flex flex-col items-center gap-3 pb-2" x-data="{ 
+                    theme: localStorage.getItem('theme') || 'system',
+                    applyTheme(val) {
+                        this.theme = val;
+                        localStorage.setItem('theme', val);
+                        if (val === 'dark' || (val === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                        if (window.$flux) window.$flux.appearance = val;
+                    }
+                }">
+                <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aparência</span>
+                <div class="flex w-full p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                    <button @click="applyTheme('light')"
+                        :class="theme === 'light' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
+                        class="flex-1 flex justify-center py-1.5 rounded-lg transition-all">
+                        <flux:icon.sun class="w-5 h-5" />
+                    </button>
+                    <button @click="applyTheme('dark')"
+                        :class="theme === 'dark' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
+                        class="flex-1 flex justify-center py-1.5 rounded-lg transition-all">
+                        <flux:icon.moon class="w-5 h-5" />
+                    </button>
+                    <button @click="applyTheme('system')"
+                        :class="theme === 'system' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500'"
+                        class="flex-1 flex justify-center py-1.5 rounded-lg transition-all">
+                        <flux:icon.computer-desktop class="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Dropdown End -->
+    </div>
 @endauth
