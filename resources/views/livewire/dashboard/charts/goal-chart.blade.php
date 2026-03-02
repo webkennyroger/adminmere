@@ -1,128 +1,128 @@
-<div class="rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-white/[0.03]">
-    <div class="shadow-default rounded-2xl bg-white px-5 pb-11 pt-5 dark:bg-zinc-900 sm:px-6 sm:pt-6">
-        <div class="flex justify-between">
-            <div>
-                <h3 class="text-lg font-semibold text-zinc-800 dark:text-white/90">
-                    Meta mensal
-                </h3>
-                <p class="mt-1 text-theme-sm text-zinc-500 dark:text-zinc-400">
-                    Meta que você definiu para cada mês
-                </p>
-            </div>
+<div class=" border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-white/[0.03]">
+ <div class="shadow-default bg-white px-5 pb-11 pt-5 dark:bg-zinc-900 sm:px-6 sm:pt-6">
+ <div class="flex justify-between">
+ <div>
+ <h3 class="text-lg font-semibold text-zinc-800 dark:text-white/90">
+ Meta mensal
+ </h3>
+ <p class="mt-1 text-theme-sm text-zinc-500 dark:text-zinc-400">
+ Meta que você definiu para cada mês
+ </p>
+ </div>
 
-            <!-- Dropdown Menu -->
-            <div x-data="{openDropDown: false}" class="relative h-fit">
-                <button @click="openDropDown = !openDropDown"
-                    :class="openDropDown ? 'text-zinc-700 dark:text-white' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-white'"
-                    class="text-zinc-400 hover:text-zinc-700 dark:hover:text-white">
-                    <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                            fill=""></path>
-                    </svg>
-                </button>
+ <!-- Dropdown Menu -->
+ <div x-data="{openDropDown: false}" class="relative h-fit">
+ <button @click="openDropDown = !openDropDown"
+ :class="openDropDown ? 'text-zinc-700 dark:text-white' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-white'"
+ class="text-zinc-400 hover:text-zinc-700 dark:hover:text-white">
+ <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
+ xmlns="http://www.w3.org/2000/svg">
+ <path fill-rule="evenodd" clip-rule="evenodd"
+ d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
+ fill=""></path>
+ </svg>
+ </button>
 
-                <div x-show="openDropDown" @click.outside="openDropDown = false"
-                    class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-zinc-200 shadow-theme-lg dark:bg-zinc-dark top-full rounded-2xl dark:border-zinc-800"
-                    style="display: none;">
-                    <button wire:click="$set('chartType', 'users'); openDropDown = false"
-                        class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 rounded-lg text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
-                        Usuários
-                    </button>
-                    <button wire:click="$set('chartType', 'sales'); openDropDown = false"
-                        class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 rounded-lg text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
-                        Vendas
-                    </button>
-                    <button wire:click="$set('chartType', 'expenses'); openDropDown = false"
-                        class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 rounded-lg text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
-                        Despesas
-                    </button>
-                    <button wire:click="$set('chartType', 'revenue'); openDropDown = false"
-                        class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 rounded-lg text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
-                        Renda
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Chart -->
+ <div x-show="openDropDown" @click.outside="openDropDown = false"
+ class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-zinc-200 shadow-theme-lg dark:bg-zinc-dark top-full dark:border-zinc-800"
+ style="display: none;">
+ <button wire:click="$set('chartType', 'users'); openDropDown = false"
+ class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+ Usuários
+ </button>
+ <button wire:click="$set('chartType', 'sales'); openDropDown = false"
+ class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+ Vendas
+ </button>
+ <button wire:click="$set('chartType', 'expenses'); openDropDown = false"
+ class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+ Despesas
+ </button>
+ <button wire:click="$set('chartType', 'revenue'); openDropDown = false"
+ class="flex w-full px-3 py-2 font-medium text-left text-zinc-500 text-theme-xs hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
+ Renda
+ </button>
+ </div>
+ </div>
+ </div>
+ <!-- Chart -->
 
-        <div class="relative">
-            <div id="goalChart" class="h-full" style="min-height: 230px;" data-percentage="{{ $goalPercentage }}"></div>
-        </div>
-        <p class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-zinc-500 sm:text-base">
-            @if($chartType === 'users')
-                Você angariou {{ number_format($todayValue, 0, ',', '.') }} usuários hoje.<br>
-            @elseif($chartType === 'sales')
-                Você fez {{ number_format($todayValue, 0, ',', '.') }} vendas hoje.
-            @else
-                Você movimentou R$ {{ number_format($todayValue, 2, ',', '.') }} hoje.
-            @endif
-            Continue com o bom trabalho!
-        </p>
-    </div>
+ <div class="relative">
+ <div id="goalChart" class="h-full" style="min-height: 230px;" data-percentage="{{ $goalPercentage }}"></div>
+ </div>
+ <p class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-zinc-500 sm:text-base">
+ @if($chartType === 'users')
+ Você angariou {{ number_format($todayValue, 0, ',', '.') }} usuários hoje.<br>
+ @elseif($chartType === 'sales')
+ Você fez {{ number_format($todayValue, 0, ',', '.') }} vendas hoje.
+ @else
+ Você movimentou R$ {{ number_format($todayValue, 2, ',', '.') }} hoje.
+ @endif
+ Continue com o bom trabalho!
+ </p>
+ </div>
 
-    <!-- Stats -->
-    <div class="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
-        <div>
-            <p class="mb-1 text-center text-theme-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
-                Alvo
-            </p>
-            <p
-                class="flex items-center justify-center gap-1 text-base font-semibold text-zinc-800 dark:text-white/90 sm:text-lg">
-                @if($chartType === 'users')
-                    {{ number_format($targetValue, 0, ',', '.') }}
-                @else
-                    R$ {{ number_format($targetValue / 1000, 0) }}K
-                @endif
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7.26816 13.6632C7.4056 13.8192 7.60686 13.9176 7.8311 13.9176C7.83148 13.9176 7.83187 13.9176 7.83226 13.9176C8.02445 13.9178 8.21671 13.8447 8.36339 13.6981L12.3635 9.70076C12.6565 9.40797 12.6567 8.9331 12.3639 8.6401C12.0711 8.34711 11.5962 8.34694 11.3032 8.63973L8.5811 11.36L8.5811 2.5C8.5811 2.08579 8.24531 1.75 7.8311 1.75C7.41688 1.75 7.0811 2.08579 7.0811 2.5L7.0811 11.3556L4.36354 8.63975C4.07055 8.34695 3.59568 8.3471 3.30288 8.64009C3.01008 8.93307 3.01023 9.40794 3.30321 9.70075L7.26816 13.6632Z"
-                        fill="#D92D20"></path>
-                </svg>
-            </p>
-        </div>
+ <!-- Stats -->
+ <div class="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
+ <div>
+ <p class="mb-1 text-center text-theme-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
+ Alvo
+ </p>
+ <p
+ class="flex items-center justify-center gap-1 text-base font-semibold text-zinc-800 dark:text-white/90 sm:text-lg">
+ @if($chartType === 'users')
+ {{ number_format($targetValue, 0, ',', '.') }}
+ @else
+ R$ {{ number_format($targetValue / 1000, 0) }}K
+ @endif
+ <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path fill-rule="evenodd" clip-rule="evenodd"
+ d="M7.26816 13.6632C7.4056 13.8192 7.60686 13.9176 7.8311 13.9176C7.83148 13.9176 7.83187 13.9176 7.83226 13.9176C8.02445 13.9178 8.21671 13.8447 8.36339 13.6981L12.3635 9.70076C12.6565 9.40797 12.6567 8.9331 12.3639 8.6401C12.0711 8.34711 11.5962 8.34694 11.3032 8.63973L8.5811 11.36L8.5811 2.5C8.5811 2.08579 8.24531 1.75 7.8311 1.75C7.41688 1.75 7.0811 2.08579 7.0811 2.5L7.0811 11.3556L4.36354 8.63975C4.07055 8.34695 3.59568 8.3471 3.30288 8.64009C3.01008 8.93307 3.01023 9.40794 3.30321 9.70075L7.26816 13.6632Z"
+ fill="#D92D20"></path>
+ </svg>
+ </p>
+ </div>
 
-        <div class="h-7 w-px bg-zinc-200 dark:bg-zinc-800"></div>
+ <div class="h-7 w-px bg-zinc-200 dark:bg-zinc-800"></div>
 
-        <div>
-            <p class="mb-1 text-center text-theme-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
-                Receita
-            </p>
-            <p
-                class="flex items-center justify-center gap-1 text-base font-semibold text-zinc-800 dark:text-white/90 sm:text-lg">
-                @if($chartType === 'users')
-                    {{ number_format($revenueValue, 0, ',', '.') }}
-                @else
-                    R$ {{ number_format($revenueValue / 1000, 2) }}K
-                @endif
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-                        fill="#039855"></path>
-                </svg>
-            </p>
-        </div>
+ <div>
+ <p class="mb-1 text-center text-theme-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
+ Receita
+ </p>
+ <p
+ class="flex items-center justify-center gap-1 text-base font-semibold text-zinc-800 dark:text-white/90 sm:text-lg">
+ @if($chartType === 'users')
+ {{ number_format($revenueValue, 0, ',', '.') }}
+ @else
+ R$ {{ number_format($revenueValue / 1000, 2) }}K
+ @endif
+ <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path fill-rule="evenodd" clip-rule="evenodd"
+ d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
+ fill="#039855"></path>
+ </svg>
+ </p>
+ </div>
 
-        <div class="h-7 w-px bg-zinc-200 dark:bg-zinc-800"></div>
+ <div class="h-7 w-px bg-zinc-200 dark:bg-zinc-800"></div>
 
-        <div>
-            <p class="mb-1 text-center text-theme-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
-                Hoje
-            </p>
-            <p
-                class="flex items-center justify-center gap-1 text-base font-semibold text-zinc-800 dark:text-white/90 sm:text-lg">
-                @if($chartType === 'users')
-                    {{ number_format($todayValue, 0, ',', '.') }}
-                @else
-                    R$ {{ number_format($todayValue / 1000, 2) }}K
-                @endif
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-                        fill="#039855"></path>
-                </svg>
-            </p>
-        </div>
-    </div>
+ <div>
+ <p class="mb-1 text-center text-theme-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
+ Hoje
+ </p>
+ <p
+ class="flex items-center justify-center gap-1 text-base font-semibold text-zinc-800 dark:text-white/90 sm:text-lg">
+ @if($chartType === 'users')
+ {{ number_format($todayValue, 0, ',', '.') }}
+ @else
+ R$ {{ number_format($todayValue / 1000, 2) }}K
+ @endif
+ <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path fill-rule="evenodd" clip-rule="evenodd"
+ d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
+ fill="#039855"></path>
+ </svg>
+ </p>
+ </div>
+ </div>
 </div>
