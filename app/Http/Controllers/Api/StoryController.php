@@ -24,7 +24,7 @@ class StoryController extends Controller
                 $query->where('expires_at', '>', $now);
             })
             ->with(['stories' => function ($query) use ($now) {
-                $query->where('expires_at', '>', $now)->orderBy('created_at', 'asc');
+                $query->where('expires_at', '>', $now)->orderBy('created_at', 'asc')->orderBy('id', 'asc');
             }, 'profile'])
             ->get();
 

@@ -44,7 +44,7 @@ class Stories extends Component
             })
             ->with([
                 'stories' => function ($query) use ($now) {
-                    $query->where('expires_at', '>', $now)->orderBy('created_at', 'asc');
+                    $query->where('expires_at', '>', $now)->orderBy('created_at', 'asc')->orderBy('id', 'asc');
                 },
                 'profile',
             ])
@@ -54,15 +54,16 @@ class Stories extends Component
         $this->stories = $users->map(function ($u) use ($user) {
             $userStories = $u->stories->map(function ($s) {
                 $isVideo = preg_match('/\.(mp4|mov|avi|webm)$/i', $s->image_url);
+                $url = str_starts_with($s->image_url, 'http') ? $s->image_url : asset('storage/'.$s->image_url);
 
                 return [
                     'id' => $s->id,
-                    'url' => $s->image_url,
+                    'url' => $url,
                     'type' => $isVideo ? 'video' : 'image',
                     'duration' => $isVideo ? 15 : 5,
                     'created_at' => $s->created_at->diffForHumans(),
                 ];
-            });
+            })->values()->toArray();
 
             return [
                 'user_id' => $u->id,
