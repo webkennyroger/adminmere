@@ -17,6 +17,9 @@ class ActivityController extends Controller
     {
         $user = $request->user();
         $feed = $request->query('feed', 'personal');
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = min(20, max(5, (int) $request->query('per_page', 15)));
+        $offset = ($page - 1) * $perPage;
 
         // Activities Query
         $activitiesQuery = Activity::with(['user.profile', 'likes', 'savedItems', 'comments' => function ($q) {
@@ -42,10 +45,10 @@ class ActivityController extends Controller
             $postsQuery->where('user_id', $user->id);
         }
 
-        $activities = $activitiesQuery->latest('start_time')->limit(50)->get();
-        $posts = $postsQuery->latest()->limit(50)->get();
+        $activities = $activitiesQuery->latest('start_time')->get();
+        $posts = $postsQuery->latest()->get();
 
-        // Merge and sort
+        // Merge and sort all items
         $merged = collect([])
             ->merge($activities->map(fn($a) => [
                 'type' => 'activity',
@@ -60,7 +63,11 @@ class ActivityController extends Controller
             ->sortByDesc('date')
             ->values();
 
-        $formatted = $merged->map(function ($entry) use ($user) {
+        $total = $merged->count();
+        $lastPage = max(1, (int) ceil($total / $perPage));
+        $paginatedItems = $merged->slice($offset, $perPage)->values();
+
+        $formatted = $paginatedItems->map(function ($entry) use ($user) {
             if ($entry['type'] === 'activity') {
                 return $this->formatActivity($entry['item'], $user);
             } else {
@@ -76,6 +83,13 @@ class ActivityController extends Controller
         return response()->json([
             'success' => true,
             'data' => $formatted,
+            'meta' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => $lastPage,
+                'has_more_pages' => $page < $lastPage,
+            ],
         ]);
     }
 
