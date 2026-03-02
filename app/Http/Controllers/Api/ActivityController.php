@@ -36,7 +36,7 @@ class ActivityController extends Controller
             $postsQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
         } elseif ($feed === 'community') {
             $activitiesQuery->where('privacy', 'public');
-            $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+            $postsQuery->where(fn($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
         } elseif ($feed === 'personal') {
             $activitiesQuery->where('user_id', $user->id);
             $postsQuery->where('user_id', $user->id);
@@ -47,12 +47,12 @@ class ActivityController extends Controller
 
         // Merge and sort
         $merged = collect([])
-            ->merge($activities->map(fn ($a) => [
+            ->merge($activities->map(fn($a) => [
                 'type' => 'activity',
                 'item' => $a,
                 'date' => $a->start_time ?? $a->created_at,
             ]))
-            ->merge($posts->map(fn ($p) => [
+            ->merge($posts->map(fn($p) => [
                 'type' => 'post',
                 'item' => $p,
                 'date' => $p->created_at,
@@ -81,23 +81,32 @@ class ActivityController extends Controller
 
     public function formatPost($post, $user)
     {
+        // Garante que mediaPaths é sempre um array de strings
+        $media = $post->media ?? [];
+        if (is_string($media)) {
+            $media = json_decode($media, true) ?? [];
+        }
+
         return [
-            'id' => 'post_'.$post->id,
-            'type' => 'post',
-            'title' => $post->title,
-            'user_id' => (string) $post->user_id,
-            'userName' => $post->user->name,
+            'id'           => 'post_' . $post->id,
+            'type'         => 'post',
+            'title'        => $post->title,
+            'userId'       => (string) $post->user_id,
+            'user_id'      => (string) $post->user_id,
+            'userName'     => $post->user->name,
             'userAvatarUrl' => $post->user->image_url,
-            'createdAt' => $post->created_at->toIso8601String(),
-            'description' => $post->content,
-            'mediaPaths' => $post->media ?? [],
-            'likes' => $post->likes->count(),
-            'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
-            'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
-            'isArchived' => (bool) ($post->is_archived ?? false),
+            'createdAt'    => $post->created_at->toIso8601String(),
+            'content'      => $post->content,
+            'notes'        => $post->content,
+            'description'  => $post->content,
+            'mediaPaths'   => array_values(array_filter((array) $media)),
+            'likes'        => $post->likes->count(),
+            'isLiked'      => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
+            'isSaved'      => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'isArchived'   => (bool) ($post->is_archived ?? false),
             'commentsList' => $post->comments ? array_fill(0, $post->comments->count(), []) : [],
-            'shares' => 0,
-            'privacy' => $post->privacy,
+            'shares'       => 0,
+            'privacy'      => $post->privacy,
         ];
     }
 
@@ -126,7 +135,7 @@ class ActivityController extends Controller
         ];
 
         return [
-            'id' => 'poll_'.$post->id,
+            'id' => 'poll_' . $post->id,
             'type' => 'poll',
             'title' => $post->title,
             'description' => $post->content,
@@ -319,22 +328,36 @@ class ActivityController extends Controller
             $routePoints = $routePoints['points'];
         }
 
+        // Garante que mediaPaths é sempre um array de strings
+        $media = $activity->media ?? [];
+        if (is_string($media)) {
+            $media = json_decode($media, true) ?? [];
+        }
+
         return [
-            'id' => 'activity_'.$activity->id,
-            'user_id' => (string) $activity->user_id,
-            'userName' => $activity->user->name,
-            'userAvatarUrl' => $activity->user->image_url,
-            'type' => 'activity',
-            'activityTitle' => $activity->title,
-            'sport' => $activity->sport_type,
-            'createdAt' => ($activity->start_time ?? $activity->created_at)->toIso8601String(),
+            'id'               => 'activity_' . $activity->id,
+            'userId'           => (string) $activity->user_id,
+            'user_id'          => (string) $activity->user_id,
+            'userName'         => $activity->user->name,
+            'userAvatarUrl'    => $activity->user->image_url,
+            'type'             => 'activity',
+            'activityTitle'    => $activity->title,
+            'sport'            => $activity->sport_type,
+            'createdAt'        => ($activity->start_time ?? $activity->created_at)->toIso8601String(),
             'distanceInMeters' => (float) $activity->distance,
             'durationInSeconds' => (int) $activity->duration,
-            'routePoints' => $routePoints ?? [],
-            'likes' => $activity->likes->count(),
-            'isLiked' => $user ? $activity->likes->where('user_id', $user->id)->isNotEmpty() : false,
-            'isSaved' => $user ? $activity->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
-            'commentsList' => $activity->comments ? array_fill(0, $activity->comments->count(), []) : [],
+            'calories'         => (float) ($activity->calories ?? 0),
+            'location'         => $activity->location ?? '',
+            'notes'            => $activity->description ?? null,
+            'routePoints'      => $routePoints ?? [],
+            'mediaPaths'       => array_values(array_filter((array) $media)),
+            'likes'            => $activity->likes->count(),
+            'isLiked'          => $user ? $activity->likes->where('user_id', $user->id)->isNotEmpty() : false,
+            'isSaved'          => $user ? $activity->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'commentsList'     => $activity->comments ? array_fill(0, $activity->comments->count(), []) : [],
+            'privacy'          => $activity->privacy ?? 'public',
+            'feedType'         => $activity->feed_type ?? 'personal',
+            'shares'           => 0,
         ];
     }
 
@@ -354,7 +377,7 @@ class ActivityController extends Controller
             $lng = round($point['lng'] * 1e5);
             $d_lat = $lat - $last_lat;
             $d_lng = $lng - $last_lng;
-            $res .= $this->encodeSignedNumber($d_lat).$this->encodeSignedNumber($d_lng);
+            $res .= $this->encodeSignedNumber($d_lat) . $this->encodeSignedNumber($d_lng);
             $last_lat = $lat;
             $last_lng = $lng;
         }
