@@ -32,27 +32,44 @@ class Stories extends Component
         /** @var \App\Models\User $user */
         $user = \Illuminate\Support\Facades\Auth::user();
 
-        // 1. Get IDs of users being followed
+        // 1. Get IDs of users being followed + current user
         $followingIds = $user->following()->pluck('following_id')->toArray();
+        $followingIds[] = $user->id; // Include self
 
         // 2. Fetch users with active stories
         $users = \App\Models\User::whereIn('id', $followingIds)
             ->whereHas('stories', function ($query) {
                 $query->where('expires_at', '>', now());
             })
-            ->with(['latestStory', 'profile'])
+            ->with([
+                'stories' => function ($query) {
+                    $query->where('expires_at', '>', now())->orderBy('created_at', 'asc');
+                },
+                'profile',
+            ])
             ->get();
 
         // 3. Map to stories array
-        $this->stories = $users->map(function ($u) {
-            $latestStoryUrl = $u->latestStory ? $u->latestStory->image_url : null;
+        $this->stories = $users->map(function ($u) use ($user) {
+            $userStories = $u->stories->map(function ($s) {
+                $isVideo = preg_match('/\.(mp4|mov|avi|webm)$/i', $s->image_url);
+
+                return [
+                    'id' => $s->id,
+                    'url' => $s->image_url,
+                    'type' => $isVideo ? 'video' : 'image',
+                    'duration' => $isVideo ? 15 : 5,
+                    'created_at' => $s->created_at->diffForHumans(),
+                ];
+            });
 
             return [
                 'user_id' => $u->id,
-                'name' => $u->profile->nickname ?? $u->name,
+                'name' => $u->id === $user->id ? 'Seu story' : ($u->profile->nickname ?? $u->name),
                 'avatar' => $u->image_url,
-                'story_image' => $latestStoryUrl,
-                'is_own' => false,
+                'stories' => $userStories,
+                'latest_story_image' => $u->stories->last()->image_url,
+                'is_own' => $u->id === $user->id,
                 'has_story' => true,
                 'profile_url' => $u->profile_url,
             ];
