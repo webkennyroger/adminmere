@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Post;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +15,7 @@ class ActivityController extends Controller
 {
     use \App\Traits\ResolvesActivityItems;
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $user = $request->user();
         $feed = $request->query('feed', 'personal');
@@ -93,7 +95,12 @@ class ActivityController extends Controller
         ]);
     }
 
-    public function formatPost($post, $user)
+    /**
+     * @param  Post  $post
+     * @param  User|null  $user
+     * @return array<string, mixed>
+     */
+    public function formatPost(Post $post, ?User $user): array
     {
         // Garante que mediaPaths é sempre um array de strings
         $media = $post->media ?? [];
@@ -124,7 +131,12 @@ class ActivityController extends Controller
         ];
     }
 
-    public function formatPoll($post, $user)
+    /**
+     * @param  Post  $post
+     * @param  User|null  $user
+     * @return array<string, mixed>
+     */
+    public function formatPoll(Post $post, ?User $user): array
     {
         $hasVoted = $user ? $post->pollVotes->where('user_id', $user->id)->isNotEmpty() : false;
         $totalVotes = $post->pollVotes->count();
@@ -169,7 +181,7 @@ class ActivityController extends Controller
     /**
      * Get activity history for the current user.
      */
-    public function history(Request $request)
+    public function history(Request $request): JsonResponse
     {
         $user = $request->user();
         $perPage = (int) $request->get('per_page', 20);
@@ -197,7 +209,7 @@ class ActivityController extends Controller
     /**
      * Store or update an activity from the mobile app.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'id' => 'nullable|string',
@@ -272,9 +284,11 @@ class ActivityController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id): JsonResponse
     {
+        /** @var Activity|Post $item */
         $item = $this->resolveItem($id);
+        /** @var User $user */
         $user = $request->user();
 
         if ($item->user_id != $user->id && ! $user->isAdmin()) {
@@ -313,13 +327,15 @@ class ActivityController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $formatted,
+            'data'    => $formatted,
         ]);
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, string $id): JsonResponse
     {
+        /** @var Activity|Post $item */
         $item = $this->resolveItem($id);
+        /** @var User $user */
         $user = $request->user();
 
         if ($item->user_id != $user->id && ! $user->isAdmin()) {
@@ -335,7 +351,12 @@ class ActivityController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function formatActivity($activity, $user)
+    /**
+     * @param  Activity  $activity
+     * @param  User|null  $user
+     * @return array<string, mixed>
+     */
+    public function formatActivity(Activity $activity, ?User $user): array
     {
         $routePoints = $activity->polylines;
         if (is_array($routePoints) && isset($routePoints['points'])) {
