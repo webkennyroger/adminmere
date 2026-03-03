@@ -100,14 +100,19 @@ document.addEventListener("alpine:init", () => {
         renderPoints(points) {
             if (points.length > 1) {
                 this.polyline = L.polyline(points, {
-                    color: '#22c55e', weight: 3, opacity: 0.8, smoothFactor: 1
+                    color: '#f97316',  // laranja — igual à imagem de referência
+                    weight: 5,
+                    opacity: 0.95,
+                    smoothFactor: 1.5,
+                    lineCap: 'round',
+                    lineJoin: 'round',
                 }).addTo(this.map);
-                this.map.fitBounds(this.polyline.getBounds(), { padding: [10, 10] });
+                this.map.fitBounds(this.polyline.getBounds(), { padding: [20, 20] });
             } else if (points.length === 1) {
                 this.map.setView(points[0], 15);
                 L.circleMarker(points[0], {
-                    radius: 8, fillColor: '#22c55e',
-                    color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8
+                    radius: 9, fillColor: '#f97316',
+                    color: '#fff', weight: 2.5, opacity: 1, fillOpacity: 0.9
                 }).addTo(this.map);
             }
         },
