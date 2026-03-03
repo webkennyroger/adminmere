@@ -124,24 +124,26 @@
 
         @if($hasMedia)
             <!-- Map Display -->
-            @if(!empty($activity->polylines))
                 @php
                     $poly = null;
                     $pathString = null;
                     if (is_array($activity->polylines)) {
-                        // Extract summary_polyline from the polylines array
                         if (isset($activity->polylines['summary_polyline'])) {
                             $poly = $activity->polylines['summary_polyline'];
-                        } elseif (isset($activity->polylines[0]['lat'])) {
-                            $coords = collect($activity->polylines)->take(60)->map(function ($pt) {
-                                return $pt['lat'] . ',' . $pt['lng'];
-                            })->implode('|');
+                        } elseif (!empty($activity->polylines) && isset($activity->polylines[0]['lat'])) {
+                            $totalPoints = count($activity->polylines);
+                            $step = max(1, floor($totalPoints / 60)); 
+                            
+                            $coords = [];
+                            for ($i = 0; $i < $totalPoints; $i += $step) {
+                                $coords[] = $activity->polylines[$i]['lat'] . ',' . $activity->polylines[$i]['lng'];
+                            }
+                            
                             if (!empty($coords)) {
-                                $pathString = 'color:0xff0000ff|weight:4|' . $coords;
+                                $pathString = 'color:0x22c55eff|weight:4|' . implode('|', $coords);
                             }
                         }
                     } else {
-                        // If it's a string, use it directly
                         $poly = $activity->polylines;
                     }
                 @endphp
