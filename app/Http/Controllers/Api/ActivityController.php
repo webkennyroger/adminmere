@@ -360,6 +360,27 @@ class ActivityController extends Controller
         ]);
     }
 
+    public function upload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'files' => 'required|array',
+            'files.*' => 'image|max:10240', // 10MB max per image
+        ]);
+
+        $paths = [];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('activities_media', 'public');
+                $paths[] = url('storage/' . $path);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $paths,
+        ]);
+    }
+
     public function update(Request $request, string $id): JsonResponse
     {
         /** @var Activity|Post $item */
@@ -387,7 +408,7 @@ class ActivityController extends Controller
             $action = new \App\Actions\Activities\UpdateActivity;
             $item = $action->execute($item, [
                 'title' => $request->activityTitle ?? $request->title,
-                'description' => $request->description ?? $request->content,
+                'description' => $request->description ?? $request->input('content'),
                 'privacy' => $request->privacy,
             ]);
             $formatted = $this->formatActivity($item, $user);
@@ -395,7 +416,7 @@ class ActivityController extends Controller
             $action = new \App\Actions\Posts\UpdatePost;
             $item = $action->execute($item, [
                 'title' => $request->title ?? $request->activityTitle,
-                'content' => $request->content ?? $request->description,
+                'content' => $request->input('content') ?? $request->description,
                 'privacy' => $request->privacy,
             ]);
             $formatted = $this->formatPost($item, $user);
