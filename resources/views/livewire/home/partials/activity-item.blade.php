@@ -124,73 +124,12 @@
 
         @if($hasMedia)
             <!-- Map Display -->
-                @php
-                    $poly = null;
-                    $pathString = null;
-                    if (is_array($activity->polylines)) {
-                        if (isset($activity->polylines['summary_polyline'])) {
-                            $poly = $activity->polylines['summary_polyline'];
-                        } elseif (!empty($activity->polylines) && isset($activity->polylines[0]['lat'])) {
-                            $totalPoints = count($activity->polylines);
-                            $step = max(1, floor($totalPoints / 60)); 
-                            
-                            $coords = [];
-                            for ($i = 0; $i < $totalPoints; $i += $step) {
-                                $coords[] = $activity->polylines[$i]['lat'] . ',' . $activity->polylines[$i]['lng'];
-                            }
-                            
-                            if (!empty($coords)) {
-                                $pathString = 'color:0x22c55eff|weight:4|' . implode('|', $coords);
-                            }
-                        }
-                    } else {
-                        $poly = $activity->polylines;
-                    }
-                @endphp
-
-                @if($poly)
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden group/map">
-                        <a href="https://www.google.com/maps/dir/?api=1&travelmode=walking&destination={{ $poly }}" target="_blank"
-                            class="block w-full h-full">
-                            <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
-                                class="w-full h-full object-cover group-hover/map:scale-105 transition-transform duration-500"
-                                alt="Mapa da atividade" loading="lazy">
-                            <div
-                                class="absolute inset-0 bg-black/0 group-hover/map:bg-black/10 transition-colors flex items-center justify-center">
-                                <span
-                                    class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-xs font-bold text-zinc-900 dark:text-white opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">Abrir
-                                    no Google Maps</span>
-                            </div>
-                        </a>
-                    </div>
-                @elseif($pathString)
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden group/map">
-                        <a href="https://www.google.com/maps/dir/?api=1&travelmode=walking&waypoints={{ urlencode($pathString) }}"
-                            target="_blank" class="block w-full h-full">
-                            <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path={{ urlencode($pathString) }}&key={{ config('services.google.maps_key') }}"
-                                class="w-full h-full object-cover group-hover/map:scale-105 transition-transform duration-500"
-                                alt="Mapa da atividade" loading="lazy">
-                            <div
-                                class="absolute inset-0 bg-black/0 group-hover/map:bg-black/10 transition-colors flex items-center justify-center">
-                                <span
-                                    class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-xs font-bold text-zinc-900 dark:text-white opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">Abrir
-                                    no Google Maps</span>
-                            </div>
-                        </a>
-                    </div>
-                @else
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <div class="text-center">
-                            <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0v10m0-10L5.553 2.894A1 1 0 005 2h14a1 1 0 011 1v14a1 1 0 01-1.553.894L15 13m0 0v10m0-10l4.447 2.724A1 1 0 0021 20.382V9.618a1 1 0 00-1.553-.894L15 11" />
-                            </svg>
-                            <p class="text-sm text-zinc-400">Mapa indisponível</p>
-                        </div>
-                    </div>
-                @endif
+            @if(!empty($activity->polylines))
+                <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                    <p class="text-sm text-zinc-400">Mapa (em processamento)</p>
+                </div>
             @endif
+        @endif
 
             <!-- Media Grid -->
             @if($mediaCount > 0)
