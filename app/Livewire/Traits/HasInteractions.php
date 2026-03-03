@@ -214,6 +214,8 @@ trait HasInteractions
         $this->showComments = true;
 
         $model->refresh();
+        $model->unsetRelation('comments');
+        $model->load(['likes', 'comments']);
     }
 
     public function updatedNewComment($value)

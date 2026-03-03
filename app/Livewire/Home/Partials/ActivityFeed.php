@@ -57,21 +57,28 @@ class ActivityFeed extends Component
         $user = auth()->user();
 
         // Posts Query
-        $postsQuery = Post::query()->with(['user', 'likes', 'pollOptions', 'pollVotes', 'savedItems']);
+        $postsQuery = Post::query()->with(['user', 'likes', 'comments', 'pollOptions', 'pollVotes', 'savedItems']);
 
         // Activities Query
-        $activitiesQuery = \App\Models\Activity::query()->with(['user', 'likes', 'savedItems']);
+        $activitiesQuery = \App\Models\Activity::query()->with(['user', 'likes', 'comments', 'savedItems']);
 
         if ($this->feed === 'timeline' || $this->feed === 'network' || $this->feed === 'community') {
             if ($this->feed === 'community') {
                 $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
-                $activitiesQuery->where('feed_type', 'community')->where('privacy', 'public');
+                $activitiesQuery->where(fn ($q) => $q->where('feed_type', 'community')->where('privacy', 'public')->orWhere('user_id', $user->id));
             } else {
                 $followingIds = $user->following()->pluck('following_id')->toArray();
                 $followingIds[] = $user->id;
 
-                $postsQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
-                $activitiesQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
+                $postsQuery->where(function ($q) use ($followingIds, $user) {
+                    $q->whereIn('user_id', $followingIds)->where('privacy', 'public')
+                        ->orWhere('user_id', $user->id);
+                });
+
+                $activitiesQuery->where(function ($q) use ($followingIds, $user) {
+                    $q->whereIn('user_id', $followingIds)->where('privacy', 'public')
+                        ->orWhere('user_id', $user->id);
+                });
             }
         } elseif ($this->feed === 'personal') {
             $savedPostsIds = \App\Models\SavedItem::where('user_id', $user->id)
