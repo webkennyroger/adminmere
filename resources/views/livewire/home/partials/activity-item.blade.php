@@ -32,8 +32,14 @@
                     class="font-bold text-zinc-900 dark:text-white hover:text-brand-600 transition-colors block leading-tight truncate">
                     {{ $activity->user->name }}
                 </a>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
                     {{ $activity->start_time->diffForHumans() }}
+                    @if($activity->device)
+                        · {{ $activity->device }}
+                    @endif
+                    @if($activity->location)
+                        · {{ $activity->location }}
+                    @endif
                 </p>
             </div>
         </div>
@@ -111,6 +117,21 @@
             </div>
         @endif
 
+        {{-- Título da atividade com ícone de esporte (igual à imagem de referência) --}}
+        <div class="px-4 pb-3 flex items-center gap-3">
+            {{-- Ícone de corrida --}}
+            <div class="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor"
+                    stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 10.5h2.25l.75-3 4.5 3L12 6l2.25 4.5L16.5 9l1.5 3H21M9.75 18.75c0 .621-.504 1.125-1.125 1.125H7.5a1.125 1.125 0 010-2.25h1.125c.621 0 1.125.504 1.125 1.125zM15.75 18.75c0 .621-.504 1.125-1.125 1.125H13.5a1.125 1.125 0 010-2.25h1.125c.621 0 1.125.504 1.125 1.125z" />
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
+                {{ $activity->name ?? $activity->sport_type ?? 'Atividade' }}
+            </h2>
+        </div>
+
         <!-- Media Section -->
         @php
             // Filter out local Android/iOS paths that won't load on web
@@ -141,29 +162,8 @@
             $locationStr = $activity->location ?? '';
         @endphp
 
-        {{-- MAP: show when GPS track exists --}}
-        @if($mapData['type'] !== 'none')
-            <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
-                x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
-                <div x-ref="mapContainer" class="w-full h-full z-10"></div>
-                <div x-show="!loaded"
-                    class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
-                    <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-            </div>
-        @elseif(!empty($locationStr))
-            {{-- Fallback: geocode city/address via free Nominatim API --}}
-            <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
-                x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
-                <div x-ref="mapContainer" class="w-full h-full z-10"></div>
-                <div x-show="!loaded"
-                    class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
-                    <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-            </div>
-        @endif
 
-        {{-- MEDIA GRID --}}
+        {{-- MEDIA GRID (fotos/videos) --}}
         @if($mediaCount > 0)
             @if($mediaCount === 1)
                 <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
@@ -273,7 +273,33 @@
             </div>
         </div>
 
-        <!-- Actions Bar -->
+        {{-- MAP: DEPOIS dos stats, igual à imagem de referência --}}
+        @if($mapData['type'] !== 'none')
+            <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden"
+                x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
+                <div x-ref="mapContainer" class="w-full h-full"></div>
+                <div x-show="!loaded"
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
+                    <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                {{-- Botão Salvar rota (igual à imagem de referência) --}}
+                <button
+                    class="absolute bottom-3 right-3 z-20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 transition-colors">
+                    Salvar rota
+                </button>
+            </div>
+        @elseif(!empty($locationStr))
+            <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden"
+                x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
+                <div x-ref="mapContainer" class="w-full h-full"></div>
+                <div x-show="!loaded"
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
+                    <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Actions Bar --}}
         <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-6">
