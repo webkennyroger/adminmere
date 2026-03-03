@@ -215,27 +215,26 @@ class ChatSidebar extends Component
         $authId = Auth::id();
         $authUser = User::find($authId);
 
-        if (!$authUser) {
-            $this->users = collect();
-            return;
-        }
-
         // IDs dos usuários que sigo
-        $followingIds = $authUser->following()->pluck('id')->toArray();
+        $followingIds = $authUser->following()->pluck('users.id')->toArray();
 
-        // Carregar usuários: apenas os que sigo OU que já tenho histórico de conversa
+        // Carregar usuários: admins, managers, histórico de chat OU que sigo
         $this->users = User::where('id', '!=', $authId)
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%'.$this->search.'%');
+            })
             ->where(function ($query) use ($authId, $followingIds) {
-                $query->whereIn('id', $followingIds)
+                $query->whereHas('profile', function ($q) {
+                    $q->whereIn('role', ['admin', 'manager']);
+                })
                     ->orWhereHas('messagesSent', function ($q) use ($authId) {
                         $q->where('receiver_id', $authId);
                     })
                     ->orWhereHas('messagesReceived', function ($q) use ($authId) {
                         $q->where('sender_id', $authId);
-                    });
-            })
-            ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%'.$this->search.'%');
+                    })
+                    // Inclui todos que sigo
+                    ->orWhereIn('id', $followingIds);
             })
             ->get()
             ->map(function ($user) use ($authId) {
