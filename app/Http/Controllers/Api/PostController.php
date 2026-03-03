@@ -120,7 +120,34 @@ class PostController extends Controller
             'isLiked' => $post->likes->where('user_id', $user->id)->isNotEmpty(),
             'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
             'isArchived' => (bool) ($post->is_archived ?? false),
-            'commentsList' => [], // Separate comments for performance
+            'commentsList' => $post->comments->map(function ($comment) use ($user) {
+                return [
+                    'id' => (string) $comment->id,
+                    'user_id' => (string) $comment->user_id,
+                    'userName' => $comment->user->name,
+                    'userAvatarUrl' => $comment->user->image_url,
+                    'text' => $comment->body,
+                    'mediaUrl' => $comment->media_url,
+                    'timestamp' => $comment->created_at->toIso8601String(),
+                    'parent_id' => (string) $comment->parent_id,
+                    'likes' => $comment->likes->count(),
+                    'isLiked' => $user ? $comment->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                    'replies' => $comment->replies->map(function ($reply) use ($user) {
+                        return [
+                            'id' => (string) $reply->id,
+                            'user_id' => (string) $reply->user_id,
+                            'userName' => $reply->user->name,
+                            'userAvatarUrl' => $reply->user->image_url,
+                            'text' => $reply->body,
+                            'mediaUrl' => $reply->media_url,
+                            'timestamp' => $reply->created_at->toIso8601String(),
+                            'parent_id' => (string) $reply->parent_id,
+                            'likes' => $reply->likes->count(),
+                            'isLiked' => $user ? $reply->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray(),
             'shares' => 0,
             'privacy' => $post->privacy,
         ];

@@ -24,24 +24,46 @@ class ActivityController extends Controller
         $offset = ($page - 1) * $perPage;
 
         // Activities Query
-        $activitiesQuery = Activity::with(['user.profile', 'likes', 'savedItems', 'comments' => function ($q) {
-            $q->whereNull('parent_id')->latest();
-        }]);
+        $activitiesQuery = Activity::with([
+            'user.profile',
+            'likes',
+            'savedItems',
+            'comments' => function ($q) {
+                $q->whereNull('parent_id')->latest();
+            }
+        ]);
 
         // Posts Query (Simple posts and polls)
-        $postsQuery = Post::with(['user.profile', 'likes', 'savedItems', 'pollOptions', 'pollVotes.user', 'comments' => function ($q) {
-            $q->whereNull('parent_id')->latest();
-        }]);
+        $postsQuery = Post::with([
+            'user.profile',
+            'likes',
+            'savedItems',
+            'pollOptions',
+            'pollVotes.user',
+            'comments' => function ($q) {
+                $q->whereNull('parent_id')->latest();
+            }
+        ]);
 
         if ($feed === 'timeline' || $feed === 'network') {
             $followingIds = $user->following()->pluck('following_id')->toArray();
             $followingIds[] = $user->id; // Incluir o próprio usuário
 
-            $activitiesQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
-            $postsQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
+            $activitiesQuery->whereIn('user_id', $followingIds)
+                ->where('privacy', 'public')
+                ->where(function ($q) {
+                    $q->where('feed_type', '!=', 'community')
+                      ->orWhereNull('feed_type');
+                });
+            $postsQuery->whereIn('user_id', $followingIds)
+                ->where('privacy', 'public')
+                ->where(function ($q) {
+                    $q->where('feed_type', '!=', 'community')
+                      ->orWhereNull('feed_type');
+                });
         } elseif ($feed === 'community') {
-            $activitiesQuery->where('privacy', 'public');
-            $postsQuery->where(fn($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+            $activitiesQuery->where('feed_type', 'community')->where('privacy', 'public');
+            $postsQuery->where('feed_type', 'community')->where('privacy', 'public');
         } elseif ($feed === 'personal') {
             $activitiesQuery->where('user_id', $user->id);
             $postsQuery->where('user_id', $user->id);
@@ -109,25 +131,52 @@ class ActivityController extends Controller
         }
 
         return [
-            'id'           => 'post_' . $post->id,
-            'type'         => 'post',
-            'title'        => $post->title,
-            'userId'       => (string) $post->user_id,
-            'user_id'      => (string) $post->user_id,
-            'userName'     => $post->user->name,
+            'id' => 'post_' . $post->id,
+            'type' => 'post',
+            'title' => $post->title,
+            'userId' => (string) $post->user_id,
+            'user_id' => (string) $post->user_id,
+            'userName' => $post->user->name,
             'userAvatarUrl' => $post->user->image_url,
-            'createdAt'    => $post->created_at->toIso8601String(),
-            'content'      => $post->content,
-            'notes'        => $post->content,
-            'description'  => $post->content,
-            'mediaPaths'   => array_values(array_filter((array) $media)),
-            'likes'        => $post->likes->count(),
-            'isLiked'      => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
-            'isSaved'      => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
-            'isArchived'   => (bool) ($post->is_archived ?? false),
-            'commentsList' => $post->comments ? array_fill(0, $post->comments->count(), []) : [],
-            'shares'       => 0,
-            'privacy'      => $post->privacy,
+            'createdAt' => $post->created_at->toIso8601String(),
+            'content' => $post->content,
+            'notes' => $post->content,
+            'description' => $post->content,
+            'mediaPaths' => array_values(array_filter((array) $media)),
+            'likes' => $post->likes->count(),
+            'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
+            'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'isArchived' => (bool) ($post->is_archived ?? false),
+            'commentsList' => $post->comments->map(function ($comment) use ($user) {
+                return [
+                    'id' => (string) $comment->id,
+                    'user_id' => (string) $comment->user_id,
+                    'userName' => $comment->user->name,
+                    'userAvatarUrl' => $comment->user->image_url,
+                    'text' => $comment->body,
+                    'mediaUrl' => $comment->media_url,
+                    'timestamp' => $comment->created_at->toIso8601String(),
+                    'parent_id' => (string) $comment->parent_id,
+                    'likes' => $comment->likes->count(),
+                    'isLiked' => $user ? $comment->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                    'replies' => $comment->replies->map(function ($reply) use ($user) {
+                        return [
+                            'id' => (string) $reply->id,
+                            'user_id' => (string) $reply->user_id,
+                            'userName' => $reply->user->name,
+                            'userAvatarUrl' => $reply->user->image_url,
+                            'text' => $reply->body,
+                            'mediaUrl' => $reply->media_url,
+                            'timestamp' => $reply->created_at->toIso8601String(),
+                            'parent_id' => (string) $reply->parent_id,
+                            'likes' => $reply->likes->count(),
+                            'isLiked' => $user ? $reply->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray(),
+            'shares' => 0,
+            'privacy' => $post->privacy,
         ];
     }
 
@@ -174,7 +223,34 @@ class ActivityController extends Controller
             'isLiked' => $user ? $post->likes->where('user_id', $user->id)->isNotEmpty() : false,
             'isSaved' => $user ? $post->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
             'isArchived' => (bool) ($post->is_archived ?? false),
-            'commentsList' => $post->comments ? array_fill(0, $post->comments->count(), []) : [],
+            'commentsList' => $post->comments->map(function ($comment) use ($user) {
+                return [
+                    'id' => (string) $comment->id,
+                    'user_id' => (string) $comment->user_id,
+                    'userName' => $comment->user->name,
+                    'userAvatarUrl' => $comment->user->image_url,
+                    'text' => $comment->body,
+                    'mediaUrl' => $comment->media_url,
+                    'timestamp' => $comment->created_at->toIso8601String(),
+                    'parent_id' => (string) $comment->parent_id,
+                    'likes' => $comment->likes->count(),
+                    'isLiked' => $user ? $comment->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                    'replies' => $comment->replies->map(function ($reply) use ($user) {
+                        return [
+                            'id' => (string) $reply->id,
+                            'user_id' => (string) $reply->user_id,
+                            'userName' => $reply->user->name,
+                            'userAvatarUrl' => $reply->user->image_url,
+                            'text' => $reply->body,
+                            'mediaUrl' => $reply->media_url,
+                            'timestamp' => $reply->created_at->toIso8601String(),
+                            'parent_id' => (string) $reply->parent_id,
+                            'likes' => $reply->likes->count(),
+                            'isLiked' => $user ? $reply->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray(),
         ];
     }
 
@@ -243,8 +319,8 @@ class ActivityController extends Controller
         }
 
         $polylines = $request->routePoints ?? [];
-        if (is_array($polylines) && ! empty($polylines)) {
-            if (! isset($polylines['summary_polyline'])) {
+        if (is_array($polylines) && !empty($polylines)) {
+            if (!isset($polylines['summary_polyline'])) {
                 $summary = $this->encodePolyline($polylines);
                 $polylines = [
                     'points' => $polylines,
@@ -291,7 +367,7 @@ class ActivityController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if ($item->user_id != $user->id && ! $user->isAdmin()) {
+        if ($item->user_id != $user->id && !$user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -327,7 +403,7 @@ class ActivityController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $formatted,
+            'data' => $formatted,
         ]);
     }
 
@@ -338,7 +414,7 @@ class ActivityController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if ($item->user_id != $user->id && ! $user->isAdmin()) {
+        if ($item->user_id != $user->id && !$user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -370,29 +446,56 @@ class ActivityController extends Controller
         }
 
         return [
-            'id'               => 'activity_' . $activity->id,
-            'userId'           => (string) $activity->user_id,
-            'user_id'          => (string) $activity->user_id,
-            'userName'         => $activity->user->name,
-            'userAvatarUrl'    => $activity->user->image_url,
-            'type'             => 'activity',
-            'activityTitle'    => $activity->title,
-            'sport'            => $activity->sport_type,
-            'createdAt'        => ($activity->start_time ?? $activity->created_at)->toIso8601String(),
+            'id' => 'activity_' . $activity->id,
+            'userId' => (string) $activity->user_id,
+            'user_id' => (string) $activity->user_id,
+            'userName' => $activity->user->name,
+            'userAvatarUrl' => $activity->user->image_url,
+            'type' => 'activity',
+            'activityTitle' => $activity->title,
+            'sport' => $activity->sport_type,
+            'createdAt' => ($activity->start_time ?? $activity->created_at)->toIso8601String(),
             'distanceInMeters' => (float) $activity->distance,
             'durationInSeconds' => (int) $activity->duration,
-            'calories'         => (float) ($activity->calories ?? 0),
-            'location'         => $activity->location ?? '',
-            'notes'            => $activity->description ?? null,
-            'routePoints'      => $routePoints ?? [],
-            'mediaPaths'       => array_values(array_filter((array) $media)),
-            'likes'            => $activity->likes->count(),
-            'isLiked'          => $user ? $activity->likes->where('user_id', $user->id)->isNotEmpty() : false,
-            'isSaved'          => $user ? $activity->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
-            'commentsList'     => $activity->comments ? array_fill(0, $activity->comments->count(), []) : [],
-            'privacy'          => $activity->privacy ?? 'public',
-            'feedType'         => $activity->feed_type ?? 'personal',
-            'shares'           => 0,
+            'calories' => (float) ($activity->calories ?? 0),
+            'location' => $activity->location ?? '',
+            'notes' => $activity->description ?? null,
+            'routePoints' => $routePoints ?? [],
+            'mediaPaths' => array_values(array_filter((array) $media)),
+            'likes' => $activity->likes->count(),
+            'isLiked' => $user ? $activity->likes->where('user_id', $user->id)->isNotEmpty() : false,
+            'isSaved' => $user ? $activity->savedItems->where('user_id', $user->id)->isNotEmpty() : false,
+            'commentsList' => $activity->comments->map(function ($comment) use ($user) {
+                return [
+                    'id' => (string) $comment->id,
+                    'user_id' => (string) $comment->user_id,
+                    'userName' => $comment->user->name,
+                    'userAvatarUrl' => $comment->user->image_url,
+                    'text' => $comment->body,
+                    'mediaUrl' => $comment->media_url,
+                    'timestamp' => $comment->created_at->toIso8601String(),
+                    'parent_id' => (string) $comment->parent_id,
+                    'likes' => $comment->likes->count(),
+                    'isLiked' => $user ? $comment->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                    'replies' => $comment->replies->map(function ($reply) use ($user) {
+                        return [
+                            'id' => (string) $reply->id,
+                            'user_id' => (string) $reply->user_id,
+                            'userName' => $reply->user->name,
+                            'userAvatarUrl' => $reply->user->image_url,
+                            'text' => $reply->body,
+                            'mediaUrl' => $reply->media_url,
+                            'timestamp' => $reply->created_at->toIso8601String(),
+                            'parent_id' => (string) $reply->parent_id,
+                            'likes' => $reply->likes->count(),
+                            'isLiked' => $user ? $reply->likes->where('user_id', $user->id)->isNotEmpty() : false,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray(),
+            'privacy' => $activity->privacy ?? 'public',
+            'feedType' => $activity->feed_type ?? 'personal',
+            'shares' => 0,
         ];
     }
 
