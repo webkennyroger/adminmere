@@ -224,12 +224,9 @@ class ChatSidebar extends Component
                 $query->where('name', 'like', '%'.$this->search.'%');
             })
             ->where(function ($query) use ($authId, $followingIds) {
-                $query->whereHas('profile', function ($q) {
-                    $q->whereIn('role', ['admin', 'manager']);
+                $query->whereHas('messagesSent', function ($q) use ($authId) {
+                    $q->where('receiver_id', $authId);
                 })
-                    ->orWhereHas('messagesSent', function ($q) use ($authId) {
-                        $q->where('receiver_id', $authId);
-                    })
                     ->orWhereHas('messagesReceived', function ($q) use ($authId) {
                         $q->where('sender_id', $authId);
                     })
