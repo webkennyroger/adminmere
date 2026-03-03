@@ -1306,26 +1306,3 @@ pre[class*="language-"] {
     box-shadow: 0 6px 20px rgba(63, 63, 70, 0.3);
 }
 
-/* ─── Mapa panorâmico de atividade ─────────────────────────────────── */
-.map-panoramic {
-    height: 200px; /* altura panorâmica — igual à imagem de referência */
-}
-
-/* Esconde o logo do Leaflet (mantém só texto OSM que é obrigatório) */
-.map-panoramic .leaflet-control-attribution a[href*="leaflet"],
-.map-panoramic .leaflet-control-attribution svg {
-    display: none !important;
-}
-
-/* Texto da atribuição — pequeno e discreto */
-.map-panoramic .leaflet-control-attribution {
-    font-size: 9px !important;
-    background: rgba(255, 255, 255, 0.7) !important;
-    padding: 1px 4px !important;
-    border-radius: 3px !important;
-}
-
-/* Dark mode: tiles claros mesmo no dark mode (mapa de atividade) */
-.dark .map-panoramic .leaflet-tile-pane {
-    filter: brightness(0.85) saturate(0.9);
-}

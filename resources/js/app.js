@@ -49,13 +49,23 @@ document.addEventListener("alpine:init", () => {
 
             // Carto Tiles - Premium look & supports Dark Mode
             const isDark = document.documentElement.classList.contains('dark');
-            const tileLayer = isDark 
+            const tileLayer = isDark
                 ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                 : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
             L.tileLayer(tileLayer, {
-                attribution: 'OSM'
+                attribution: '© OSM'
             }).addTo(this.map);
+
+            // Remove o logo do Leaflet via DOM (mantém apenas "© OSM" obrigatório)
+            this.$nextTick(() => {
+                const attr = this.$refs.mapContainer.querySelector('.leaflet-control-attribution');
+                if (attr) {
+                    // Remove o link "Leaflet" mas mantém o texto OSM
+                    attr.querySelectorAll('a[href*="leaflet"]').forEach(el => el.remove());
+                    attr.style.cssText = 'font-size:9px;background:rgba(255,255,255,0.65);padding:1px 4px;border-radius:3px;';
+                }
+            });
 
             let points = [];
             if (mapData.type === 'encoded') {

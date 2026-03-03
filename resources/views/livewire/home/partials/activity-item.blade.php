@@ -143,7 +143,7 @@
 
         {{-- MAP: show when GPS track exists --}}
         @if($mapData['type'] !== 'none')
-            <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 map-panoramic"
+            <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
                 x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
                 <div x-ref="mapContainer" class="w-full h-full z-10"></div>
                 <div x-show="!loaded"
@@ -153,7 +153,7 @@
             </div>
         @elseif(!empty($locationStr))
             {{-- Fallback: geocode city/address via free Nominatim API --}}
-            <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 map-panoramic"
+            <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
                 x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
                 <div x-ref="mapContainer" class="w-full h-full z-10"></div>
                 <div x-show="!loaded"
