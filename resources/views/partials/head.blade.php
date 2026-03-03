@@ -16,6 +16,11 @@
     })();
 </script>
 
+<!-- Leaflet CSS (Free maps - OpenStreetMap) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet JS loaded BEFORE Alpine/Livewire to avoid race condition -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 <!-- Stores Initialization -->
@@ -51,5 +56,4 @@
 </script>
 
 @livewireStyles
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 @stack('styles')
