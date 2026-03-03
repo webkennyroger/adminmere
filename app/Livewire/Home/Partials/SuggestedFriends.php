@@ -48,8 +48,7 @@ class SuggestedFriends extends Component
             // Reload suggestions to replace the followed user
             $this->loadSuggestions();
 
-            // Dispatch event for other components (optional)
-            $this->dispatch('friend-followed');
+            $this->dispatch('refresh-feed');
         }
     }
 

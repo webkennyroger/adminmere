@@ -59,6 +59,8 @@ class UserRelationships extends Component
             $currentUser->follow($targetUser);
             $targetUser->notify(new \App\Notifications\NewFollower($currentUser));
         }
+
+        $this->dispatch('refresh-feed');
     }
 
     public function render()

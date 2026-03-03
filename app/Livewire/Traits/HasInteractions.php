@@ -210,7 +210,7 @@ trait HasInteractions
             $mediaPath = $this->commentImage->store('comments', 'public');
         }
 
-        $model->comments()->create([
+        $comment = $model->comments()->create([
             'user_id' => auth()->id(),
             'body' => $this->newComment ?? '',
             'parent_id' => $parentId,
@@ -226,6 +226,9 @@ trait HasInteractions
         $model->refresh();
         $model->unsetRelation('comments');
         $model->load(['likes', 'comments']);
+
+        // Broadcast real-time update
+        broadcast(new \App\Events\CommentPosted($model->id, $comment->load('user')))->toOthers();
     }
 
     public function updatedNewComment($value)

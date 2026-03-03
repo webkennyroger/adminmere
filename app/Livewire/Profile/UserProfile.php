@@ -69,6 +69,9 @@ class UserProfile extends Component
         } else {
             $currentUser->follow($this->user);
         }
+
+        // Notify other components to refresh the feed
+        $this->dispatch('refresh-feed');
     }
 
     public function getStatsProperty()

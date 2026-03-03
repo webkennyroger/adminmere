@@ -53,7 +53,7 @@ class FindFriends extends Component
         if ($userToFollow) {
             Auth::user()->follow($userToFollow);
             $userToFollow->notify(new \App\Notifications\NewFollower(Auth::user()));
-            // $this->dispatch('friend-followed'); // Optional feedback
+            $this->dispatch('refresh-feed');
         }
     }
 
@@ -63,6 +63,7 @@ class FindFriends extends Component
 
         if ($userToFollow) {
             Auth::user()->unfollow($userToFollow);
+            $this->dispatch('refresh-feed');
         }
     }
 
