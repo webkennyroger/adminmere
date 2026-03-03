@@ -60,33 +60,56 @@ document.addEventListener("alpine:init", () => {
             let points = [];
             if (mapData.type === 'encoded') {
                 points = this.decodePolyline(mapData.data);
+                this.renderPoints(points);
+                this.loaded = true;
             } else if (mapData.type === 'points') {
                 points = mapData.data.map(p => [p.lat, p.lng]);
+                this.renderPoints(points);
+                this.loaded = true;
+            } else if (mapData.type === 'geocode' && mapData.data) {
+                // Free geocoding via Nominatim (OpenStreetMap)
+                const q = encodeURIComponent(mapData.data);
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${q}&limit=1`, {
+                    headers: { 'Accept-Language': 'pt-BR' }
+                })
+                .then(r => r.json())
+                .then(results => {
+                    if (results && results.length > 0) {
+                        const lat = parseFloat(results[0].lat);
+                        const lon = parseFloat(results[0].lon);
+                        this.map.setView([lat, lon], 13);
+                        L.circleMarker([lat, lon], {
+                            radius: 8, fillColor: '#22c55e',
+                            color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9
+                        }).addTo(this.map);
+                    } else {
+                        // Default to Brazil center
+                        this.map.setView([-14.235, -51.9253], 4);
+                    }
+                    this.loaded = true;
+                })
+                .catch(() => {
+                    this.map.setView([-14.235, -51.9253], 4);
+                    this.loaded = true;
+                });
+            } else {
+                this.loaded = true;
             }
+        },
 
+        renderPoints(points) {
             if (points.length > 1) {
                 this.polyline = L.polyline(points, {
-                    color: '#22c55e', // Brand Green
-                    weight: 3,
-                    opacity: 0.8,
-                    smoothFactor: 1
+                    color: '#22c55e', weight: 3, opacity: 0.8, smoothFactor: 1
                 }).addTo(this.map);
-
-                // Focus on the path
                 this.map.fitBounds(this.polyline.getBounds(), { padding: [10, 10] });
             } else if (points.length === 1) {
                 this.map.setView(points[0], 15);
                 L.circleMarker(points[0], {
-                    radius: 8,
-                    fillColor: "#22c55e",
-                    color: "#fff",
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.8
+                    radius: 8, fillColor: '#22c55e',
+                    color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8
                 }).addTo(this.map);
             }
-
-            this.loaded = true;
         },
 
         decodePolyline(str, precision) {

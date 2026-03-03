@@ -123,49 +123,55 @@
         @endphp
 
         @if($hasMedia)
-            <!-- Map Display -->
-            @if(!empty($activity->polylines))
-                @php
-                    $polylines = $activity->polylines;
-                    // Prepare data for JS
-                    $mapData = [
-                        'type' => 'none',
-                        'data' => null
-                    ];
+            <!-- Map Display was here, now moved above -->
+        @endif
 
-                    if ($polylines) {
-                        if (isset($polylines['summary_polyline']) && !empty($polylines['summary_polyline'])) {
-                            $mapData = ['type' => 'encoded', 'data' => $polylines['summary_polyline']];
-                        } elseif (is_array($polylines) && isset($polylines[0]['lat'])) {
-                            $mapData = ['type' => 'points', 'data' => collect($polylines)->take(100)->values()->all()];
-                        } elseif (is_string($polylines) && !empty($polylines)) {
-                            $mapData = ['type' => 'encoded', 'data' => $polylines];
-                        }
-                    }
-                @endphp
+        @php
+            $polylines = $activity->polylines;
+            // Prepare data for JS
+            $mapData = [
+                'type' => 'none',
+                'data' => null
+            ];
 
-                @if($mapData['type'] !== 'none')
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
-                        x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
-                        <div x-ref="mapContainer" class="w-full h-full z-10"></div>
+            if ($polylines) {
+                if (isset($polylines['summary_polyline']) && !empty($polylines['summary_polyline'])) {
+                    $mapData = ['type' => 'encoded', 'data' => $polylines['summary_polyline']];
+                } elseif (isset($polylines['points']) && is_array($polylines['points']) && count($polylines['points']) > 0) {
+                    $mapData = ['type' => 'points', 'data' => collect($polylines['points'])->take(100)->values()->all()];
+                } elseif (is_array($polylines) && isset($polylines[0]['lat'])) {
+                    $mapData = ['type' => 'points', 'data' => collect($polylines)->take(100)->values()->all()];
+                } elseif (is_string($polylines) && !empty($polylines)) {
+                    $mapData = ['type' => 'encoded', 'data' => $polylines];
+                }
+            }
 
-                        <!-- Overlay for "Open in Maps" -->
-                        <div class="absolute top-2 right-2 z-20">
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ $mapData['type'] === 'points' ? $mapData['data'][0]['lat'] . ',' . $mapData['data'][0]['lng'] : 'Activity' }}"
-                                target="_blank"
-                                class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-[10px] font-bold text-zinc-900 dark:text-white shadow-sm hover:bg-white transition-colors">
-                                Abrir no Maps
-                            </a>
-                        </div>
+            // Fallback: use location string to geocode a point
+            $locationStr = $activity->location ?? '';
+        @endphp
 
-                        <!-- Skeleton / Loading State -->
-                        <div x-show="!loaded"
-                            class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
-                            <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
-                    </div>
-                @endif
-            @endif
+        @if($mapData['type'] !== 'none')
+            <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
+                x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
+                <div x-ref="mapContainer" class="w-full h-full z-10"></div>
+
+                <!-- Skeleton / Loading State -->
+                <div x-show="!loaded"
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
+                    <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+        @elseif(!empty($locationStr))
+            {{-- No GPS track but has location text - show geocoded map --}}
+            <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
+                x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
+                <div x-ref="mapContainer" class="w-full h-full z-10"></div>
+                <div x-show="!loaded"
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
+                    <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+        @endif
 
             <!-- Media Grid -->
             @if($mediaCount > 0)
