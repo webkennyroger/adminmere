@@ -113,8 +113,9 @@
                     $totalVotes = $post->total_votes;
                     $isExpired = $post->poll_expires_at && $post->poll_expires_at->isPast();
                     $isMultiple = (bool)(is_array($post->meta) && ($post->meta['isMultiple'] ?? false));
-                    // Show results ONLY if voted or expired. Don't force show for owner unless voted.
-                    $showResults = $hasVoted || $isExpired;
+                    // Em enquetes múltiplas, permitimos continuar votando a menos que o usuário queira ver os resultados
+                    // ou a enquete tenha expirado ou ele clicou para ver resultados locais.
+                    $showResults = ($hasVoted && !$isMultiple) || $isExpired || $showResultsLocal;
                 @endphp
 
                 @if($isMultiple)
@@ -154,12 +155,28 @@
                         @else
                             <!-- Voting View -->
                             <button wire:click="vote({{ $option->id }})" wire:loading.attr="disabled"
-                                class="w-full text-left px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-brand-500 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 text-zinc-900 dark:text-white transition-all text-sm font-medium">
-                                {{ $option->option_text }}
+                                class="w-full flex justify-between items-center px-4 py-2.5 rounded-lg border {{ $isVotedOption ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20' : 'border-zinc-300 dark:border-zinc-700' }} hover:border-brand-500 dark:hover:border-brand-500 transition-all text-sm font-medium">
+                                <span class="{{ $isVotedOption ? 'text-brand-700 dark:text-brand-300 font-bold' : 'text-zinc-900 dark:text-white' }}">
+                                    {{ $option->option_text }}
+                                </span>
+                                @if($isVotedOption)
+                                    <svg class="w-4 h-4 text-brand-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                @endif
                             </button>
                         @endif
                     </div>
                 @endforeach
+
+                @if($isMultiple && $hasVoted && !$showResults)
+                    <div class="mt-4 flex justify-center">
+                        <button wire:click="$set('showResultsLocal', true)" 
+                            class="text-xs font-bold text-brand-600 hover:text-brand-700 uppercase tracking-widest bg-brand-50 dark:bg-brand-900/40 px-4 py-2 rounded-full border border-brand-200 dark:border-brand-800 transition-colors">
+                            Ver resultados parciais
+                        </button>
+                    </div>
+                @endif
 
                 <div class="flex justify-between items-center mt-2 text-xs text-zinc-500 dark:text-zinc-400 px-1">
                     <span>{{ $totalVotes }} votos</span>

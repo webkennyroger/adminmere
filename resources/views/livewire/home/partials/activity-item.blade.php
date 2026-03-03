@@ -147,14 +147,34 @@
                 @endphp
 
                 @if($poly)
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden">
-                        <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
-                            class="w-full h-full object-cover" alt="Mapa da atividade" loading="lazy">
+                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden group/map">
+                        <a href="https://www.google.com/maps/dir/?api=1&travelmode=walking&destination={{ $poly }}" target="_blank"
+                            class="block w-full h-full">
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:{{ $poly }}&key={{ config('services.google.maps_key') }}"
+                                class="w-full h-full object-cover group-hover/map:scale-105 transition-transform duration-500"
+                                alt="Mapa da atividade" loading="lazy">
+                            <div
+                                class="absolute inset-0 bg-black/0 group-hover/map:bg-black/10 transition-colors flex items-center justify-center">
+                                <span
+                                    class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-xs font-bold text-zinc-900 dark:text-white opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">Abrir
+                                    no Google Maps</span>
+                            </div>
+                        </a>
                     </div>
                 @elseif($pathString)
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden">
-                        <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path={{ urlencode($pathString) }}&key={{ config('services.google.maps_key') }}"
-                            class="w-full h-full object-cover" alt="Mapa da atividade" loading="lazy">
+                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden group/map">
+                        <a href="https://www.google.com/maps/dir/?api=1&travelmode=walking&waypoints={{ urlencode($pathString) }}"
+                            target="_blank" class="block w-full h-full">
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path={{ urlencode($pathString) }}&key={{ config('services.google.maps_key') }}"
+                                class="w-full h-full object-cover group-hover/map:scale-105 transition-transform duration-500"
+                                alt="Mapa da atividade" loading="lazy">
+                            <div
+                                class="absolute inset-0 bg-black/0 group-hover/map:bg-black/10 transition-colors flex items-center justify-center">
+                                <span
+                                    class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-xs font-bold text-zinc-900 dark:text-white opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">Abrir
+                                    no Google Maps</span>
+                            </div>
+                        </a>
                     </div>
                 @else
                     <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
@@ -178,7 +198,9 @@
                         @if(str_contains($mediaItems[0], '.mp4'))
                             <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
                         @else
-                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
+                            <img src="{{ $mediaItems[0] }}"
+                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
+                                x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
                         @endif
                     </div>
                 @elseif($mediaCount === 2)
@@ -189,7 +211,10 @@
                                 @if(str_contains($media, '.mp4'))
                                     <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
                                 @else
-                                    <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
+                                    <img src="{{ $media }}"
+                                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                        alt="Post image"
+                                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
                                 @endif
                             </div>
                         @endforeach
@@ -198,13 +223,19 @@
                     <!-- Three Images Grid -->
                     <div class="grid grid-cols-2 gap-0.5">
                         <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
+                            <img src="{{ $mediaItems[0] }}"
+                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
                         </div>
                         <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
+                            <img src="{{ $mediaItems[1] }}"
+                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
                         </div>
                         <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
+                            <img src="{{ $mediaItems[2] }}"
+                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
                         </div>
                     </div>
                 @else
@@ -213,9 +244,13 @@
                         @foreach($mediaItems as $index => $media)
                             @if($index < 4)
                                 <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                                    <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
+                                    <img src="{{ $media }}"
+                                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                        alt="Post image"
+                                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
                                     @if($index === 3 && $mediaCount > 4)
-                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 3 })'>
+                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors"
+                                            x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 3 })'>
                                             <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
                                         </div>
                                     @endif

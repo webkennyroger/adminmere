@@ -81,38 +81,79 @@ class AuthController extends Controller
     public function googleLogin(Request $request)
     {
         $request->validate([
-            'access_token' => 'required|string',
+            'access_token' => 'required_without:id_token|string',
+            'id_token' => 'required_without:access_token|string',
         ]);
 
         try {
-            // In a real mobile app interacton, the app gets the token from Google SDK
-            // and sends it to the backend. We use Socialite to verify it.
-            // Note: 'google-one-tap' or standard 'google' provider might need
-            // stateless() depending on flow.
+            $googleUser = null;
 
-            $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->access_token);
+            if ($request->filled('id_token')) {
+                // Verify ID Token via Google API
+                $response = \Illuminate\Support\Facades\Http::get('https://oauth2.googleapis.com/tokeninfo', [
+                    'id_token' => $request->id_token,
+                ]);
 
-            if (! $googleUser) {
+                if ($response->failed()) {
+                    return response()->json([
+                        'message' => 'Falha ao validar ID Token do Google.',
+                        'error' => 'invalid_id_token',
+                    ], 401);
+                }
+
+                $tokenData = $response->json();
+
+                // Check audience (client_id)
+                $clientId = config('services.google.client_id');
+                if ($clientId && $tokenData['aud'] !== $clientId) {
+                    return response()->json([
+                        'message' => 'ID Token não pertence a esta aplicação.',
+                        'error' => 'invalid_audience',
+                    ], 401);
+                }
+
+                // Map to a generic object similar to Socialite User
+                $googleUser = (object) [
+                    'email' => $tokenData['email'] ?? null,
+                    'name' => $tokenData['name'] ?? null,
+                    'id' => $tokenData['sub'] ?? null,
+                    'avatar' => $tokenData['picture'] ?? null,
+                ];
+            } else {
+                /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+                $driver = Socialite::driver('google');
+                $user = $driver->stateless()->userFromToken($request->access_token);
+                $googleUser = (object) [
+                    'email' => $user->getEmail(),
+                    'name' => $user->getName(),
+                    'id' => $user->getId(),
+                    'avatar' => $user->getAvatar(),
+                ];
+            }
+
+            if (! $googleUser->email) {
                 return response()->json([
-                    'message' => 'Falha ao validar token do Google. Token inválido ou expirado.',
-                    'error' => 'invalid_token',
+                    'message' => 'E-mail não retornado pelo Google.',
+                    'error' => 'no_email_provided',
                 ], 401);
             }
 
-            $user = User::where('email', $googleUser->getEmail())->first();
+            $user = User::where('email', $googleUser->email)->first();
+
 
             if (! $user) {
                 $user = User::create([
-                    'email' => $googleUser->getEmail(),
-                    'name' => $googleUser->getName(),
-                    'google_id' => $googleUser->getId(),
-                    'avatar' => $googleUser->getAvatar(),
+                    'email' => $googleUser->email,
+                    'name' => $googleUser->name ?? explode('@', $googleUser->email)[0],
+                    'google_id' => $googleUser->id,
+                    'avatar' => $googleUser->avatar,
                     'password' => Hash::make(str()->random(24)),
+                    'email_verified_at' => now(),
                 ]);
             } else {
                 $user->update([
-                    'google_id' => $googleUser->getId(),
-                    'avatar' => $googleUser->getAvatar(),
+                    'google_id' => $googleUser->id,
+                    'avatar' => $googleUser->avatar,
                 ]);
             }
 
@@ -131,7 +172,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Falha ao fazer login com Google. Verifique o token ou tente novamente.',
+                'message' => 'Falha ao fazer login com Google: ' . $e->getMessage(),
                 'error' => 'google_auth_failed',
             ], 401);
         }

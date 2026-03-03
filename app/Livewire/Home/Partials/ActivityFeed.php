@@ -65,10 +65,14 @@ class ActivityFeed extends Component
         if ($this->feed === 'timeline' || $this->feed === 'network' || $this->feed === 'community') {
             if ($this->feed === 'community') {
                 $postsQuery->where(fn ($q) => $q->where('feed_type', 'community')->orWhere('privacy', 'public'));
+                $activitiesQuery->where('feed_type', 'community')->where('privacy', 'public');
             } else {
-                $postsQuery->where('privacy', 'public');
+                $followingIds = $user->following()->pluck('following_id')->toArray();
+                $followingIds[] = $user->id;
+
+                $postsQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
+                $activitiesQuery->whereIn('user_id', $followingIds)->where('privacy', 'public');
             }
-            $activitiesQuery->where('privacy', 'public');
         } elseif ($this->feed === 'personal') {
             $savedPostsIds = \App\Models\SavedItem::where('user_id', $user->id)
                 ->where('saved_item_type', Post::class)

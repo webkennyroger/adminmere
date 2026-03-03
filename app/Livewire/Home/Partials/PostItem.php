@@ -10,6 +10,8 @@ class PostItem extends Component
     use \App\Livewire\Traits\HasInteractions;
     use \Livewire\WithFileUploads;
 
+    public $showResultsLocal = false;
+
     public Post $post;
 
     // Edit/Delete Post
