@@ -66,11 +66,21 @@ trait HasInteractions
 
         if ($existingLikeQuery->exists()) {
             $existingLikeQuery->delete();
+            $isLiked = false;
         } else {
             $model->allLikes()->create(['user_id' => $user->id]);
+            $isLiked = true;
         }
 
         $model->refresh();
+
+        // Broadcast real-time update
+        broadcast(new \App\Events\LikeToggled(
+            $model->id,
+            $isLiked,
+            $model->allLikes()->count(),
+            $user->id
+        ))->toOthers();
     }
 
     public function toggleSave()

@@ -215,8 +215,14 @@ class ChatSidebar extends Component
         $authId = Auth::id();
         $authUser = User::find($authId);
 
-        // IDs dos usuários que sigo
-        $followingIds = $authUser->following()->pluck('users.id')->toArray();
+        if (! $authUser) {
+            $this->users = collect();
+
+            return;
+        }
+
+        // IDs dos usuários que sigo - seleciona da tabela pivot diretamente para evitar ambiguïdade
+        $followingIds = $authUser->following()->pluck('followers.following_id')->toArray();
 
         // Carregar usuários: admins, managers, histórico de chat OU que sigo
         $this->users = User::where('id', '!=', $authId)
