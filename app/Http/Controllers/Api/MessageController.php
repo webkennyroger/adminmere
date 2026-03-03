@@ -22,10 +22,12 @@ class MessageController extends Controller
         $messages = Message::where(function ($query) use ($authUser, $userId) {
             $query->where(function ($q) use ($authUser, $userId) {
                 $q->where('sender_id', $authUser->id)
-                    ->where('receiver_id', $userId);
+                    ->where('receiver_id', $userId)
+                    ->where('deleted_by_sender', false);
             })->orWhere(function ($q) use ($authUser, $userId) {
                 $q->where('sender_id', $userId)
-                    ->where('receiver_id', $authUser->id);
+                    ->where('receiver_id', $authUser->id)
+                    ->where('deleted_by_receiver', false);
             });
         })
             ->orderBy('created_at', 'asc')
@@ -95,12 +97,16 @@ class MessageController extends Controller
     public function getConversations(Request $request)
     {
         $authUser = Auth::user();
+        $showArchived = $request->boolean('archived', false);
 
-        // Get unique user IDs the current user has chatted with
-        $userIds = Message::where('sender_id', $authUser->id)
-            ->orWhere('receiver_id', $authUser->id)
-            ->get()
-            ->map(function ($message) use ($authUser) {
+        // Get unique user IDs the current user has chatted with, but only if not deleted
+        $messages = Message::where(function($q) use ($authUser) {
+                $q->where('sender_id', $authUser->id)->where('deleted_by_sender', false);
+            })->orWhere(function($q) use ($authUser) {
+                $q->where('receiver_id', $authUser->id)->where('deleted_by_receiver', false);
+            })->get();
+
+        $userIds = $messages->map(function ($message) use ($authUser) {
                 return $message->sender_id == $authUser->id ? $message->receiver_id : $message->sender_id;
             })
             ->unique()
@@ -114,15 +120,32 @@ class MessageController extends Controller
                 continue;
             }
 
-            $lastMessage = Message::where(function ($q) use ($authUser, $userId) {
-                $q->where('sender_id', $authUser->id)->where('receiver_id', $userId);
+            // check if conversation is archived
+            $lastMessageQuery = Message::where(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $authUser->id)->where('receiver_id', $userId)->where('deleted_by_sender', false);
             })->orWhere(function ($q) use ($authUser, $userId) {
-                $q->where('sender_id', $userId)->where('receiver_id', $authUser->id);
-            })->latest()->first();
+                $q->where('sender_id', $userId)->where('receiver_id', $authUser->id)->where('deleted_by_receiver', false);
+            });
+
+            $lastMessage = (clone $lastMessageQuery)->latest()->first();
+
+            if (!$lastMessage) continue;
+
+            // Check archival status based on the AUTH user's role in the messages
+            $isArchived = Message::where(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $authUser->id)->where('receiver_id', $userId)->where('archived_by_sender', true);
+            })->orWhere(function ($q) use ($authUser, $userId) {
+                $q->where('sender_id', $userId)->where('receiver_id', $authUser->id)->where('archived_by_receiver', true);
+            })->exists();
+
+            if ($isArchived !== $showArchived) {
+                continue;
+            }
 
             $unreadCount = Message::where('sender_id', $userId)
                 ->where('receiver_id', $authUser->id)
                 ->whereNull('read_at')
+                ->where('deleted_by_receiver', false)
                 ->count();
 
             $result[] = [
@@ -136,6 +159,7 @@ class MessageController extends Controller
                     'created_at' => $lastMessage ? $lastMessage->created_at->toIso8601String() : null,
                 ],
                 'unread_count' => $unreadCount,
+                'is_archived' => $isArchived,
             ];
         }
 
@@ -146,4 +170,74 @@ class MessageController extends Controller
 
         return response()->json(['success' => true, 'data' => $result]);
     }
+
+    // Apaga conversa (apenas para o usuário logado)
+    public function destroy($userId)
+    {
+        $authUser = Auth::user();
+
+        Message::where('sender_id', $authUser->id)
+            ->where('receiver_id', $userId)
+            ->update(['deleted_by_sender' => true]);
+
+        Message::where('sender_id', $userId)
+            ->where('receiver_id', $authUser->id)
+            ->update(['deleted_by_receiver' => true]);
+
+        return response()->json(['success' => true, 'message' => 'Conversa apagada com sucesso']);
+    }
+
+    // Arquiva conversa (apenas para o usuário logado)
+    public function archive($userId, Request $request)
+    {
+        $authUser = Auth::user();
+        $status = $request->input('status', true);
+
+        Message::where('sender_id', $authUser->id)
+            ->where('receiver_id', $userId)
+            ->update(['archived_by_sender' => $status]);
+
+        Message::where('sender_id', $userId)
+            ->where('receiver_id', $authUser->id)
+            ->update(['archived_by_receiver' => $status]);
+
+        return response()->json(['success' => true, 'message' => $status ? 'Conversa arquivada' : 'Conversa desarquivada']);
+    }
+
+    // Limpa conversa para todos (Hard Delete)
+    public function clearForEveryone($userId)
+    {
+        $authUser = Auth::user();
+
+        Message::where(function ($q) use ($authUser, $userId) {
+            $q->where('sender_id', $authUser->id)->where('receiver_id', $userId);
+        })->orWhere(function ($q) use ($authUser, $userId) {
+            $q->where('sender_id', $userId)->where('receiver_id', $authUser->id);
+        })->delete();
+
+        return response()->json(['success' => true, 'message' => 'Conversa removida para todos']);
+    }
+
+    // Apaga todas as conversas
+    public function destroyAll()
+    {
+        $authUser = Auth::user();
+
+        Message::where('sender_id', $authUser->id)->update(['deleted_by_sender' => true]);
+        Message::where('receiver_id', $authUser->id)->update(['deleted_by_receiver' => true]);
+
+        return response()->json(['success' => true, 'message' => 'Todas as conversas foram apagadas']);
+    }
+
+    // Arquiva todas as conversas
+    public function archiveAll()
+    {
+        $authUser = Auth::user();
+
+        Message::where('sender_id', $authUser->id)->update(['archived_by_sender' => true]);
+        Message::where('receiver_id', $authUser->id)->update(['archived_by_receiver' => true]);
+
+        return response()->json(['success' => true, 'message' => 'Todas as conversas foram arquivadas']);
+    }
+
 }

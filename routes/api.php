@@ -103,6 +103,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages', [\App\Http\Controllers\Api\MessageController::class, 'sendMessage']);
     Route::post('/messages/{userId}/read', [\App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
     Route::get('/conversations', [\App\Http\Controllers\Api\MessageController::class, 'getConversations']);
+    Route::delete('/conversations/all', [\App\Http\Controllers\Api\MessageController::class, 'destroyAll']);
+    Route::post('/conversations/archive/all', [\App\Http\Controllers\Api\MessageController::class, 'archiveAll']);
+    Route::delete('/conversations/{userId}', [\App\Http\Controllers\Api\MessageController::class, 'destroy']);
+    Route::post('/conversations/{userId}/archive', [\App\Http\Controllers\Api\MessageController::class, 'archive']);
+    Route::delete('/conversations/{userId}/everyone', [\App\Http\Controllers\Api\MessageController::class, 'clearForEveryone']);
 
     // Stats & Dashboard API
     Route::get('/stats/dashboard', [\App\Http\Controllers\Api\StatsController::class, 'dashboard']);
