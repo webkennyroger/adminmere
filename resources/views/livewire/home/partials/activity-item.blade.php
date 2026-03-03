@@ -122,17 +122,9 @@
             $mediaCount = count($mediaItems);
         @endphp
 
-        @if($hasMedia)
-            <!-- Map Display was here, now moved above -->
-        @endif
-
         @php
             $polylines = $activity->polylines;
-            // Prepare data for JS
-            $mapData = [
-                'type' => 'none',
-                'data' => null
-            ];
+            $mapData = ['type' => 'none', 'data' => null];
 
             if ($polylines) {
                 if (isset($polylines['summary_polyline']) && !empty($polylines['summary_polyline'])) {
@@ -146,23 +138,21 @@
                 }
             }
 
-            // Fallback: use location string to geocode a point
             $locationStr = $activity->location ?? '';
         @endphp
 
+        {{-- MAP: show when GPS track exists --}}
         @if($mapData['type'] !== 'none')
             <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
                 x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
                 <div x-ref="mapContainer" class="w-full h-full z-10"></div>
-
-                <!-- Skeleton / Loading State -->
                 <div x-show="!loaded"
                     class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
                     <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
             </div>
         @elseif(!empty($locationStr))
-            {{-- No GPS track but has location text - show geocoded map --}}
+            {{-- Fallback: geocode city/address via free Nominatim API --}}
             <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
                 x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
                 <div x-ref="mapContainer" class="w-full h-full z-10"></div>
@@ -173,75 +163,70 @@
             </div>
         @endif
 
-            <!-- Media Grid -->
-            @if($mediaCount > 0)
-                @if($mediaCount === 1)
-                    <!-- Single Image/Video - Full Width -->
-                    <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
-                        @if(str_contains($mediaItems[0], '.mp4'))
-                            <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
-                        @else
-                            <img src="{{ $mediaItems[0] }}"
-                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                                x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                        @endif
+        {{-- MEDIA GRID --}}
+        @if($mediaCount > 0)
+            @if($mediaCount === 1)
+                <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
+                    @if(str_contains($mediaItems[0], '.mp4'))
+                        <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
+                    @else
+                        <img src="{{ $mediaItems[0] }}"
+                            class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
+                            x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
+                    @endif
+                </div>
+            @elseif($mediaCount === 2)
+                <div class="grid grid-cols-2 gap-0.5">
+                    @foreach($mediaItems as $media)
+                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
+                            @if(str_contains($media, '.mp4'))
+                                <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
+                            @else
+                                <img src="{{ $media }}"
+                                    class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                    alt="Post image"
+                                    x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @elseif($mediaCount === 3)
+                <div class="grid grid-cols-2 gap-0.5">
+                    <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
+                        <img src="{{ $mediaItems[0] }}"
+                            class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
                     </div>
-                @elseif($mediaCount === 2)
-                    <!-- Two Images Side by Side -->
-                    <div class="grid grid-cols-2 gap-0.5">
-                        @foreach($mediaItems as $media)
+                    <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
+                        <img src="{{ $mediaItems[1] }}"
+                            class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
+                    </div>
+                    <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
+                        <img src="{{ $mediaItems[2] }}"
+                            class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
+                    </div>
+                </div>
+            @else
+                <div class="grid grid-cols-2 gap-0.5">
+                    @foreach($mediaItems as $index => $media)
+                        @if($index < 4)
                             <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                                @if(str_contains($media, '.mp4'))
-                                    <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
-                                @else
-                                    <img src="{{ $media }}"
-                                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                        alt="Post image"
-                                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
+                                <img src="{{ $media }}"
+                                    class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                    alt="Post image"
+                                    x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
+                                @if($index === 3 && $mediaCount > 4)
+                                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors"
+                                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 3 })'>
+                                        <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
+                                    </div>
                                 @endif
                             </div>
-                        @endforeach
-                    </div>
-                @elseif($mediaCount === 3)
-                    <!-- Three Images Grid -->
-                    <div class="grid grid-cols-2 gap-0.5">
-                        <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[0] }}"
-                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                        </div>
-                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[1] }}"
-                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
-                        </div>
-                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                            <img src="{{ $mediaItems[2] }}"
-                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
-                        </div>
-                    </div>
-                @else
-                    <!-- 4+ Images Grid with Counter -->
-                    <div class="grid grid-cols-2 gap-0.5">
-                        @foreach($mediaItems as $index => $media)
-                            @if($index < 4)
-                                <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                                    <img src="{{ $media }}"
-                                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                        alt="Post image"
-                                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
-                                    @if($index === 3 && $mediaCount > 4)
-                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors"
-                                            x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 3 })'>
-                                            <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                @endif
+                        @endif
+                    @endforeach
+                </div>
             @endif
         @endif
 
