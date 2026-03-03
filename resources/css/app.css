@@ -1306,3 +1306,11 @@ pre[class*="language-"] {
     box-shadow: 0 6px 20px rgba(63, 63, 70, 0.3);
 }
 
+/* ===== Flux Tooltip: Verde com texto branco ===== */
+[data-flux-tooltip-content],
+[role="tooltip"] {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+}
+
+
