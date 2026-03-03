@@ -274,8 +274,8 @@
 
     {{-- MAP: DEPOIS dos stats, igual à imagem de referência --}}
     @if($mapData['type'] !== 'none')
-        <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden" x-data="activityMap(@js($mapData))"
-            x-intersect.once="initMap()">
+        <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate"
+            x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
             <div x-ref="mapContainer" class="w-full h-full"></div>
             <div x-show="!loaded"
                 class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
@@ -288,7 +288,7 @@
             </button>
         </div>
     @elseif(!empty($locationStr))
-        <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden"
+        <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate"
             x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
             <div x-ref="mapContainer" class="w-full h-full"></div>
             <div x-show="!loaded"
