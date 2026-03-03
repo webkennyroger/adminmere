@@ -21,10 +21,9 @@
     </div>
 
     <!-- Full Width Map -->
-    <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 relative">
-        <img src="https://maps.googleapis.com/maps/api/staticmap?center=-15.601, -56.097&zoom=14&size=600x300&style=feature:all|element:all|saturation:-100|visibility:simplified&sensor=false&key=AIzaSyCka52TrH3u26pUrTyRwKkogWB-FdWA2bU"
-            alt="Map Placeholder" class="w-full h-full object-cover opacity-80"
-            onerror="this.src='https://placehold.co/600x300/e2e8f0/94a3b8?text=Mapa+da+Corrida+em+Grupo'">
+    <div class="w-full h-48 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden"
+        x-data="activityMap({type: 'points', data: [{lat: -15.601, lng: -56.097}]})" x-intersect.once="initMap()">
+        <div x-ref="mapContainer" class="w-full h-full z-10 opacity-80"></div>
     </div>
 
     <!-- User 1 Section (Nadya) -->

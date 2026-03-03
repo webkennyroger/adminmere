@@ -126,46 +126,43 @@
             <!-- Map Display -->
             @if(!empty($activity->polylines))
                 @php
-                    $mapUrl = null;
-                    $mapsLink = 'https://www.google.com/maps';
-                    $mapsKey = config('services.google.maps_key');
+                    $polylines = $activity->polylines;
+                    // Prepare data for JS
+                    $mapData = [
+                        'type' => 'none',
+                        'data' => null
+                    ];
 
-                    if (is_array($activity->polylines)) {
-                        if (isset($activity->polylines['summary_polyline']) && !empty($activity->polylines['summary_polyline'])) {
-                            // Format: encoded polyline string
-                            $encoded = $activity->polylines['summary_polyline'];
-                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:' . $encoded . '&key=' . $mapsKey;
-                            $mapsLink = 'https://www.google.com/maps/search/?api=1&query=' . urlencode('Activity map');
-                        } elseif (isset($activity->polylines[0]['lat'])) {
-                            // Format: array of {lat, lng} points
-                            $points = collect($activity->polylines)->take(100);
-                            $coordsForPath = $points->map(fn($pt) => $pt['lat'] . ',' . $pt['lng'])->implode('|');
-                            $pathParam = 'color:0x22c55eff|weight:4|' . $coordsForPath;
-                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=' . $pathParam . '&key=' . $mapsKey;
-
-                            // Link to first point
-                            $first = $activity->polylines[0];
-                            $mapsLink = 'https://www.google.com/maps/search/?api=1&query=' . $first['lat'] . ',' . $first['lng'];
+                    if ($polylines) {
+                        if (isset($polylines['summary_polyline']) && !empty($polylines['summary_polyline'])) {
+                            $mapData = ['type' => 'encoded', 'data' => $polylines['summary_polyline']];
+                        } elseif (is_array($polylines) && isset($polylines[0]['lat'])) {
+                            $mapData = ['type' => 'points', 'data' => collect($polylines)->take(100)->values()->all()];
+                        } elseif (is_string($polylines) && !empty($polylines)) {
+                            $mapData = ['type' => 'encoded', 'data' => $polylines];
                         }
-                    } elseif (is_string($activity->polylines) && !empty($activity->polylines)) {
-                        $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:' . $activity->polylines . '&key=' . $mapsKey;
-                        $mapsLink = 'https://www.google.com/maps/search/?api=1&query=' . urlencode('Activity map');
                     }
                 @endphp
 
-                @if($mapUrl)
-                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden group/map">
-                        <a href="{{ $mapsLink }}" target="_blank" class="block w-full h-full">
-                            <img src="{!! $mapUrl !!}"
-                                class="w-full h-full object-cover group-hover/map:scale-105 transition-transform duration-500"
-                                alt="Mapa da atividade" loading="lazy">
-                            <div
-                                class="absolute inset-0 bg-black/0 group-hover/map:bg-black/10 transition-colors flex items-center justify-center">
-                                <span
-                                    class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-xs font-bold text-zinc-900 dark:text-white opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">Abrir
-                                    no Google Maps</span>
-                            </div>
-                        </a>
+                @if($mapData['type'] !== 'none')
+                    <div class="w-full aspect-video bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
+                        x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
+                        <div x-ref="mapContainer" class="w-full h-full z-10"></div>
+
+                        <!-- Overlay for "Open in Maps" -->
+                        <div class="absolute top-2 right-2 z-20">
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $mapData['type'] === 'points' ? $mapData['data'][0]['lat'] . ',' . $mapData['data'][0]['lng'] : 'Activity' }}"
+                                target="_blank"
+                                class="bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-full text-[10px] font-bold text-zinc-900 dark:text-white shadow-sm hover:bg-white transition-colors">
+                                Abrir no Maps
+                            </a>
+                        </div>
+
+                        <!-- Skeleton / Loading State -->
+                        <div x-show="!loaded"
+                            class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
+                            <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
                     </div>
                 @endif
             @endif

@@ -54,6 +54,7 @@ NUNCA adicione codigo aqui. Edite apenas o arquivo acima.
 
     <!-- Quill JS -->
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     @stack('scripts')
 </body>

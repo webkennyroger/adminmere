@@ -26,6 +26,84 @@ document.addEventListener("alpine:init", () => {
     initSidebarStore();
     initChatStore();
 
+    // Activity Map Component
+    window.Alpine.data('activityMap', (mapData) => ({
+        loaded: false,
+        map: null,
+        polyline: null,
+        
+        initMap() {
+            if (!this.$refs.mapContainer || this.map) return;
+            
+            // Initialization wait for container to be ready 
+            // especially during Livewire updates
+            this.map = L.map(this.$refs.mapContainer, {
+                zoomControl: false,
+                dragging: false,
+                touchZoom: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                tap: false,
+            });
+
+            // Carto Tiles - Premium look & supports Dark Mode
+            const isDark = document.documentElement.classList.contains('dark');
+            const tileLayer = isDark 
+                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+            L.tileLayer(tileLayer, {
+                attribution: 'OSM'
+            }).addTo(this.map);
+
+            let points = [];
+            if (mapData.type === 'encoded') {
+                points = this.decodePolyline(mapData.data);
+            } else if (mapData.type === 'points') {
+                points = mapData.data.map(p => [p.lat, p.lng]);
+            }
+
+            if (points.length > 1) {
+                this.polyline = L.polyline(points, {
+                    color: '#22c55e', // Brand Green
+                    weight: 3,
+                    opacity: 0.8,
+                    smoothFactor: 1
+                }).addTo(this.map);
+
+                // Focus on the path
+                this.map.fitBounds(this.polyline.getBounds(), { padding: [10, 10] });
+            } else if (points.length === 1) {
+                this.map.setView(points[0], 15);
+                L.circleMarker(points[0], {
+                    radius: 8,
+                    fillColor: "#22c55e",
+                    color: "#fff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(this.map);
+            }
+
+            this.loaded = true;
+        },
+
+        decodePolyline(str, precision) {
+            var index = 0, lat = 0, lng = 0, coordinates = [], shift = 0, result = 0, byte = null, latitude_change, longitude_change, factor = Math.pow(10, precision || 5);
+            while (index < str.length) {
+                shift = 0; result = 0;
+                do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+                latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1)); lat += latitude_change;
+                shift = 0; result = 0;
+                do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+                longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1)); lng += longitude_change;
+                coordinates.push([lat / factor, lng / factor]);
+            }
+            return coordinates;
+        }
+    }));
+
     console.log("Alpine stores and plugins initialized for Livewire 3");
 });
 

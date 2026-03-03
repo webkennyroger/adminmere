@@ -13,7 +13,7 @@
             </div>
         @endif
         <button type="button" @click="modalFoto = true"
-            class="flex-1 text-left bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full px-5 py-2.5 text-[15px] text-zinc-500 dark:text-zinc-400 transition-colors cursor-pointer">
+            class="flex-1 text-left bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl px-5 py-2.5 text-[15px] text-zinc-500 dark:text-zinc-400 transition-colors cursor-pointer">
             O que você está pensando, {{ auth()->user()->name }}?
         </button>
     </div>
