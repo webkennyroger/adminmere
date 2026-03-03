@@ -134,8 +134,8 @@
                         if (isset($activity->polylines['summary_polyline']) && !empty($activity->polylines['summary_polyline'])) {
                             // Format: encoded polyline string
                             $encoded = $activity->polylines['summary_polyline'];
-                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:' . urlencode($encoded) . '&key=' . $mapsKey;
-                            $mapsLink = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=' . urlencode($encoded);
+                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:' . $encoded . '&key=' . $mapsKey;
+                            $mapsLink = 'https://www.google.com/maps/search/?api=1&query=' . urlencode('Activity map');
                         } elseif (isset($activity->polylines[0]['lat'])) {
                             // Format: array of {lat, lng} points
                             $points = collect($activity->polylines)->take(100);
@@ -143,14 +143,13 @@
                             $pathParam = 'color:0x22c55eff|weight:4|' . $coordsForPath;
                             $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=' . $pathParam . '&key=' . $mapsKey;
 
-                            // Link to first and last point
+                            // Link to first point
                             $first = $activity->polylines[0];
-                            $last = $activity->polylines[count($activity->polylines) - 1];
-                            $mapsLink = 'https://www.google.com/maps/dir/' . $first['lat'] . ',' . $first['lng'] . '/' . $last['lat'] . ',' . $last['lng'];
+                            $mapsLink = 'https://www.google.com/maps/search/?api=1&query=' . $first['lat'] . ',' . $first['lng'];
                         }
                     } elseif (is_string($activity->polylines) && !empty($activity->polylines)) {
-                        $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:' . urlencode($activity->polylines) . '&key=' . $mapsKey;
-                        $mapsLink = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=' . urlencode($activity->polylines);
+                        $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=enc:' . $activity->polylines . '&key=' . $mapsKey;
+                        $mapsLink = 'https://www.google.com/maps/search/?api=1&query=' . urlencode('Activity map');
                     }
                 @endphp
 
@@ -469,7 +468,7 @@
         wire:key="delete-activity-modal-{{ $activity->id }}">
         <div class="p-4 sm:p-14 text-center overflow-y-auto">
             <div
-                class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
+                class="mx-auto flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
                 <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
