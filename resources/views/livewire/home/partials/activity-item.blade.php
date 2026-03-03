@@ -141,7 +141,7 @@
                             $points = collect($activity->polylines)->take(100);
                             $coordsForPath = $points->map(fn($pt) => $pt['lat'] . ',' . $pt['lng'])->implode('|');
                             $pathParam = 'color:0x22c55eff|weight:4|' . $coordsForPath;
-                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=' . urlencode($pathParam) . '&key=' . $mapsKey;
+                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?size=800x450&maptype=roadmap&path=' . $pathParam . '&key=' . $mapsKey;
 
                             // Link to first and last point
                             $first = $activity->polylines[0];

@@ -29,7 +29,7 @@ class ActivityController extends Controller
             'likes',
             'savedItems',
             'comments' => function ($q) {
-                $q->whereNull('parent_id')->latest();
+                $q->whereNull('parent_id')->oldest();
             }
         ]);
 
@@ -41,7 +41,7 @@ class ActivityController extends Controller
             'pollOptions',
             'pollVotes.user',
             'comments' => function ($q) {
-                $q->whereNull('parent_id')->latest();
+                $q->whereNull('parent_id')->oldest();
             }
         ]);
 
