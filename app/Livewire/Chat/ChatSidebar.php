@@ -215,8 +215,13 @@ class ChatSidebar extends Component
         $authId = Auth::id();
         $authUser = User::find($authId);
 
+        if (!$authUser) {
+            $this->users = collect();
+            return;
+        }
+
         // IDs dos usuários que sigo
-        $followingIds = $authUser->following()->pluck('users.id')->toArray();
+        $followingIds = $authUser->following()->pluck('id')->toArray();
 
         // Carregar usuários: apenas os que sigo OU que já tenho histórico de conversa
         $this->users = User::where('id', '!=', $authId)
