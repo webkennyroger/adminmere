@@ -34,7 +34,7 @@
                 <li>
                     <flux:tooltip content="Início" position="bottom">
                         <a href="{{ route('home', ['feed' => 'timeline']) }}"
-                            class="flex items-center justify-center w-11 h-11 rounded-xl transition-colors
+                            class="flex items-center justify-center w-10 h-10 rounded-xl transition-colors
                                 {{ request()->get('feed', 'timeline') === 'timeline' ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -49,7 +49,7 @@
                 <li>
                     <flux:tooltip content="Encontrar amigos" position="bottom">
                         <a href="{{ route('home', ['feed' => 'personal']) }}"
-                            class="flex items-center justify-center w-11 h-11 rounded-xl transition-colors
+                            class="flex items-center justify-center w-10 h-10 rounded-xl transition-colors
                                 {{ request()->get('feed') === 'personal' ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -64,7 +64,7 @@
                 <li>
                     <flux:tooltip content="Mensagens" position="bottom">
                         <a href="{{ route('chat.index') }}"
-                            class="flex items-center justify-center w-11 h-11 rounded-xl transition-colors relative
+                            class="flex items-center justify-center w-10 h-10 rounded-xl transition-colors relative
                                 {{ request()->routeIs('chat.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -89,7 +89,7 @@
                 <li>
                     <flux:tooltip content="Configurações" position="bottom">
                         <a href="{{ route('profile.edit') }}"
-                            class="flex items-center justify-center w-11 h-11 rounded-xl transition-colors
+                            class="flex items-center justify-center w-10 h-10 rounded-xl transition-colors
                                 {{ request()->routeIs('profile.*') ? 'bg-brand-100 text-brand-600 dark:bg-brand-600/20 dark:text-brand-400' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"

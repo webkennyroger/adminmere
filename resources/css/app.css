@@ -1309,7 +1309,7 @@ pre[class*="language-"] {
 /* ===== Flux Tooltip: Verde com texto branco ===== */
 [data-flux-tooltip-content],
 [role="tooltip"] {
-    background-color: #16a34a !important;
+    background-color: #16b83e !important;
     color: #ffffff !important;
 }
 
