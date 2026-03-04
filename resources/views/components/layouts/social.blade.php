@@ -44,6 +44,13 @@
                 </div>
 
                 @auth
+                    <!-- Perfil do Usuário (Componente Unificado) — Visível quando expandido -->
+                    <div class="p-2" x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100">
+                        <livewire:home.partials.user-profile-card />
+                    </div>
+
                     <!-- Collapsed state: just avatar -->
                     <div class="py-4 px-2 border-b border-zinc-200/80 dark:border-zinc-800 flex flex-col items-center"
                         x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered"
