@@ -21,7 +21,7 @@
     <x-common.preloader />
 
     <!-- ══════════ MAIN WRAPPER (Sidebar Full Height Layout) ══════════ -->
-    <div class="flex min-h-screen max-w-[1920px] mx-auto">
+    <div class="flex min-h-screen">
 
         <!-- ══════════ LEFT SIDEBAR — SocialV Style ══════════ -->
         <div class="shrink-0 hidden lg:block transition-all duration-300 ease-in-out sticky top-0 h-screen z-40" :class="{
@@ -44,12 +44,6 @@
                 </div>
 
                 @auth
-                    <!-- Perfil do Usuário (Componente Unificado) -->
-                    <div class="p-2">
-                        <livewire:home.partials.user-profile-card />
-                    </div>
-
-
                     <!-- Collapsed state: just avatar -->
                     <div class="py-4 px-2 border-b border-zinc-200/80 dark:border-zinc-800 flex flex-col items-center"
                         x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered"
@@ -64,6 +58,10 @@
 
                 <!-- Menu Section -->
                 <nav class="flex-1 py-4">
+                    <div class="px-6 py-2 mb-2 text-[11px] font-bold text-zinc-400 uppercase tracking-widest"
+                        x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">
+                        Menu
+                    </div>
                     <ul class="space-y-1"
                         :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'px-3' : 'px-2'">
 
@@ -169,6 +167,11 @@
                             </a>
                         </li>
                     </ul>
+
+                    <div class="px-6 py-2 mt-6 mb-2 text-[11px] font-bold text-zinc-400 uppercase tracking-widest"
+                        x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">
+                        Outros
+                    </div>
                 </nav>
 
                 <!-- Bottom Icons -->
@@ -232,11 +235,10 @@
                             <!-- Sidebar Toggle Desktop -->
                             <flux:tooltip content="Recolher menu" position="bottom">
                                 <button @click.stop="$store.sidebar.isExpanded = !$store.sidebar.isExpanded"
-                                    class="hidden lg:flex w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5"
-                                        viewBox="0 0 24 24">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                                    class="hidden lg:flex w-10 h-10 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16"></path>
                                     </svg>
                                 </button>
                             </flux:tooltip>
