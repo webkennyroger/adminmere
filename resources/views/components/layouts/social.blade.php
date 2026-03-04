@@ -64,7 +64,8 @@
                 @endauth
 
                 <!-- Menu Section -->
-                <nav class="flex-1 py-4">
+                <nav class="py-4 transition-all duration-300"
+                    :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'flex-1' : ''">
                     <div class="px-6 py-2 mb-2 text-[11px] font-bold text-zinc-400 uppercase tracking-widest"
                         x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">
                         Menu
@@ -182,39 +183,35 @@
                 </nav>
 
                 <!-- Bottom Icons -->
-                <div class="p-3 border-t border-zinc-200/80 dark:border-zinc-800">
-                    <div class="flex items-center justify-around">
+                <div class="border-t border-zinc-200/80 dark:border-zinc-800 flex text-zinc-400 transition-all duration-300"
+                    :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'flex-row items-center justify-around p-4' : 'flex-col items-center space-y-6 py-8 px-2'">
+                    <flux:tooltip content="Início" position="right">
                         <a href="{{ route('home') }}"
                             class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                </path>
-                            </svg>
+                            <flux:icon.home variant="outline" class="w-6 h-6" />
                         </a>
+                    </flux:tooltip>
+                    <flux:tooltip content="Ver membros" position="right">
                         <a href="{{ route('users.find') }}"
                             class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z">
-                                </path>
-                            </svg>
+                            <flux:icon.users variant="outline" class="w-6 h-6" />
                         </a>
+                    </flux:tooltip>
+                    <flux:tooltip content="Desafios" position="right">
                         <a href="{{ route('challenges.index') }}"
                             class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                     d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </a>
+                    </flux:tooltip>
+                    <flux:tooltip content="Meu Perfil" position="right">
                         <a href="{{ route('profile') }}"
                             class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
+                            <flux:icon.user variant="outline" class="w-6 h-6" />
                         </a>
-                    </div>
+                    </flux:tooltip>
                 </div>
             </aside>
         </div>
