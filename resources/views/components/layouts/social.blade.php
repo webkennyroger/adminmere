@@ -28,13 +28,15 @@
             <!-- LEFT: Logo + green -->
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sidebar Toggle (mobile) -->
-                <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
-                    class="lg:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
+                <flux:tooltip content="Abrir menu" position="bottom">
+                    <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
+                        class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </flux:tooltip>
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5">
                     <img class="w-9 h-9 rounded-lg" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="Mere" />
                     <span
@@ -47,13 +49,15 @@
             <!-- RIGHT: Search + Icons + Profile -->
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sidebar Toggle Desktop (Right Side) -->
-                <button @click.stop="$store.sidebar.isExpanded = !$store.sidebar.isExpanded"
-                    class="hidden lg:flex p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="9" y1="3" x2="9" y2="21"></line>
-                    </svg>
-                </button>
+                <flux:tooltip content="Recolher menu" position="bottom">
+                    <button @click.stop="$store.sidebar.isExpanded = !$store.sidebar.isExpanded"
+                        class="hidden lg:flex w-10 h-10 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                        </svg>
+                    </button>
+                </flux:tooltip>
 
                 <!-- Search -->
                 <div class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-2 w-52">
@@ -68,8 +72,9 @@
                 <!-- Icon group -->
                 <div class="flex items-center gap-0.5">
                     @if(auth()->check() && auth()->user()->isAdmin())
-                        <flux:tooltip content="Admin" position="bottom">
-                            <a href="{{ route('dashboard') }}" class="header-icon">
+                        <flux:tooltip content="Administração" position="bottom">
+                            <a href="{{ route('dashboard') }}"
+                                class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -82,7 +87,8 @@
 
                     <!-- Users / Find Friends -->
                     <flux:tooltip content="Encontrar amigos" position="bottom">
-                        <a href="{{ route('users.find') }}" class="header-icon">
+                        <a href="{{ route('users.find') }}"
+                            class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -92,7 +98,8 @@
 
                     <!-- Messages -->
                     <flux:tooltip content="Mensagens" position="bottom">
-                        <a href="{{ route('chat.index') }}" class="header-icon relative">
+                        <a href="{{ route('chat.index') }}"
+                            class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all relative">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                 stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -112,7 +119,9 @@
                 </div>
 
                 <!-- User Dropdown -->
-                <x-layouts.header.user-dropdown />
+                <flux:tooltip content="Minha conta" position="bottom">
+                    <x-layouts.header.user-dropdown />
+                </flux:tooltip>
             </div>
         </div>
     </header>
