@@ -24,16 +24,15 @@
     <header
         class="sticky top-0 z-50 w-full bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 h-[70px] shadow-sm">
         <div class="h-full flex items-center justify-between px-4 lg:px-6 max-w-[1920px] mx-auto">
-
-            <!-- LEFT: Logo + Toggle + Search -->
-            <div class="flex items-center gap-4 shrink-0">
-                <a href="{{ route('home') }}" class="flex items-center gap-2.5">
+            <!-- 1. LEFT: Logo + Toggles + Search -->
+            <div class="flex items-center gap-4 flex-1">
+                <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
                     <img class="w-9 h-9 rounded-lg" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="Mere" />
                     <span
-                        class="hidden sm:inline text-xl font-bold text-zinc-800 dark:text-white tracking-tight">Mere</span>
+                        class="hidden xl:inline text-xl font-bold text-zinc-800 dark:text-white tracking-tight">Mere</span>
                 </a>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
                     <!-- Sidebar Toggle (mobile) -->
                     <flux:tooltip content="Abrir menu" position="bottom">
                         <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
@@ -48,7 +47,7 @@
                     <!-- Sidebar Toggle Desktop -->
                     <flux:tooltip content="Recolher menu" position="bottom">
                         <button @click.stop="$store.sidebar.isExpanded = !$store.sidebar.isExpanded"
-                            class="hidden lg:flex w-10 h-10 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
+                            class="hidden lg:flex w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5"
                                 viewBox="0 0 24 24">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -59,22 +58,20 @@
                 </div>
 
                 <!-- Search -->
-                <div class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2 w-72">
+                <div
+                    class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-2 w-full max-w-[300px]">
                     <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                    <input type="text" placeholder="Buscando algo?"
+                    <input type="text" placeholder="Pesquisar..."
                         class="bg-transparent border-none outline-none text-sm w-full ml-2 text-zinc-600 dark:text-zinc-200 placeholder-zinc-400 focus:ring-0 p-0">
                 </div>
             </div>
 
-
-
-            <!-- RIGHT: Icons + Profile -->
-            <div class="flex items-center gap-3 shrink-0">
-                <!-- Icon group -->
-                <div class="flex items-center gap-0.5">
+            <!-- 2. CENTER: Navigation Icons -->
+            <div class="hidden md:flex items-center justify-center flex-1">
+                <div class="flex items-center gap-1">
                     <!-- Home -->
                     <flux:tooltip content="Início" position="bottom">
                         <a href="{{ route('home') }}"
@@ -132,8 +129,10 @@
                         </flux:tooltip>
                     @endif
                 </div>
+            </div>
 
-                <!-- User Dropdown -->
+            <!-- 3. RIGHT: Profile -->
+            <div class="flex items-center justify-end flex-1">
                 <flux:tooltip content="Minha conta" position="bottom">
                     <x-layouts.header.user-dropdown />
                 </flux:tooltip>
