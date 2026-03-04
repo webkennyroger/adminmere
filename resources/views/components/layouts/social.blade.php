@@ -20,132 +20,11 @@
 
     <x-common.preloader />
 
-    <!-- ══════════ HEADER — SocialV Style ══════════ -->
-    <header
-        class="sticky top-0 z-50 w-full bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 h-[70px] shadow-sm">
-        <div class="h-full flex items-center justify-between px-4 lg:px-6 max-w-[1920px] mx-auto">
-            <!-- 1. LEFT: Logo + Toggles + Search -->
-            <div class="flex items-center gap-4 flex-1">
-                <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
-                    <img class="w-9 h-9 rounded-lg" src="{{ asset('assets/images/logo/merelogo.png') }}" alt="Mere" />
-                    <span
-                        class="hidden xl:inline text-xl font-bold text-zinc-800 dark:text-white tracking-tight">Mere</span>
-                </a>
-
-                <div class="flex items-center gap-2">
-                    <!-- Sidebar Toggle (mobile) -->
-                    <flux:tooltip content="Abrir menu" position="bottom">
-                        <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
-                            class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16"></path>
-                            </svg>
-                        </button>
-                    </flux:tooltip>
-
-                    <!-- Sidebar Toggle Desktop -->
-                    <flux:tooltip content="Recolher menu" position="bottom">
-                        <button @click.stop="$store.sidebar.isExpanded = !$store.sidebar.isExpanded"
-                            class="hidden lg:flex w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="9" y1="3" x2="9" y2="21"></line>
-                            </svg>
-                        </button>
-                    </flux:tooltip>
-                </div>
-
-                <!-- Search -->
-                <div
-                    class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-2 w-full max-w-[300px]">
-                    <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input type="text" placeholder="Pesquisar..."
-                        class="bg-transparent border-none outline-none text-sm w-full ml-2 text-zinc-600 dark:text-zinc-200 placeholder-zinc-400 focus:ring-0 p-0">
-                </div>
-            </div>
-
-            <!-- 2. CENTER: Navigation Icons -->
-            <div class="hidden md:flex items-center justify-center flex-1">
-                <div class="flex items-center gap-1">
-                    <!-- Home -->
-                    <flux:tooltip content="Início" position="bottom">
-                        <a href="{{ route('home') }}"
-                            class="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                        </a>
-                    </flux:tooltip>
-
-                    <!-- Users / Find Friends -->
-                    <flux:tooltip content="Encontrar amigos" position="bottom">
-                        <a href="{{ route('users.find') }}"
-                            class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </a>
-                    </flux:tooltip>
-
-                    <!-- Messages -->
-                    <flux:tooltip content="Mensagens" position="bottom">
-                        <a href="{{ route('chat.index') }}"
-                            class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all relative">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                            </svg>
-                            @if(auth()->check() && auth()->user()->messagesReceived()->whereNull('read_at')->count() > 0)
-                                <span
-                                    class="absolute -top-0.5 -right-0.5 w-4 h-4 text-[9px] font-bold text-white bg-red-500 rounded-full flex items-center justify-center border-2 border-white dark:border-zinc-900">
-                                    {{ auth()->user()->messagesReceived()->whereNull('read_at')->count() }}
-                                </span>
-                            @endif
-                        </a>
-                    </flux:tooltip>
-
-                    <!-- Notifications -->
-                    <livewire:layouts.header.notification-dropdown />
-
-                    @if(auth()->check() && auth()->user()->isAdmin())
-                        <flux:tooltip content="Administração" position="bottom">
-                            <a href="{{ route('dashboard') }}"
-                                class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </a>
-                        </flux:tooltip>
-                    @endif
-                </div>
-            </div>
-
-            <!-- 3. RIGHT: Profile -->
-            <div class="flex items-center justify-end flex-1">
-                <flux:tooltip content="Minha conta" position="bottom">
-                    <x-layouts.header.user-dropdown />
-                </flux:tooltip>
-            </div>
-        </div>
-    </header>
-
-    <!-- ══════════ MAIN WRAPPER ══════════ -->
-    <div class="flex min-h-[calc(100vh-70px)] max-w-[1920px] mx-auto">
+    <!-- ══════════ MAIN WRAPPER (Sidebar Full Height Layout) ══════════ -->
+    <div class="flex min-h-screen max-w-[1920px] mx-auto">
 
         <!-- ══════════ LEFT SIDEBAR — SocialV Style ══════════ -->
-        <div class="shrink-0 hidden lg:block transition-all duration-300 ease-in-out sticky top-[70px] h-[calc(100vh-70px)] z-40"
-            :class="{
+        <div class="shrink-0 hidden lg:block transition-all duration-300 ease-in-out sticky top-0 h-screen z-40" :class="{
                 'w-[260px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
                 'w-[80px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
             }">
@@ -153,6 +32,16 @@
                 class="flex flex-col w-full bg-white dark:bg-zinc-900 border-r border-zinc-200/80 dark:border-zinc-800 h-full overflow-y-auto no-scrollbar"
                 @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
                 @mouseleave="$store.sidebar.setHovered(false)">
+
+                <!-- Logo no topo da Sidebar -->
+                <div class="p-6 border-b border-zinc-200/80 dark:border-zinc-800 flex items-center justify-center">
+                    <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
+                        <img class="w-9 h-9 rounded-lg" src="{{ asset('assets/images/logo/merelogo.png') }}"
+                            alt="Mere" />
+                        <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered"
+                            class="text-xl font-bold text-zinc-800 dark:text-white tracking-tight">Mere</span>
+                    </a>
+                </div>
 
                 @auth
                     <!-- Perfil do Usuário (Componente Unificado) -->
@@ -321,9 +210,126 @@
         </div>
 
         <!-- ══════════ CONTENT AREA ══════════ -->
-        <main class="flex-1 min-w-0 transition-all duration-300">
-            {{ $slot }}
-        </main>
+        <div class="flex-1 min-w-0 flex flex-col">
+            <!-- Header (moved inside right section) -->
+            <header
+                class="sticky top-0 z-50 w-full bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 h-[70px] shadow-sm">
+                <div class="h-full flex items-center justify-between px-4 lg:px-6">
+                    <!-- 1. LEFT: Toggles + Search -->
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="flex items-center gap-2">
+                            <!-- Sidebar Toggle (mobile) -->
+                            <flux:tooltip content="Abrir menu" position="bottom">
+                                <button @click="$store.sidebar.isMobileOpen = !$store.sidebar.isMobileOpen"
+                                    class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16"></path>
+                                    </svg>
+                                </button>
+                            </flux:tooltip>
+
+                            <!-- Sidebar Toggle Desktop -->
+                            <flux:tooltip content="Recolher menu" position="bottom">
+                                <button @click.stop="$store.sidebar.isExpanded = !$store.sidebar.isExpanded"
+                                    class="hidden lg:flex w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        viewBox="0 0 24 24">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                                    </svg>
+                                </button>
+                            </flux:tooltip>
+                        </div>
+
+                        <!-- Search -->
+                        <div
+                            class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-2 w-full max-w-[300px]">
+                            <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <input type="text" placeholder="Pesquisar..."
+                                class="bg-transparent border-none outline-none text-sm w-full ml-2 text-zinc-600 dark:text-zinc-200 placeholder-zinc-400 focus:ring-0 p-0">
+                        </div>
+                    </div>
+
+                    <!-- 2. CENTER: Navigation Icons -->
+                    <div class="hidden md:flex items-center justify-center flex-1">
+                        <div class="flex items-center gap-1">
+                            <!-- Home -->
+                            <flux:tooltip content="Início" position="bottom">
+                                <a href="{{ route('home') }}"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                </a>
+                            </flux:tooltip>
+
+                            <!-- Users / Find Friends -->
+                            <flux:tooltip content="Encontrar amigos" position="bottom">
+                                <a href="{{ route('users.find') }}"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </a>
+                            </flux:tooltip>
+
+                            <!-- Messages -->
+                            <flux:tooltip content="Mensagens" position="bottom">
+                                <a href="{{ route('chat.index') }}"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all relative">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                    </svg>
+                                    @if(auth()->check() && auth()->user()->messagesReceived()->whereNull('read_at')->count() > 0)
+                                        <span
+                                            class="absolute -top-0.5 -right-0.5 w-4 h-4 text-[9px] font-bold text-white bg-red-500 rounded-full flex items-center justify-center border-2 border-white dark:border-zinc-900">
+                                            {{ auth()->user()->messagesReceived()->whereNull('read_at')->count() }}
+                                        </span>
+                                    @endif
+                                </a>
+                            </flux:tooltip>
+
+                            <!-- Notifications -->
+                            <livewire:layouts.header.notification-dropdown />
+
+                            @if(auth()->check() && auth()->user()->isAdmin())
+                                <flux:tooltip content="Administração" position="bottom">
+                                    <a href="{{ route('dashboard') }}"
+                                        class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </a>
+                                </flux:tooltip>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- 3. RIGHT: Profile -->
+                    <div class="flex items-center justify-end flex-1">
+                        <flux:tooltip content="Minha conta" position="bottom">
+                            <x-layouts.header.user-dropdown />
+                        </flux:tooltip>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 min-w-0 transition-all duration-300">
+                {{ $slot }}
+            </main>
+        </div>
     </div>
 
     <!-- Mobile Bottom Navigation -->
