@@ -6,6 +6,11 @@ import ApexCharts from "apexcharts";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import { Calendar } from "@fullcalendar/core";
+import Swiper from 'swiper';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 // Stores
 
@@ -25,6 +30,27 @@ document.addEventListener("alpine:init", () => {
 
     initSidebarStore();
     initChatStore();
+
+    // Media Slider Component
+    window.Alpine.data('mediaSlider', () => ({
+        swiper: null,
+        init() {
+            this.swiper = new Swiper(this.$refs.container, {
+                modules: [Navigation, Pagination],
+                slidesPerView: 1,
+                spaceBetween: 0,
+                pagination: {
+                    el: this.$refs.pagination,
+                    clickable: true,
+                    dynamicBullets: true,
+                },
+                navigation: {
+                    nextEl: this.$refs.next,
+                    prevEl: this.$refs.prev,
+                },
+            });
+        }
+    }));
 
     // Activity Map Component
     window.Alpine.data('activityMap', (mapData) => ({

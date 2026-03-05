@@ -164,80 +164,60 @@
     @endphp
 
 
-    {{-- MEDIA GRID (fotos/videos) --}}
+    {{-- MEDIA SLIDER --}}
     @if($mediaCount > 0)
-        @if($mediaCount === 1)
-            <div class="w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-800 relative">
-                @if(str_contains($mediaItems[0], '.mp4'))
-                    <video src="{{ $mediaItems[0] }}" controls class="w-full h-full object-cover"></video>
-                @else
-                    <img src="{{ $mediaItems[0] }}"
-                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                @endif
-            </div>
-        @elseif($mediaCount === 2)
-            <div class="grid grid-cols-2 gap-0.5">
-                @foreach($mediaItems as $media)
-                    <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                        @if(str_contains($media, '.mp4'))
-                            <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
-                        @else
-                            <img src="{{ $media }}"
-                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                                x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        @elseif($mediaCount === 3)
-            <div class="grid grid-cols-2 gap-0.5">
-                <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[0] }}"
-                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                </div>
-                <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[1] }}"
-                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
-                </div>
-                <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[2] }}"
-                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                        x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
-                </div>
-            </div>
-        @else
-            <div class="grid grid-cols-2 gap-0.5">
-                @foreach($mediaItems as $index => $media)
-                    @if($index < 4)
-                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                            <img src="{{ $media }}"
-                                class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image"
-                                x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: $index })'>
-                            @if($index === 3 && $mediaCount > 4)
-                                <div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors"
-                                    x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 3 })'>
-                                    <span class="text-white text-3xl font-bold">+{{ $mediaCount - 4 }}</span>
-                                </div>
+        <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative group overflow-hidden" x-data="mediaSlider()">
+            <div x-ref="container" class="swiper w-full">
+                <div class="swiper-wrapper">
+                    @foreach($mediaItems as $media)
+                        <div class="swiper-slide flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+                            @if(str_contains($media, '.mp4'))
+                                <video src="{{ $media }}" controls class="w-full aspect-4/5 object-cover"></video>
+                            @else
+                                <img src="{{ $media }}"
+                                    class="w-full aspect-4/5 object-cover cursor-pointer transition-opacity duration-300"
+                                    alt="Activity image"
+                                    x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $loop->index }} })'>
                             @endif
                         </div>
-                    @endif
-                @endforeach
+                    @endforeach
+                </div>
+
+                @if($mediaCount > 1)
+                    <!-- Navigation -->
+                    <div x-ref="prev"
+                        class="swiper-button-prev text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    </div>
+                    <div x-ref="next"
+                        class="swiper-button-next text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    </div>
+
+                    <!-- Pagination -->
+                    <div x-ref="pagination" class="swiper-pagination bottom-4!"></div>
+                @endif
             </div>
-        @endif
+
+            <style>
+                .swiper-pagination-bullet-active {
+                    background: #22c55e !important;
+                }
+
+                .swiper-pagination-bullet {
+                    background: rgba(255, 255, 255, 0.7);
+                    opacity: 1;
+                }
+            </style>
+        </div>
     @endif
 
-    <!-- Activity Stats (if sports activity) -->
-    <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
-        <div class="flex items-center justify-around text-center">
+    <!-- Activity Stats -->
+    <div class="px-4 py-6 border-t border-zinc-100 dark:border-zinc-800">
+        <div class="grid grid-cols-4 gap-4 text-center">
             <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                <p class="text-xl font-bold text-zinc-900 dark:text-white leading-none mb-1.5">
                     {{ number_format(($activity->distance ?? 0) / 1000, 2, ',', '.') }}
                 </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Distância
-                </p>
+                <p class="text-[9px] uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">Distância</p>
             </div>
 
             @php
@@ -249,48 +229,49 @@
                 $paceSec = round(($pace - $paceMin) * 60);
             @endphp
             <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                <p class="text-xl font-bold text-zinc-900 dark:text-white leading-none mb-1.5">
                     {{ $paceMin }}:{{ str_pad($paceSec, 2, '0', STR_PAD_LEFT) }}
                 </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Ritmo</p>
+                <p class="text-[9px] uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">Ritmo</p>
             </div>
 
             <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                <p class="text-xl font-bold text-zinc-900 dark:text-white leading-none mb-1.5">
                     {{ $activity->duration ? gmdate($activity->duration >= 3600 ? "H:i:s" : "i:s", $activity->duration) : '00:00' }}
                 </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Tempo</p>
+                <p class="text-[9px] uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">Tempo</p>
             </div>
 
             <div>
-                <p class="text-lg font-bold text-zinc-900 dark:text-white">
+                <p class="text-xl font-bold text-zinc-900 dark:text-white leading-none mb-1.5">
                     {{ number_format($activity->calories ?? 0, 0, ',', '.') }}
                 </p>
-                <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Calorias
-                </p>
+                <p class="text-[9px] uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">Calorias</p>
             </div>
         </div>
     </div>
 
-    {{-- MAP: DEPOIS dos stats, igual à imagem de referência --}}
+    {{-- MAP --}}
     @if($mapData['type'] !== 'none')
-        <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate"
+        <div class="w-full h-64 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate border-t border-zinc-100 dark:border-zinc-800"
             x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
-            <div x-ref="mapContainer" class="w-full h-full"></div>
+            <div x-ref="mapContainer" class="w-full h-full opacity-80 dark:opacity-70 transition-opacity duration-700">
+            </div>
             <div x-show="!loaded"
                 class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
                 <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-            {{-- Botão Salvar rota (igual à imagem de referência) --}}
+            {{-- Botão Salvar rota --}}
             <button
-                class="absolute bottom-3 right-3 z-20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 transition-colors">
+                class="absolute bottom-4 right-4 z-20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 transition-all duration-300">
                 Salvar rota
             </button>
         </div>
     @elseif(!empty($locationStr))
-        <div class="w-full h-52 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate"
+        <div class="w-full h-64 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate border-t border-zinc-100 dark:border-zinc-800"
             x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
-            <div x-ref="mapContainer" class="w-full h-full"></div>
+            <div x-ref="mapContainer" class="w-full h-full opacity-80 dark:opacity-70 transition-opacity duration-700">
+            </div>
             <div x-show="!loaded"
                 class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 z-10">
                 <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>

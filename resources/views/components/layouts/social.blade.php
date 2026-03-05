@@ -183,35 +183,36 @@
                 </nav>
 
                 <!-- Bottom Icons -->
-                <div class="border-t border-zinc-200/80 dark:border-zinc-800 flex text-zinc-400 transition-all duration-300"
-                    :class="($store.sidebar.isExpanded || $store.sidebar.isHovered) ? 'flex-row items-center justify-around p-4' : 'flex-col items-center space-y-6 py-8 px-2'">
-                    <flux:tooltip content="Início" position="right">
-                        <a href="{{ route('home') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <flux:icon.home variant="outline" class="w-6 h-6" />
-                        </a>
-                    </flux:tooltip>
-                    <flux:tooltip content="Ver membros" position="right">
-                        <a href="{{ route('users.find') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <flux:icon.users variant="outline" class="w-6 h-6" />
-                        </a>
-                    </flux:tooltip>
-                    <flux:tooltip content="Desafios" position="right">
-                        <a href="{{ route('challenges.index') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </a>
-                    </flux:tooltip>
-                    <flux:tooltip content="Meu Perfil" position="right">
-                        <a href="{{ route('profile') }}"
-                            class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
-                            <flux:icon.user variant="outline" class="w-6 h-6" />
-                        </a>
-                    </flux:tooltip>
+                <div class="border-t border-zinc-200/80 dark:border-zinc-800 flex text-zinc-400 transition-all duration-300 flex-row items-center justify-around p-4">
+                    <div class="flex items-center gap-2" x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered">
+                        <flux:tooltip content="Início" position="right">
+                            <a href="{{ route('home') }}"
+                                class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
+                                <flux:icon.home variant="outline" class="w-6 h-6" />
+                            </a>
+                        </flux:tooltip>
+                        <flux:tooltip content="Ver membros" position="right">
+                            <a href="{{ route('users.find') }}"
+                                class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
+                                <flux:icon.users variant="outline" class="w-6 h-6" />
+                            </a>
+                        </flux:tooltip>
+                        <flux:tooltip content="Desafios" position="right">
+                            <a href="{{ route('challenges.index') }}"
+                                class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </a>
+                        </flux:tooltip>
+                        <flux:tooltip content="Meu Perfil" position="right">
+                            <a href="{{ route('profile') }}"
+                                class="p-2 rounded-lg text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-600/10 transition-all">
+                                <flux:icon.user variant="outline" class="w-6 h-6" />
+                            </a>
+                        </flux:tooltip>
+                    </div>
                 </div>
             </aside>
         </div>

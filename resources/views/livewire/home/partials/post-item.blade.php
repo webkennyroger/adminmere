@@ -208,55 +208,44 @@
     @endphp
 
     @if($mediaCount > 0)
-        @if($mediaCount === 1)
-            <div class="w-full max-h-[600px] bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
-                @if(str_contains($mediaItems[0], '.mp4'))
-                    <video src="{{ $mediaItems[0] }}" controls class="w-full max-h-[600px] object-contain"></video>
-                @else
-                    <img src="{{ $mediaItems[0] }}" class="w-full max-h-[600px] object-contain cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                @endif
-            </div>
-        @elseif($mediaCount === 2)
-            <div class="grid grid-cols-2 gap-0.5">
-                @foreach($mediaItems as $media)
-                    <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                        @if(str_contains($media, '.mp4'))
-                            <video src="{{ $media }}" controls class="w-full h-full object-cover"></video>
-                        @else
-                            <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $loop->index }} })'>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        @elseif($mediaCount === 3)
-            <div class="grid grid-cols-2 gap-0.5">
-                <div class="row-span-2 aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[0] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                </div>
-                <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[1] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 1 })'>
-                </div>
-                <div class="aspect-square bg-zinc-100 dark:bg-zinc-800">
-                    <img src="{{ $mediaItems[2] }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 2 })'>
-                </div>
-            </div>
-        @else
-            <div class="grid grid-cols-2 gap-0.5">
-                @foreach($mediaItems as $index => $media)
-                    @if($index < 4)
-                        <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 relative">
-                            <img src="{{ $media }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" alt="Post image" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $index }} })'>
-                            @if($index === 3 && $mediaCount > 4)
-                                <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center cursor-pointer hover:bg-black/80 transition-colors" x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
-                                    <span class="text-white text-4xl font-bold mb-1">+{{ $mediaCount - 4 }}</span>
-                                    <span class="text-white text-sm font-medium">Ver todas</span>
-                                </div>
+        <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative group overflow-hidden"
+             x-data="mediaSlider()">
+            <div x-ref="container" class="swiper w-full">
+                <div class="swiper-wrapper">
+                    @foreach($mediaItems as $media)
+                        <div class="swiper-slide flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+                            @if(str_contains($media, '.mp4'))
+                                <video src="{{ $media }}" controls class="w-full max-h-[600px] object-contain"></video>
+                            @else
+                                <img src="{{ $media }}" 
+                                     class="w-full max-h-[600px] object-contain cursor-pointer transition-opacity duration-300" 
+                                     alt="Post image" 
+                                     x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $loop->index }} })'>
                             @endif
                         </div>
-                    @endif
-                @endforeach
+                    @endforeach
+                </div>
+                
+                @if($mediaCount > 1)
+                    <!-- Navigation -->
+                    <div x-ref="prev" class="swiper-button-prev text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                    <div x-ref="next" class="swiper-button-next text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                    
+                    <!-- Pagination -->
+                    <div x-ref="pagination" class="swiper-pagination bottom-4!"></div>
+                @endif
             </div>
-        @endif
+
+            <style>
+                .swiper-pagination-bullet-active {
+                    background: #22c55e !important;
+                }
+                .swiper-pagination-bullet {
+                    background: rgba(255, 255, 255, 0.7);
+                    opacity: 1;
+                }
+            </style>
+        </div>
     @endif
 
     <!-- Actions Bar -->
@@ -360,7 +349,7 @@
                 <div class="space-y-3">
                     <label class="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">ADICIONAR MÍDIA</label>
                     <div class="flex gap-4">
-                        <label class="cursor-pointer flex-1">
+                        <label class="cursor-pointer shrink-0">
                             <div class="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-4 flex flex-col items-center gap-1 hover:border-brand-500 transition-colors">
                                 <svg class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
