@@ -107,16 +107,16 @@
     </div>
     {{-- FIM do header flex --}}
 
-    {{-- Título da atividade com ícone de esporte --}}
-    <div class="px-4 pb-2 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" stroke-width="1.5"
+    {{-- Activity Header Row --}}
+    <div class="px-4 py-2 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" stroke-width="2"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M13.5 10.5 10.5 6 6 9l1.5 4.5M13.5 10.5 18 9l1.5 4.5M13.5 10.5l-3 6m9.75-4.5a4.5 4.5 0 11-9 0" />
+                    d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l4.5-4.5a4.5 4.5 0 0 1 1.242-1.244m3.134 3.134a4.5 4.5 0 0 1 1.242-1.244l4.5-4.5a4.5 4.5 0 1 1 6.364 6.364l-4.5 4.5a4.5 4.5 0 0 1-1.242 1.244" />
             </svg>
         </div>
-        <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
+        <h2 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
             {{ $activity->name ?? ucfirst($activity->sport_type ?? 'Atividade') }}
         </h2>
     </div>

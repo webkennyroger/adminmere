@@ -198,9 +198,7 @@
     @php
         $mediaItems = collect($post->media ?? [])->filter(function ($path) {
             if (empty($path)) return false;
-            // Accept http/https URLs or storage paths
-            return str_starts_with($path, 'http://') || 
-                   str_starts_with($path, 'https://') || 
+            return str_starts_with($path, 'http') || 
                    str_starts_with($path, '/storage') || 
                    str_starts_with($path, 'storage/');
         })->values()->all();
@@ -215,10 +213,10 @@
                     @foreach($mediaItems as $media)
                         <div class="swiper-slide flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
                             @if(str_contains($media, '.mp4'))
-                                <video src="{{ $media }}" controls class="w-full max-h-[600px] object-contain"></video>
+                                <video src="{{ $media }}" controls class="w-full aspect-4/5 object-cover"></video>
                             @else
                                 <img src="{{ $media }}" 
-                                     class="w-full max-h-[600px] object-contain cursor-pointer transition-opacity duration-300" 
+                                     class="w-full aspect-4/5 object-cover cursor-pointer transition-opacity duration-300" 
                                      alt="Post image" 
                                      x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $loop->index }} })'>
                             @endif
@@ -409,7 +407,7 @@
     <!-- Delete Post Modal -->
     <x-ui.modal wire:model="confirmingPostDeletion" :maxWidth="'sm:max-w-lg'" :showCloseButton="false" wire:key="delete-post-modal-{{ $post->id }}">
         <div class="p-4 sm:p-14 text-center overflow-y-auto">
-            <div class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
+            <div class="mx-auto flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
                 <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -438,7 +436,7 @@
     <!-- Delete Poll Modal -->
     <x-ui.modal wire:model="confirmingPollDeletion" :maxWidth="'sm:max-w-lg'" :showCloseButton="false" wire:key="delete-poll-modal-{{ $post->id }}">
         <div class="p-4 sm:p-14 text-center overflow-y-auto">
-            <div class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
+            <div class="mx-auto flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
                 <svg class="h-6 w-6 text-[#E60000]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
