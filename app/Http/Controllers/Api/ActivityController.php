@@ -53,13 +53,13 @@ class ActivityController extends Controller
                 ->where('privacy', 'public')
                 ->where(function ($q) {
                     $q->where('feed_type', '!=', 'community')
-                      ->orWhereNull('feed_type');
+                        ->orWhereNull('feed_type');
                 });
             $postsQuery->whereIn('user_id', $followingIds)
                 ->where('privacy', 'public')
                 ->where(function ($q) {
                     $q->where('feed_type', '!=', 'community')
-                      ->orWhereNull('feed_type');
+                        ->orWhereNull('feed_type');
                 });
         } elseif ($feed === 'community') {
             $activitiesQuery->where('feed_type', 'community')->where('privacy', 'public');
@@ -364,7 +364,7 @@ class ActivityController extends Controller
     {
         $request->validate([
             'files' => 'required|array',
-            'files.*' => 'image|max:10240', // 10MB max per image
+            'files.*' => 'file|mimes:jpeg,png,jpg,gif,svg,webp,mp4,mov,avi,wmv,ogg,qt|max:102400', // 100MB max per file
         ]);
 
         $paths = [];

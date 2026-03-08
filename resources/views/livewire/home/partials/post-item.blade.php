@@ -205,14 +205,14 @@
         $mediaCount = count($mediaItems);
     @endphp
 
-    @if($mediaCount > 0)
+    @if($mediaCount > 1)
         <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative group overflow-hidden"
              x-data="mediaSlider()">
             <div x-ref="container" class="swiper w-full">
                 <div class="swiper-wrapper">
                     @foreach($mediaItems as $media)
                         <div class="swiper-slide flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
-                            @if(str_contains($media, '.mp4'))
+                            @if(str_contains($media, '.mp4') || str_contains($media, '.mov') || str_contains($media, '.webm'))
                                 <video src="{{ $media }}" controls class="w-full aspect-4/5 object-cover"></video>
                             @else
                                 <img src="{{ $media }}" 
@@ -224,14 +224,12 @@
                     @endforeach
                 </div>
                 
-                @if($mediaCount > 1)
-                    <!-- Navigation -->
-                    <div x-ref="prev" class="swiper-button-prev text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                    <div x-ref="next" class="swiper-button-next text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                    
-                    <!-- Pagination -->
-                    <div x-ref="pagination" class="swiper-pagination bottom-4!"></div>
-                @endif
+                <!-- Navigation -->
+                <div x-ref="prev" class="swiper-button-prev text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div x-ref="next" class="swiper-button-next text-white! w-9! h-9! bg-black/30! hover:bg-black/50! rounded-full after:text-sm! opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                
+                <!-- Pagination -->
+                <div x-ref="pagination" class="swiper-pagination bottom-4!"></div>
             </div>
 
             <style>
@@ -243,6 +241,17 @@
                     opacity: 1;
                 }
             </style>
+        </div>
+    @elseif($mediaCount === 1)
+        <div class="w-full bg-zinc-100 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800">
+            @if(str_contains($mediaItems[0], '.mp4') || str_contains($mediaItems[0], '.mov') || str_contains($mediaItems[0], '.webm'))
+                <video src="{{ $mediaItems[0] }}" controls class="w-full aspect-4/5 object-cover"></video>
+            @else
+                <img src="{{ $mediaItems[0] }}"
+                    class="w-full aspect-4/5 object-cover cursor-pointer transition-opacity duration-300"
+                    alt="Post image"
+                    x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
+            @endif
         </div>
     @endif
 
