@@ -213,10 +213,10 @@
                     @foreach($mediaItems as $media)
                         <div class="swiper-slide flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
                             @if(str_contains($media, '.mp4') || str_contains($media, '.mov') || str_contains($media, '.webm'))
-                                <video src="{{ $media }}" controls class="w-full aspect-4/5 object-cover"></video>
+                                <video src="{{ $media }}" controls class="w-full aspect-[629/377] object-cover"></video>
                             @else
                                 <img src="{{ $media }}" 
-                                     class="w-full aspect-4/5 object-cover cursor-pointer transition-opacity duration-300" 
+                                     class="w-full aspect-[629/377] object-cover cursor-pointer transition-opacity duration-300" 
                                      alt="Post image" 
                                      x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $loop->index }} })'>
                             @endif
@@ -245,10 +245,10 @@
     @elseif($mediaCount === 1)
         <div class="w-full bg-zinc-100 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800">
             @if(str_contains($mediaItems[0], '.mp4') || str_contains($mediaItems[0], '.mov') || str_contains($mediaItems[0], '.webm'))
-                <video src="{{ $mediaItems[0] }}" controls class="w-full aspect-4/5 object-cover"></video>
+                <video src="{{ $mediaItems[0] }}" controls class="w-full aspect-[629/377] object-cover"></video>
             @else
                 <img src="{{ $mediaItems[0] }}"
-                    class="w-full aspect-4/5 object-cover cursor-pointer transition-opacity duration-300"
+                    class="w-full aspect-[629/377] object-cover cursor-pointer transition-opacity duration-300"
                     alt="Post image"
                     x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: 0 })'>
             @endif
