@@ -220,8 +220,8 @@
                     @if($hasMap)
                         <div class="swiper-slide bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                             @if($mapData['type'] !== 'none')
-                                <div class="w-full aspect-[629/377] relative overflow-hidden isolate"
-                                    x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
+                                <div class="w-full relative overflow-hidden isolate" style="aspect-ratio: 629/377"
+                                    x-data="activityMap(@js($mapData))" x-init="initMap()">
                                     <div x-ref="mapContainer"
                                         class="w-full h-full opacity-80 dark:opacity-70 transition-opacity duration-700"></div>
                                     <div x-show="!loaded"
@@ -236,8 +236,8 @@
                                     </button>
                                 </div>
                             @elseif(!empty($locationStr))
-                                <div class="w-full aspect-[629/377] relative overflow-hidden isolate"
-                                    x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
+                                <div class="w-full relative overflow-hidden isolate" style="aspect-ratio: 629/377"
+                                    x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-init="initMap()">
                                     <div x-ref="mapContainer"
                                         class="w-full h-full opacity-80 dark:opacity-70 transition-opacity duration-700"></div>
                                     <div x-show="!loaded"
@@ -255,11 +255,11 @@
                     @foreach($mediaItems as $media)
                         <div class="swiper-slide flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
                             @if(str_contains($media, '.mp4') || str_contains($media, '.mov') || str_contains($media, '.webm'))
-                                <video src="{{ $media }}" controls class="w-full aspect-[629/377] object-cover"></video>
+                                <video src="{{ $media }}" controls class="w-full object-cover"
+                                    style="aspect-ratio: 629/377"></video>
                             @else
-                                <img src="{{ $media }}"
-                                    class="w-full aspect-[629/377] object-cover cursor-pointer transition-opacity duration-300"
-                                    alt="Activity image"
+                                <img src="{{ $media }}" class="w-full object-cover cursor-pointer transition-opacity duration-300"
+                                    style="aspect-ratio: 629/377" alt="Activity image"
                                     x-on:click='$dispatch("open-lightbox", { images: @json($mediaItems), index: {{ $loop->index }} })'>
                             @endif
                         </div>
@@ -292,8 +292,8 @@
     @elseif($hasMap)
         {{-- ONLY MAP --}}
         @if($mapData['type'] !== 'none')
-            <div class="w-full aspect-[629/377] bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate border-t border-zinc-100 dark:border-zinc-800"
-                x-data="activityMap(@js($mapData))" x-intersect.once="initMap()">
+            <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate border-t border-zinc-100 dark:border-zinc-800"
+                style="aspect-ratio: 629/377" x-data="activityMap(@js($mapData))" x-init="initMap()">
                 <div x-ref="mapContainer" class="w-full h-full opacity-80 dark:opacity-70 transition-opacity duration-700">
                 </div>
                 <div x-show="!loaded"
@@ -306,8 +306,9 @@
                 </button>
             </div>
         @elseif(!empty($locationStr))
-            <div class="w-full aspect-[629/377] bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate border-t border-zinc-100 dark:border-zinc-800"
-                x-data="activityMap({type: 'geocode', data: @js($locationStr)})" x-intersect.once="initMap()">
+            <div class="w-full bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden isolate border-t border-zinc-100 dark:border-zinc-800"
+                style="aspect-ratio: 629/377" x-data="activityMap({type: 'geocode', data: @js($locationStr)})"
+                x-init="initMap()">
                 <div x-ref="mapContainer" class="w-full h-full opacity-80 dark:opacity-70 transition-opacity duration-700">
                 </div>
                 <div x-show="!loaded"

@@ -83,6 +83,13 @@ document.addEventListener("alpine:init", () => {
                 attribution: "© OSM",
             }).addTo(this.map);
 
+            // Invalidation of size to ensure it renders correctly after container readiness
+            setTimeout(() => {
+                if (this.map) {
+                    this.map.invalidateSize();
+                }
+            }, 500);
+
             // Remove o logo do Leaflet via DOM (mantém apenas "© OSM" obrigatório)
             this.$nextTick(() => {
                 const attr = this.$refs.mapContainer.querySelector(
