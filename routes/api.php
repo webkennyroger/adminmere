@@ -114,4 +114,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stats/challenges/active', [\App\Http\Controllers\Api\StatsController::class, 'activeChallenges']);
     Route::get('/stats/challenges/available', [\App\Http\Controllers\Api\StatsController::class, 'availableChallenges']);
     Route::get('/stats/tier', [\App\Http\Controllers\Api\StatsController::class, 'userTier']);
+
+    // Clubs API
+    Route::get('/clubs', [\App\Http\Controllers\Api\ClubController::class, 'index']);
+    Route::get('/clubs/my', [\App\Http\Controllers\Api\ClubController::class, 'myClubs']);
+    Route::get('/clubs/categories', [\App\Http\Controllers\Api\ClubController::class, 'categories']);
+    Route::get('/clubs/{id}', [\App\Http\Controllers\Api\ClubController::class, 'show']);
+    Route::post('/clubs', [\App\Http\Controllers\Api\ClubController::class, 'store']);
+    Route::put('/clubs/{id}', [\App\Http\Controllers\Api\ClubController::class, 'update']);
+    Route::delete('/clubs/{id}', [\App\Http\Controllers\Api\ClubController::class, 'destroy']);
+    Route::post('/clubs/{id}/join', [\App\Http\Controllers\Api\ClubController::class, 'join']);
+    Route::post('/clubs/{id}/leave', [\App\Http\Controllers\Api\ClubController::class, 'leave']);
+    Route::get('/clubs/{id}/members', [\App\Http\Controllers\Api\ClubController::class, 'members']);
 });
