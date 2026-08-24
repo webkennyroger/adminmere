@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // User/Social API
     Route::get('/users/suggested', [UserController::class, 'suggested']);
     Route::post('/users/{id}/follow', [UserController::class, 'toggleFollow']);
+    Route::post('/users/{id}/block', [UserController::class, 'toggleBlock']);
     Route::get('/users/following', [UserController::class, 'following']);
     Route::get('/users/{id}', [UserController::class, 'profile']);
     Route::post('/user/profile', [UserController::class, 'updateProfile']);

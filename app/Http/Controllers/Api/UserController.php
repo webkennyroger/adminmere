@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -94,6 +97,32 @@ class UserController extends Controller
         ]);
     }
 
+    public function toggleBlock(Request $request, $id)
+    {
+        $user = $request->user();
+        $userToBlock = User::findOrFail($id);
+
+        if ($user->id === $userToBlock->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot block yourself',
+            ], 400);
+        }
+
+        if ($user->blockedUsers()->where('blocked_user_id', $userToBlock->id)->exists()) {
+            $user->blockedUsers()->detach($userToBlock->id);
+            $isBlocked = false;
+        } else {
+            $user->blockedUsers()->attach($userToBlock->id);
+            $isBlocked = true;
+        }
+
+        return response()->json([
+            'success' => true,
+            'is_blocked' => $isBlocked,
+        ]);
+    }
+
     /**
      * Get user profile details and their activities.
      */
@@ -151,7 +180,7 @@ class UserController extends Controller
      */
     private function getWeeklyStats($user)
     {
-        $now = \Carbon\Carbon::now();
+        $now = Carbon::now();
         $sevenDaysAgo = $now->copy()->subDays(7);
 
         $activities = $user->activities()
@@ -167,7 +196,7 @@ class UserController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $day = $now->copy()->subDays($i);
             $dayActivities = $activities->filter(function ($a) use ($day) {
-                return \Carbon\Carbon::parse($a->start_time)->format('Y-m-d') === $day->format('Y-m-d');
+                return Carbon::parse($a->start_time)->format('Y-m-d') === $day->format('Y-m-d');
             });
 
             $dailyData[] = [
@@ -248,7 +277,7 @@ class UserController extends Controller
         $user->save();
 
         // Update or create profile
-        $profile = $user->profile ?? new \App\Models\Profile(['user_id' => $user->id]);
+        $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
 
         if ($request->has('surname')) {
             $profile->last_name = $request->surname;
@@ -293,7 +322,7 @@ class UserController extends Controller
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($profile->image) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->image);
+                Storage::disk('public')->delete($profile->image);
             }
 
             $path = $request->file('image')->store('profiles', 'public');
@@ -304,7 +333,7 @@ class UserController extends Controller
         if ($request->hasFile('cover_image')) {
             // Delete old image if exists
             if ($profile->cover_image) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->cover_image);
+                Storage::disk('public')->delete($profile->cover_image);
             }
 
             $path = $request->file('cover_image')->store('covers', 'public');

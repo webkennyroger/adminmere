@@ -52,6 +52,14 @@ class MessageController extends Controller
             return response()->json(['success' => false, 'error' => $validator->errors()], 422);
         }
 
+        $recipient = User::findOrFail($request->recipient_id);
+        $isBlocked = $authUser->blockedUsers()->where('blocked_user_id', $recipient->id)->exists()
+            || $recipient->blockedUsers()->where('blocked_user_id', $authUser->id)->exists();
+
+        if ($isBlocked) {
+            return response()->json(['success' => false, 'error' => 'Não é possível enviar mensagens para este usuário.'], 403);
+        }
+
         $type = $request->input('type', 'text');
         $filePath = null;
 
@@ -100,15 +108,15 @@ class MessageController extends Controller
         $showArchived = $request->boolean('archived', false);
 
         // Get unique user IDs the current user has chatted with, but only if not deleted
-        $messages = Message::where(function($q) use ($authUser) {
-                $q->where('sender_id', $authUser->id)->where('deleted_by_sender', false);
-            })->orWhere(function($q) use ($authUser) {
-                $q->where('receiver_id', $authUser->id)->where('deleted_by_receiver', false);
-            })->get();
+        $messages = Message::where(function ($q) use ($authUser) {
+            $q->where('sender_id', $authUser->id)->where('deleted_by_sender', false);
+        })->orWhere(function ($q) use ($authUser) {
+            $q->where('receiver_id', $authUser->id)->where('deleted_by_receiver', false);
+        })->get();
 
         $userIds = $messages->map(function ($message) use ($authUser) {
-                return $message->sender_id == $authUser->id ? $message->receiver_id : $message->sender_id;
-            })
+            return $message->sender_id == $authUser->id ? $message->receiver_id : $message->sender_id;
+        })
             ->unique()
             ->values();
 
@@ -129,7 +137,9 @@ class MessageController extends Controller
 
             $lastMessage = (clone $lastMessageQuery)->latest()->first();
 
-            if (!$lastMessage) continue;
+            if (! $lastMessage) {
+                continue;
+            }
 
             // Check archival status based on the AUTH user's role in the messages
             $isArchived = Message::where(function ($q) use ($authUser, $userId) {
@@ -239,5 +249,4 @@ class MessageController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Todas as conversas foram arquivadas']);
     }
-
 }
