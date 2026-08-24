@@ -183,7 +183,7 @@
                              <div>
                                 <h4 class="font-bold text-zinc-900 dark:text-zinc-200 mb-1">Informações adicionais</h4>
                                 <p>O desafio começa e termina com base nos fusos horários locais de cada atleta.</p>
-                                <p class="mt-2">Todas as atividades registradas durante o período do Desafio devem ser carregadas no AdminMere em no máximo três dias após o término do Desafio.</p>
+                                <p class="mt-2">Todas as atividades registradas durante o período do Desafio devem ser carregadas no Ora em no máximo três dias após o término do Desafio.</p>
                             </div>
                         </div>
                     </div>
