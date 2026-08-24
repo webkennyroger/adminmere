@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Challenge;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StatsController extends Controller
@@ -52,7 +53,7 @@ class StatsController extends Controller
 
         // Get conquered challenges count
         $conqueredChallenges = $user->challenges()
-            ->wherePivot('completed', true)
+            ->wherePivot('status', 'completed')
             ->count();
 
         return response()->json([
@@ -117,7 +118,7 @@ class StatsController extends Controller
         $user = $request->user();
 
         $challenges = $user->challenges()
-            ->wherePivot('completed', false)
+            ->wherePivot('status', '!=', 'completed')
             ->where('end_date', '>=', Carbon::now())
             ->with('category')
             ->get()
@@ -199,6 +200,41 @@ class StatsController extends Controller
         return response()->json([
             'success' => true,
             'data' => $challenges,
+        ]);
+    }
+
+    /**
+     * Join a challenge.
+     */
+    public function joinChallenge(Request $request, Challenge $challenge): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->challenges()->where('challenges.id', $challenge->id)->exists()) {
+            $user->challenges()->attach($challenge->id, [
+                'progress' => 0,
+                'status' => 'joined',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'is_joined' => true,
+        ]);
+    }
+
+    /**
+     * Leave a challenge.
+     */
+    public function leaveChallenge(Request $request, Challenge $challenge): JsonResponse
+    {
+        $user = $request->user();
+
+        $user->challenges()->detach($challenge->id);
+
+        return response()->json([
+            'success' => true,
+            'is_joined' => false,
         ]);
     }
 

@@ -130,6 +130,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stats/challenges/active', [StatsController::class, 'activeChallenges']);
     Route::get('/stats/challenges/available', [StatsController::class, 'availableChallenges']);
     Route::get('/stats/tier', [StatsController::class, 'userTier']);
+    Route::post('/challenges/{challenge}/join', [StatsController::class, 'joinChallenge']);
+    Route::post('/challenges/{challenge}/leave', [StatsController::class, 'leaveChallenge']);
 
     // Clubs API
     Route::get('/clubs', [ClubController::class, 'index']);
