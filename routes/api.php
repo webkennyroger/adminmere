@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SaveController;
 use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\TrainingPlanController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -132,6 +133,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stats/tier', [StatsController::class, 'userTier']);
     Route::post('/challenges/{challenge}/join', [StatsController::class, 'joinChallenge']);
     Route::post('/challenges/{challenge}/leave', [StatsController::class, 'leaveChallenge']);
+
+    // Training Plans API
+    Route::get('/training-plans', [TrainingPlanController::class, 'index']);
+    Route::get('/training-plans/today', [TrainingPlanController::class, 'todayWorkout']);
+    Route::post('/training-plans/complete-today', [TrainingPlanController::class, 'completeToday']);
+    Route::get('/training-plans/{trainingPlan}', [TrainingPlanController::class, 'show']);
+    Route::post('/training-plans/{trainingPlan}/enroll', [TrainingPlanController::class, 'enroll']);
+    Route::post('/training-plans/{trainingPlan}/unenroll', [TrainingPlanController::class, 'unenroll']);
 
     // Clubs API
     Route::get('/clubs', [ClubController::class, 'index']);

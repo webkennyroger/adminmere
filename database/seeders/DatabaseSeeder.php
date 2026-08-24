@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubscriptionSeeder::class,
             ChallengeSeeder::class, // Triggers Notifications for Admin
+            TrainingPlanSeeder::class,
             GoalSeeder::class,
             SupportSeeder::class,
             ScheduleSeeder::class,
