@@ -5,16 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 
 class PasswordResetController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function sendResetLinkEmail(Request $request)
     {
@@ -35,7 +37,7 @@ class PasswordResetController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function reset(Request $request)
     {
@@ -64,5 +66,24 @@ class PasswordResetController extends Controller
         return $status === Password::PASSWORD_RESET
                     ? response()->json(['status' => __($status)])
                     : response()->json(['email' => __($status)], 422);
+    }
+
+    /**
+     * Update the password of the currently authenticated user.
+     *
+     * @return Response
+     */
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => ['required', 'string', PasswordRule::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => $validated['password'],
+        ]);
+
+        return response()->json(['status' => __('Password updated successfully.')]);
     }
 }
