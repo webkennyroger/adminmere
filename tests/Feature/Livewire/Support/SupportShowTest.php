@@ -14,6 +14,7 @@ class SupportShowTest extends TestCase
     public function test_can_view_support_detail()
     {
         $user = User::factory()->create();
+        $user->profile()->update(['role' => 'admin']);
         $ticket = Support::create([
             'user_id' => $user->id,
             'subject' => 'Test Ticket',
@@ -30,7 +31,10 @@ class SupportShowTest extends TestCase
 
     public function test_cannot_view_others_ticket()
     {
+        // Manager: passa pelo gate de acesso web, mas não tem o bypass de
+        // dono de ticket que só existe para admins (ver SupportShow::mount).
         $user = User::factory()->create();
+        $user->profile()->update(['role' => 'manager']);
         $otherUser = User::factory()->create();
         $ticket = Support::create([
             'user_id' => $otherUser->id,
@@ -48,6 +52,7 @@ class SupportShowTest extends TestCase
     public function test_404_for_non_existent_ticket()
     {
         $user = User::factory()->create();
+        $user->profile()->update(['role' => 'admin']);
 
         $this->actingAs($user)
             ->get(route('support.show', 99999))

@@ -2,18 +2,21 @@
 
 namespace Tests\Feature\Livewire\Support;
 
+use App\Livewire\Support\SupportList;
 use App\Models\Support;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class SupportListTest extends TestCase
 {
-    use \Illuminate\Foundation\Testing\RefreshDatabase;
+    use RefreshDatabase;
 
     public function test_can_view_support_list()
     {
         $user = User::factory()->create();
+        $user->profile()->update(['role' => 'admin']);
         Support::create([
             'user_id' => $user->id,
             'subject' => 'Test Ticket 1',
@@ -46,7 +49,7 @@ class SupportListTest extends TestCase
         ]);
 
         Livewire::actingAs($user)
-            ->test(\App\Livewire\Support\SupportList::class)
+            ->test(SupportList::class)
             ->set('status', 'solved')
             ->assertSee('Solved Ticket')
             ->assertDontSee('Pending Ticket');
@@ -67,7 +70,7 @@ class SupportListTest extends TestCase
         ]);
 
         Livewire::actingAs($user)
-            ->test(\App\Livewire\Support\SupportList::class)
+            ->test(SupportList::class)
             ->set('search', 'Find')
             ->assertSee('Find Me')
             ->assertDontSee('Hide Me');
@@ -80,7 +83,7 @@ class SupportListTest extends TestCase
         $ticket2 = Support::create(['user_id' => $user->id, 'subject' => 'B Ticket', 'created_at' => now(), 'message' => 'm', 'status' => 'o', 'priority' => 'l']);
 
         Livewire::actingAs($user)
-            ->test(\App\Livewire\Support\SupportList::class)
+            ->test(SupportList::class)
             ->set('sortBy', 'subject')
             ->set('sortAsc', true)
             ->assertSeeInOrder(['A Ticket', 'B Ticket'])

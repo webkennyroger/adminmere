@@ -73,7 +73,7 @@ class ChallengeCreate extends Component
 
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio criado com sucesso!']);
 
-        return redirect()->route('challenges.index');
+        return redirect()->route('admin.challenges.index');
     }
 
     public function render()

@@ -17,6 +17,7 @@ beforeEach(function () {
 
 test('two factor settings page can be rendered', function () {
     $user = User::factory()->withoutTwoFactor()->create();
+    $user->profile()->update(['role' => 'admin']);
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
@@ -28,6 +29,7 @@ test('two factor settings page can be rendered', function () {
 
 test('two factor settings page requires password confirmation when enabled', function () {
     $user = User::factory()->create();
+    $user->profile()->update(['role' => 'admin']);
 
     $response = $this->actingAs($user)
         ->get(route('two-factor.show'));
@@ -39,6 +41,7 @@ test('two factor settings page returns forbidden response when two factor is dis
     config(['fortify.features' => []]);
 
     $user = User::factory()->create();
+    $user->profile()->update(['role' => 'admin']);
 
     $response = $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])

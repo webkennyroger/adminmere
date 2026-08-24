@@ -1,8 +1,19 @@
 <?php
 
-test('returns a successful response', function () {
-    $user = \App\Models\User::factory()->create();
-    $response = $this->actingAs($user)->get(route('home'));
+use App\Models\User;
 
-    $response->assertStatus(200);
+test('non-admin users are blocked from the web dashboard', function () {
+    $user = User::factory()->create();
+    $response = $this->actingAs($user)->get(route('dashboard'));
+
+    $response->assertForbidden();
+});
+
+test('admins can access the web dashboard', function () {
+    $user = User::factory()->create();
+    $user->profile()->update(['role' => 'admin']);
+
+    $response = $this->actingAs($user)->get(route('dashboard'));
+
+    $response->assertSuccessful();
 });

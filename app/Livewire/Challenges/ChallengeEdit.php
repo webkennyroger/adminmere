@@ -143,7 +143,7 @@ class ChallengeEdit extends Component
 
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio excluído com sucesso!']);
 
-        return redirect()->route('challenges.index');
+        return redirect()->route('admin.challenges.index');
     }
 
     /**
@@ -180,7 +180,7 @@ class ChallengeEdit extends Component
 
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Desafio atualizado com sucesso!']);
 
-        return redirect()->route('challenges.index');
+        return redirect()->route('admin.challenges.index');
     }
 
     /**

@@ -41,7 +41,7 @@ class NewFollower extends Notification
             'title' => 'Novo Seguidor',
             'description' => "{$this->follower->name} começou a seguir você.",
             'image' => $this->follower->profile_photo_url ?? $this->follower->avatar, // Handle diff avatar keys
-            'link' => route('profile.view', $this->follower),
+            'link' => url('/@'.$this->follower->profile?->nickname),
         ];
     }
 }

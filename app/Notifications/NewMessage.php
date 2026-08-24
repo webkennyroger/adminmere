@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class NewMessage extends Notification
 {
@@ -42,9 +43,9 @@ class NewMessage extends Notification
     {
         return [
             'title' => 'Nova Mensagem',
-            'description' => $this->sender->name.': '.\Illuminate\Support\Str::limit($this->messageContent, 30),
+            'description' => $this->sender->name.': '.Str::limit($this->messageContent, 30),
             'image' => $this->sender->profile_photo_url ?? $this->sender->avatar,
-            'link' => route('chat.index'), // Link to chat
+            'link' => url('/chat'), // Link to chat (consumido pelo app mobile; não existe mais página web equivalente)
         ];
     }
 }

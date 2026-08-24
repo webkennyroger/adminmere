@@ -4,7 +4,9 @@ use App\Models\User;
 use Livewire\Volt\Volt;
 
 test('profile page is displayed', function () {
-    $this->actingAs($user = User::factory()->create());
+    $user = User::factory()->create();
+    $user->profile()->update(['role' => 'admin']);
+    $this->actingAs($user);
 
     $this->get(route('profile.edit'))->assertOk();
 });

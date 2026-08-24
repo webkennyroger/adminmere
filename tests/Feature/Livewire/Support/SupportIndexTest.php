@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Livewire\Support;
 
+use App\Livewire\Support\SupportIndex;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -14,6 +15,7 @@ class SupportIndexTest extends TestCase
     public function test_can_view_support_create_page()
     {
         $user = User::factory()->create();
+        $user->profile()->update(['role' => 'admin']);
 
         $this->actingAs($user)
             ->get(route('support.index'))
@@ -26,7 +28,7 @@ class SupportIndexTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(\App\Livewire\Support\SupportIndex::class)
+            ->test(SupportIndex::class)
             ->set('subject', 'New Ticket')
             ->set('priority', 'high')
             ->set('message', 'Help me with this issue.')
@@ -46,7 +48,7 @@ class SupportIndexTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(\App\Livewire\Support\SupportIndex::class)
+            ->test(SupportIndex::class)
             ->set('subject', '')
             ->call('submitSupportForm')
             ->assertHasErrors(['subject']);

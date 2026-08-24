@@ -1,189 +1,162 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\BillingController;
+use App\Http\Controllers\MaintenanceController;
+use App\Livewire\Activities\ActivityList;
 use App\Livewire\Categories\CategoryIndex;
 use App\Livewire\Challenges\ChallengeIndex;
-use App\Livewire\Chat\ChatApp;
+use App\Livewire\Goals\GoalIndex;
+use App\Livewire\Plans\PlanIndex;
+use App\Livewire\Profile\UserProfileEdit;
 use App\Livewire\Schedule\ScheduleIndex;
+use App\Livewire\Support\SupportIndex;
+use App\Livewire\Support\SupportList;
+use App\Livewire\Support\SupportShow;
 use App\Livewire\Users\UserIndex;
+use App\Models\Schedule;
+use App\Models\Support;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    return auth()->check() ? redirect('/home') : redirect('/login');
+    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
 // Rota de Autenticação Google (Socialite / Web)
 Route::get('/auth/google/redirect', function () {
-    return \Laravel\Socialite\Facades\Socialite::driver('google')
+    return Socialite::driver('google')
         ->scopes(['openid', 'email', 'profile'])
         ->redirect();
 })->name('auth.google');
 
-Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleCallback'])->name('auth.google.callback');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleCallback'])->name('auth.google.callback');
 
 Route::get('/dashboard', function () {
-    // Regular users go to home, admins/managers see dashboard
-    if (! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
-        return redirect()->route('home');
-    }
-
     return view('dashboard');
 })
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'check.admin.or.manager'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/home', \App\Livewire\Home\UserHome::class)->name('home');
-});
+// Esta aplicação web é exclusiva para administradores e gerentes.
+// Usuários comuns usam o aplicativo Ora (mobile), que consome a API em routes/api.php.
+Route::middleware(['auth', 'check.admin.or.manager'])->group(function () {
+    // Rota da Agenda/Calendário
+    Route::get('/schedule', ScheduleIndex::class)->name('schedule.index');
 
-Route::middleware(['auth'])->group(function () {
-    // ===== ADMIN/MANAGER ONLY ROUTES =====
-    Route::middleware(['check.admin.or.manager'])->group(function () {
-        // Rota da Agenda/Calendário
-        Route::get('/schedule', ScheduleIndex::class)->name('schedule.index');
+    // API routes for calendar events
+    Route::get('/api/events', function () {
+        return response()->json(
+            Schedule::where('user_id', auth()->id())
+                ->get()
+                ->map(function ($event) {
+                    return [
+                        'id' => $event->id,
+                        'title' => $event->title,
+                        'start' => $event->event_date->format('Y-m-d'),
+                        'end' => $event->event_date->format('Y-m-d'),
+                        'extendedProps' => [
+                            'calendar' => $event->color ?? 'Primary',
+                            'description' => $event->description,
+                            'photo' => $event->photo,
+                            'time' => $event->event_time,
+                        ],
+                    ];
+                })
+        );
+    })->name('api.events.index');
 
-        // API routes for calendar events
-        Route::get('/api/events', function () {
-            return response()->json(
-                \App\Models\Schedule::where('user_id', auth()->id())
-                    ->get()
-                    ->map(function ($event) {
-                        return [
-                            'id' => $event->id,
-                            'title' => $event->title,
-                            'start' => $event->event_date->format('Y-m-d'),
-                            'end' => $event->event_date->format('Y-m-d'),
-                            'extendedProps' => [
-                                'calendar' => $event->color ?? 'Primary',
-                                'description' => $event->description,
-                                'photo' => $event->photo,
-                                'time' => $event->event_time,
-                            ],
-                        ];
-                    })
-            );
-        })->name('api.events.index');
+    Route::post('/api/events', function (Request $request) {
+        $data = [
+            'user_id' => auth()->id(),
+            'title' => $request->title,
+            'description' => $request->description ?? '',
+            'event_date' => $request->start_date,
+            'event_time' => $request->event_time ?? '00:00',
+            'color' => $request->event_level ?? 'Primary',
+        ];
 
-        Route::post('/api/events', function (\Illuminate\Http\Request $request) {
-            $data = [
-                'user_id' => auth()->id(),
-                'title' => $request->title,
-                'description' => $request->description ?? '',
-                'event_date' => $request->start_date,
-                'event_time' => $request->event_time ?? '00:00',
-                'color' => $request->event_level ?? 'Primary',
-            ];
-
-            if ($request->hasFile('photo')) {
-                $data['photo'] = $request->file('photo')->store('events', 'public');
-            }
-
-            $event = \App\Models\Schedule::create($data);
-
-            return response()->json(['id' => $event->id, 'success' => true]);
-        })->name('api.events.store');
-
-        Route::put('/api/events/{id}', function (\Illuminate\Http\Request $request, $id) {
-            $event = \App\Models\Schedule::where('user_id', auth()->id())->findOrFail($id);
-
-            $data = [
-                'title' => $request->title,
-                'description' => $request->description ?? '',
-                'event_date' => $request->start_date,
-                'event_time' => $request->event_time ?? '00:00',
-                'color' => $request->event_level ?? 'Primary',
-            ];
-
-            if ($request->hasFile('photo')) {
-                $data['photo'] = $request->file('photo')->store('events', 'public');
-            }
-
-            $event->update($data);
-
-            return response()->json(['success' => true]);
-        })->name('api.events.update');
-
-        Route::delete('/api/events/{id}', function ($id) {
-            $event = \App\Models\Schedule::where('user_id', auth()->id())->findOrFail($id);
-            $event->delete();
-
-            return response()->json(['success' => true]);
-        })->name('api.events.destroy');
-
-        // Rota de Gerenciamento de Desafios Mensais (Admin)
-        Route::get('/admin/challenges', ChallengeIndex::class)->name('admin.challenges.index');
-
-        // Rota de Gerenciamento de Categorias
-        Route::get('/categories', CategoryIndex::class)->name('categories.index');
-        Route::view('/categories/create', 'livewire.categories.create')->name('categories.create');
-        Route::get('/categories/{category}/edit', function ($category) {
-            return view('livewire.categories.edit', compact('category'));
-        })->name('categories.edit');
-
-        // Goals (Metas)
-        Route::get('/goals', \App\Livewire\Goals\GoalIndex::class)->name('goals.index');
-
-        // Rota de Gerenciamento de Usuários
-        Route::get('/users', UserIndex::class)->name('users.index');
-        Route::get('/users/{user}', function (\App\Models\User $user) {
-            return view('pages.profile.profile-index', compact('user'));
-        })->name('users.show');
-
-        // Subscription Plans Management
-        Route::get('/plans', \App\Livewire\Plans\PlanIndex::class)->name('plans.index');
-
-        // Rota de Gerenciamento de Atividades
-        Route::get('/activities', \App\Livewire\Activities\ActivityList::class)->name('activities.index');
-    });
-
-    // ===== PUBLIC ROUTES (All authenticated users) =====
-    // Billing / Minha Assinatura
-    Route::get('/billing', [\App\Http\Controllers\BillingController::class, 'index'])->name('billing.index');
-    Route::get('/billing/subscribe/{plan}', [\App\Http\Controllers\BillingController::class, 'subscribe'])->name('billing.subscribe');
-    Route::post('/billing/cancel', [\App\Http\Controllers\BillingController::class, 'cancel'])->name('billing.cancel');
-    Route::post('/billing/resume', [\App\Http\Controllers\BillingController::class, 'resume'])->name('billing.resume');
-    Route::get('/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
-
-    // Rota do Aplicativo de Chat
-    Route::get('/chat', ChatApp::class)->name('chat.index');
-
-    // Rota do Perfil do Usuário
-    Route::get('/profile', function () {
-        $user = auth()->user();
-        if ($user->profile && $user->profile->nickname) {
-            return redirect()->to('/@'.$user->profile->nickname);
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('events', 'public');
         }
 
-        return redirect()->route('profile.edit');
-    })->name('profile');
+        $event = Schedule::create($data);
 
-    // Public Profile Route (Social Handle Style)
-    Route::get('/@{nickname}', \App\Livewire\Profile\UserProfile::class)->name('profile.view');
-    // Legacy support (optional, can be removed if strict handle usage is desired)
-    // Route::get('/athletes/{user}', \App\Livewire\Profile\UserProfile::class)->name('profile.view.legacy');
+        return response()->json(['id' => $event->id, 'success' => true]);
+    })->name('api.events.store');
 
-    // Find Friends
-    Route::get('/find-friends', \App\Livewire\Users\FindFriends::class)->name('users.find');
+    Route::put('/api/events/{id}', function (Request $request, $id) {
+        $event = Schedule::where('user_id', auth()->id())->findOrFail($id);
 
-    // User Relationships (Followers/Following)
-    Route::get('/athletes/{user}/following', \App\Livewire\Users\UserRelationships::class)->name('users.following');
-    Route::get('/athletes/{user}/followers', \App\Livewire\Users\UserRelationships::class)->name('users.followers');
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description ?? '',
+            'event_date' => $request->start_date,
+            'event_time' => $request->event_time ?? '00:00',
+            'color' => $request->event_level ?? 'Primary',
+        ];
 
-    // Rota de Desafios (Usuários)
-    Route::get('/challenges', \App\Livewire\App\Challenges\ChallengeList::class)->name('challenges.index');
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('events', 'public');
+        }
 
-    Route::get('/challenges/{challenge}', \App\Livewire\App\Challenges\ChallengeDetail::class)->name('challenges.show');
+        $event->update($data);
+
+        return response()->json(['success' => true]);
+    })->name('api.events.update');
+
+    Route::delete('/api/events/{id}', function ($id) {
+        $event = Schedule::where('user_id', auth()->id())->findOrFail($id);
+        $event->delete();
+
+        return response()->json(['success' => true]);
+    })->name('api.events.destroy');
+
+    // Rota de Gerenciamento de Desafios Mensais (Admin)
+    Route::get('/admin/challenges', ChallengeIndex::class)->name('admin.challenges.index');
+
+    // Rota de Gerenciamento de Categorias
+    Route::get('/categories', CategoryIndex::class)->name('categories.index');
+    Route::view('/categories/create', 'livewire.categories.create')->name('categories.create');
+    Route::get('/categories/{category}/edit', function ($category) {
+        return view('livewire.categories.edit', compact('category'));
+    })->name('categories.edit');
+
+    // Goals (Metas)
+    Route::get('/goals', GoalIndex::class)->name('goals.index');
+
+    // Rota de Gerenciamento de Usuários
+    Route::get('/users', UserIndex::class)->name('users.index');
+    Route::get('/users/{user}', function (User $user) {
+        return view('pages.profile.profile-index', compact('user'));
+    })->name('users.show');
+
+    // Subscription Plans Management
+    Route::get('/plans', PlanIndex::class)->name('plans.index');
+
+    // Rota de Gerenciamento de Atividades
+    Route::get('/activities', ActivityList::class)->name('activities.index');
+
+    // Billing / Minha Assinatura
+    Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
+    Route::get('/billing/subscribe/{plan}', [BillingController::class, 'subscribe'])->name('billing.subscribe');
+    Route::post('/billing/cancel', [BillingController::class, 'cancel'])->name('billing.cancel');
+    Route::post('/billing/resume', [BillingController::class, 'resume'])->name('billing.resume');
+    Route::get('/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
 
     // Rota para o componente Support/Index
-    Route::get('/support', \App\Livewire\Support\SupportIndex::class)->name('support.index');
-    Route::post('/support', function (\Illuminate\Http\Request $request) {
+    Route::get('/support', SupportIndex::class)->name('support.index');
+    Route::post('/support', function (Request $request) {
         $request->validate([
             'subject' => 'required|min:5|max:100',
             'priority' => 'required|in:low,medium,high',
             'message' => 'required|min:10',
         ]);
 
-        \App\Models\Support::create([
+        Support::create([
             'user_id' => auth()->id(),
             'subject' => $request->subject,
             'priority' => $request->priority,
@@ -194,10 +167,10 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('support.list')->with('status', 'Ticket criado com sucesso!');
     })->name('support.store');
 
-    Route::get('/support-list', \App\Livewire\Support\SupportList::class)->name('support.list');
+    Route::get('/support-list', SupportList::class)->name('support.list');
 
-    Route::get('/support/{support}', \App\Livewire\Support\SupportShow::class)->name('support.show');
-    Route::post('/support/{support}/reply', function (\App\Models\Support $support, \Illuminate\Http\Request $request) {
+    Route::get('/support/{support}', SupportShow::class)->name('support.show');
+    Route::post('/support/{support}/reply', function (Support $support, Request $request) {
         // Ensure user owns the ticket or is admin
         if ($support->user_id !== auth()->id() && ! auth()->user()->is_admin) {
             abort(403);
@@ -215,7 +188,7 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('support.show', $support)->with('message', 'Resposta enviada com sucesso!');
     })->name('support.reply');
 
-    Route::patch('/support/{support}/status', function (\App\Models\Support $support, \Illuminate\Http\Request $request) {
+    Route::patch('/support/{support}/status', function (Support $support, Request $request) {
         if (! auth()->user()->is_admin) {
             abort(403);
         }
@@ -242,7 +215,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/coming', 'pages.coming-soon')->name('coming');
 
     // Profile Settings Routes
-    Route::get('profile/edit', App\Livewire\Profile\UserProfileEdit::class)->name('profile.edit');
+    Route::get('profile/edit', UserProfileEdit::class)->name('profile.edit');
     Volt::route('settings/password', 'settings.password')->name('user-password.edit');
     Volt::route('settings/appearance', 'settings.appearance')->name('appearance.edit');
     Volt::route('settings/two-factor', 'settings.two-factor')
@@ -255,4 +228,4 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Maintenance Route (Temporary for Initial Seeding)
-Route::get('/maintenance/seed', [App\Http\Controllers\MaintenanceController::class, 'seed']);
+Route::get('/maintenance/seed', [MaintenanceController::class, 'seed']);

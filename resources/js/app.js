@@ -15,7 +15,6 @@ import "swiper/css/pagination";
 // Stores
 
 import { initSidebarStore } from "./components/sidebar";
-import { initChatStore } from "./components/chat";
 
 // 1. Initialize & Globalize Alpine
 // 1. Initialize & Globalize Alpine
@@ -29,7 +28,6 @@ document.addEventListener("alpine:init", () => {
     // Register Stores
 
     initSidebarStore();
-    initChatStore();
 
     // Media Slider Component
     window.Alpine.data("mediaSlider", () => ({

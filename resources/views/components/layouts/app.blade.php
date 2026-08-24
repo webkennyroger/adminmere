@@ -23,14 +23,11 @@
             <!-- ===== Header Start ===== -->
             <x-layouts.header.app-header />
 
-            <main class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 transition-all duration-300"
-                :style="$store.chatSidebar?.isOpen ? 'margin-right: 400px;' : ''">
+            <main class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 transition-all duration-300">
                 {{ $slot }}
             </main>
         </div>
     </div>
-
-    @include('partials.chat-widget')
 
     <!-- Toast Container -->
     <x-toast.container />

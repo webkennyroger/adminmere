@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('chat.index') }}"
+                    <a href="{{ route('support.index') }}"
                         class="flex items-center gap-3 px-3 py-2 font-medium text-zinc-700 rounded-lg group text-theme-sm hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-300">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -60,6 +60,7 @@
                         </svg>
                         Suporte
                     </a>
+                </li>
 
                 <li>
                     <a href="{{ route('terms.show') }}"
