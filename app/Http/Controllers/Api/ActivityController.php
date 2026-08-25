@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Activities\DeleteActivity;
+use App\Actions\Activities\UpdateActivity;
+use App\Actions\Posts\DeletePost;
+use App\Actions\Posts\UpdatePost;
 use App\Http\Controllers\Controller;
+use App\Jobs\MatchSegmentsForActivity;
 use App\Models\Activity;
 use App\Models\Post;
 use App\Models\User;
+use App\Traits\ResolvesActivityItems;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,7 +19,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ActivityController extends Controller
 {
-    use \App\Traits\ResolvesActivityItems;
+    use ResolvesActivityItems;
 
     public function index(Request $request): JsonResponse
     {
@@ -30,7 +36,7 @@ class ActivityController extends Controller
             'savedItems',
             'comments' => function ($q) {
                 $q->whereNull('parent_id')->oldest();
-            }
+            },
         ]);
 
         // Posts Query (Simple posts and polls)
@@ -42,7 +48,7 @@ class ActivityController extends Controller
             'pollVotes.user',
             'comments' => function ($q) {
                 $q->whereNull('parent_id')->oldest();
-            }
+            },
         ]);
 
         if ($feed === 'timeline' || $feed === 'network') {
@@ -74,12 +80,12 @@ class ActivityController extends Controller
 
         // Merge and sort all items
         $merged = collect([])
-            ->merge($activities->map(fn($a) => [
+            ->merge($activities->map(fn ($a) => [
                 'type' => 'activity',
                 'item' => $a,
                 'date' => $a->start_time ?? $a->created_at,
             ]))
-            ->merge($posts->map(fn($p) => [
+            ->merge($posts->map(fn ($p) => [
                 'type' => 'post',
                 'item' => $p,
                 'date' => $p->created_at,
@@ -118,8 +124,6 @@ class ActivityController extends Controller
     }
 
     /**
-     * @param  Post  $post
-     * @param  User|null  $user
      * @return array<string, mixed>
      */
     public function formatPost(Post $post, ?User $user): array
@@ -131,7 +135,7 @@ class ActivityController extends Controller
         }
 
         return [
-            'id' => 'post_' . $post->id,
+            'id' => 'post_'.$post->id,
             'type' => 'post',
             'title' => $post->title,
             'userId' => (string) $post->user_id,
@@ -181,8 +185,6 @@ class ActivityController extends Controller
     }
 
     /**
-     * @param  Post  $post
-     * @param  User|null  $user
      * @return array<string, mixed>
      */
     public function formatPoll(Post $post, ?User $user): array
@@ -210,7 +212,7 @@ class ActivityController extends Controller
         ];
 
         return [
-            'id' => 'poll_' . $post->id,
+            'id' => 'poll_'.$post->id,
             'type' => 'poll',
             'title' => $post->title,
             'description' => $post->content,
@@ -311,7 +313,7 @@ class ActivityController extends Controller
         if ($request->has('taggedPartnerIds')) {
             $taggedIds = $request->taggedPartnerIds;
             if (is_array($taggedIds) && count($taggedIds) > 0) {
-                $taggedUsers = \App\Models\User::whereIn('id', $taggedIds)
+                $taggedUsers = User::whereIn('id', $taggedIds)
                     ->select('id', 'name', 'avatar')
                     ->get()
                     ->toArray();
@@ -319,8 +321,8 @@ class ActivityController extends Controller
         }
 
         $polylines = $request->routePoints ?? [];
-        if (is_array($polylines) && !empty($polylines)) {
-            if (!isset($polylines['summary_polyline'])) {
+        if (is_array($polylines) && ! empty($polylines)) {
+            if (! isset($polylines['summary_polyline'])) {
                 $summary = $this->encodePolyline($polylines);
                 $polylines = [
                     'points' => $polylines,
@@ -354,6 +356,8 @@ class ActivityController extends Controller
             ]
         );
 
+        MatchSegmentsForActivity::dispatch($activity->id);
+
         return response()->json([
             'success' => true,
             'data' => $this->formatActivity($activity, $user),
@@ -371,7 +375,7 @@ class ActivityController extends Controller
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('activities_media', 'public');
-                $paths[] = url('storage/' . $path);
+                $paths[] = url('storage/'.$path);
             }
         }
 
@@ -388,7 +392,7 @@ class ActivityController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if ($item->user_id != $user->id && !$user->isAdmin()) {
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -404,8 +408,8 @@ class ActivityController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        if ($item instanceof \App\Models\Activity) {
-            $action = new \App\Actions\Activities\UpdateActivity;
+        if ($item instanceof Activity) {
+            $action = new UpdateActivity;
             $item = $action->execute($item, [
                 'title' => $request->activityTitle ?? $request->title,
                 'description' => $request->description ?? $request->input('content'),
@@ -413,7 +417,7 @@ class ActivityController extends Controller
             ]);
             $formatted = $this->formatActivity($item, $user);
         } else {
-            $action = new \App\Actions\Posts\UpdatePost;
+            $action = new UpdatePost;
             $item = $action->execute($item, [
                 'title' => $request->title ?? $request->activityTitle,
                 'content' => $request->input('content') ?? $request->description,
@@ -435,22 +439,20 @@ class ActivityController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if ($item->user_id != $user->id && !$user->isAdmin()) {
+        if ($item->user_id != $user->id && ! $user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        if ($item instanceof \App\Models\Activity) {
-            (new \App\Actions\Activities\DeleteActivity)->execute($item);
+        if ($item instanceof Activity) {
+            (new DeleteActivity)->execute($item);
         } else {
-            (new \App\Actions\Posts\DeletePost)->execute($item);
+            (new DeletePost)->execute($item);
         }
 
         return response()->json(['success' => true]);
     }
 
     /**
-     * @param  Activity  $activity
-     * @param  User|null  $user
      * @return array<string, mixed>
      */
     public function formatActivity(Activity $activity, ?User $user): array
@@ -467,7 +469,7 @@ class ActivityController extends Controller
         }
 
         return [
-            'id' => 'activity_' . $activity->id,
+            'id' => 'activity_'.$activity->id,
             'userId' => (string) $activity->user_id,
             'user_id' => (string) $activity->user_id,
             'userName' => $activity->user->name,
@@ -536,7 +538,7 @@ class ActivityController extends Controller
             $lng = round($point['lng'] * 1e5);
             $d_lat = $lat - $last_lat;
             $d_lng = $lng - $last_lng;
-            $res .= $this->encodeSignedNumber($d_lat) . $this->encodeSignedNumber($d_lng);
+            $res .= $this->encodeSignedNumber($d_lat).$this->encodeSignedNumber($d_lng);
             $last_lat = $lat;
             $last_lng = $lng;
         }

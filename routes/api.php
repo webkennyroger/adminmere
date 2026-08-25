@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PollController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\SaveController;
+use App\Http\Controllers\Api\SegmentController;
 use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -141,6 +142,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/training-plans/{trainingPlan}', [TrainingPlanController::class, 'show']);
     Route::post('/training-plans/{trainingPlan}/enroll', [TrainingPlanController::class, 'enroll']);
     Route::post('/training-plans/{trainingPlan}/unenroll', [TrainingPlanController::class, 'unenroll']);
+
+    // Segments API
+    Route::get('/segments', [SegmentController::class, 'index']);
+    Route::post('/segments', [SegmentController::class, 'store']);
+    Route::get('/segments/{segment}', [SegmentController::class, 'show']);
 
     // Clubs API
     Route::get('/clubs', [ClubController::class, 'index']);

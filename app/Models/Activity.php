@@ -68,4 +68,9 @@ class Activity extends Model
     {
         return $this->morphMany(SavedItem::class, 'saved_item');
     }
+
+    public function segmentEfforts()
+    {
+        return $this->hasMany(SegmentEffort::class);
+    }
 }
