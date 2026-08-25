@@ -27,7 +27,7 @@
       </div>
       <!-- Footer -->
       <p class="absolute text-sm text-center text-zinc-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-zinc-400">
-          &copy; {{ $currentYear }} - MERE
+          &copy; {{ $currentYear }} - {{ config('app.name') }}
       </p>
   </div>
 @endsection

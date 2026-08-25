@@ -8,10 +8,8 @@
             <div class="flex w-full max-w-sm flex-col gap-2">
                 <a href="{{ url('/') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>
                     <div class="flex items-center justify-center">
-                        <img src="{{ asset('assets/images/logo/logo.svg') }}" class="h-10 w-auto dark:hidden" alt="Logo">
-                        <img src="{{ asset('assets/images/logo/logo-dark.svg') }}" class="h-10 w-auto hidden dark:block" alt="Logo">
+                        <span class="text-3xl font-black italic tracking-tight text-[#16b83e]">{{ config('app.name', 'Laravel') }}</span>
                     </div>
-                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
                 </a>
                 <div class="flex flex-col gap-6">
                     {{ $slot }}
