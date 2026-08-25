@@ -8,7 +8,7 @@
       {{-- common grid shape --}}
       <x-common.common-grid-shape />
       <!-- Centered Content -->
-      <div class="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
+      <div class="mx-auto w-full max-w-60.5 text-center sm:max-w-118">
           <h1 class="mb-8 font-bold text-zinc-800 text-title-md dark:text-white/90 xl:text-title-2xl">
             MANUTENÇÃO
           </h1>
@@ -21,7 +21,7 @@
           </p>
 
           <a href="/"
-              class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-3.5 text-sm font-medium text-zinc-700 shadow-theme-xs hover:bg-zinc-50 hover:text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-white/[0.03] dark:hover:text-zinc-200">
+              class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-3.5 text-sm font-medium text-zinc-700 shadow-theme-xs hover:bg-zinc-50 hover:text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-white/3 dark:hover:text-zinc-200">
               Voltar à página inicial
           </a>
       </div>
