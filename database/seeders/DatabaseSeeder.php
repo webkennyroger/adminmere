@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ActivitySeeder::class,
             FollowersSeeder::class,
             ContentSeeder::class,
+            DemoUsageSeeder::class,
         ]);
 
         $this->command->info('Database seeded successfully!');
